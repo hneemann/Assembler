@@ -136,8 +136,8 @@ public class Program {
 
     public static void main(String[] args) throws IOException, ExpressionException, InstructionException {
         new Program()
-                .add(Opcode.XOR, 0, 0)
-                .label("L1").add(Opcode.INC, 0)
+                .add(Opcode.XOR, 1, 1)
+                .label("L1").add(Opcode.INC, 1)
                 .add(Opcode.BRNZ, new Identifier("L1"))
                 .link()
                 .writeHex("/home/hneemann/Dokumente/DHBW/Technische_Informatik_I/Vorlesung/06_Prozessoren/java/assembler3/z.asm.hex")

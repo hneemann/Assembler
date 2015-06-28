@@ -14,6 +14,7 @@ public class Instruction {
     private final Opcode opcode;
     private final Expression constant;
     private String label;
+    private int lineNumber;
 
     public Instruction(Opcode opcode, int destReg, int sourceReg) {
         this(opcode, destReg, sourceReg, null);
@@ -33,6 +34,10 @@ public class Instruction {
             return 1;
     }
 
+    public void setLineNumber(int lineNumber) {
+        this.lineNumber = lineNumber;
+    }
+
     public String getLabel() {
         return label;
     }
@@ -42,28 +47,34 @@ public class Instruction {
     }
 
     public void createMachineCode(Context context, MachineCodeListener mc) throws ExpressionException {
-        int con = 0;
-        if (constant != null) {
-            con = constant.getValue(context);
-        }
+        try {
+            int con = 0;
+            if (constant != null)
+                con = constant.getValue(context);
 
-        int constBit = 0;
-        if (opcode.getImmed() == Opcode.Immed.Regist) {
-            mc.add((con & 0x7fff) | 0x8000);
-            if ((con & 0x8000) != 0)
-                constBit = 1;
-        }
+            int constBit = 0;
+            if (opcode.getImmed() == Opcode.Immed.Regist) {
+                mc.add((con & 0x7fff) | 0x8000);
+                if ((con & 0x8000) != 0)
+                    constBit = 1;
+            }
 
-        if (opcode.getImmed() == Opcode.Immed.instr) {
-            int ofs = con - context.getAddr() - 1;
-            mc.add(ofs & 0x1ff
-                    | (opcode.ordinal() << 9));
+            if (opcode.getImmed() == Opcode.Immed.instr) {
+                int ofs = con - context.getAddr() - 1;
+                if (ofs > 0x1ff || ofs < -0x1ff)
+                    throw new ExpressionException("branch out of range");
+                mc.add(ofs & 0x1ff
+                        | (opcode.ordinal() << 9));
 
-        } else {
-            mc.add(sourceReg
-                    | (destReg << 4)
-                    | (constBit << 8)
-                    | (opcode.ordinal() << 9));
+            } else {
+                mc.add(sourceReg
+                        | (destReg << 4)
+                        | (constBit << 8)
+                        | (opcode.ordinal() << 9));
+            }
+        } catch (ExpressionException e) {
+            e.setLineNumber(lineNumber);
+            throw e;
         }
     }
 

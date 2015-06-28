@@ -35,7 +35,7 @@ public enum Opcode {
     // ST R0,R1,ofs  => (R1+ofs)=R0
     ST(RegsNeeded.both, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Regist, StoreSel.ALU, ALU.ADD, EnRegWrite.No),
     // LD R0,R1,ofs  => R0=(R1+ofs)
-    LD(RegsNeeded.both, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, StorePC.No, SourceToAlu.Yes),
+    LD(RegsNeeded.both, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, StorePC.No, SourceToAlu.Yes, JmpAbs.No),
 
     JMP(RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.uncond, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
     BRC(RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRC, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
@@ -55,7 +55,7 @@ public enum Opcode {
 
     enum Branch {No, BRC, BRZ, uncond, res, BRNC, BRNZ}
 
-    enum Immed {No, Regist, One, instr}
+    enum Immed {No, Regist, Zero, res1, One, res2, Two, instr}
 
     enum StoreSel {RAM, ALU}
 
@@ -64,6 +64,8 @@ public enum Opcode {
     enum EnRegWrite {No, Yes}
 
     enum StorePC {No, Yes}
+
+    enum JmpAbs {No, Yes}
 
     private final ReadRam rr;
     private final WriteRam wr;
@@ -74,11 +76,12 @@ public enum Opcode {
     private final EnRegWrite enRegWrite;
     private final StorePC storePC;
     private final SourceToAlu sourceToAlu;
+    private final JmpAbs jmpAbs;
 
     private final RegsNeeded regsNeeded;
     private final ImmedNeeded immedNeeded;
 
-    Opcode(RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, StoreSel storeSel, ALU alu, EnRegWrite enRegWrite, StorePC storePC, SourceToAlu sourceToAlu) {
+    Opcode(RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, StoreSel storeSel, ALU alu, EnRegWrite enRegWrite, StorePC storePC, SourceToAlu sourceToAlu, JmpAbs jmpAbs) {
         this.regsNeeded = rn;
         this.immedNeeded = en;
         this.rr = rr;
@@ -90,10 +93,11 @@ public enum Opcode {
         this.enRegWrite = enRegWrite;
         this.storePC = storePC;
         this.sourceToAlu = sourceToAlu;
+        this.jmpAbs = jmpAbs;
     }
 
     Opcode(RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, StoreSel storeSel, ALU alu, EnRegWrite enRegWrite) {
-        this(rn, en, rr, wr, br, imed, storeSel, alu, enRegWrite, StorePC.No, SourceToAlu.No);
+        this(rn, en, rr, wr, br, imed, storeSel, alu, enRegWrite, StorePC.No, SourceToAlu.No, JmpAbs.No);
     }
 
 
@@ -114,13 +118,14 @@ public enum Opcode {
         return rr.ordinal()
                 | (wr.ordinal() << 1)
                 | (imed.ordinal() << 2)
-                | (storeSel.ordinal() << 4)
-                | (enRegWrite.ordinal() << 5)
-                | (storePC.ordinal() << 6)
-                | (sourceToAlu.ordinal() << 7)
+                | (jmpAbs.ordinal() << 5)
+                | (storeSel.ordinal() << 6)
+                | (enRegWrite.ordinal() << 7)
+                | (storePC.ordinal() << 8)
+                | (sourceToAlu.ordinal() << 9)
 
-                | (alu.ordinal() << 8)
-                | (br.ordinal() << 13)
+                | (alu.ordinal() << 10)
+                | (br.ordinal() << 15)
                 ;
     }
 
