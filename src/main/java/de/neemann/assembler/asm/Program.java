@@ -120,7 +120,7 @@ public class Program {
         try (PrintStream hexOut = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_I/Vorlesung/06_Prozessoren/java/assembler3/z.asm.hex")) {
             new Program()
                     .add(Opcode.LDI, 0, new Constant(1000))
-                    .add(Opcode.LJMP, new Identifier("SUB"))
+                    .add(Opcode.CALL, 1, new Identifier("SUB"))
                     .add(Opcode.LDI, 0, new Constant(0))
                     .label("END").add(Opcode.JMP, new Identifier("END"))
                     .label("SUB").add(Opcode.STS, 0, new Constant(1))

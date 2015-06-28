@@ -102,6 +102,9 @@ public enum Opcode {
         this.storePC = storePC;
         this.sourceToAlu = sourceToAlu;
         this.jmpAbs = jmpAbs;
+
+        if (regsNeeded != RegsNeeded.none && imed == Immed.instr)
+            throw new RuntimeException("immediate in instruction and registers used simultanious " + name());
     }
 
     Opcode(RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, StoreSel storeSel, ALU alu, EnRegWrite enRegWrite) {
