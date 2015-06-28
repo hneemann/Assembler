@@ -119,10 +119,13 @@ public class Program {
     public static void main(String[] args) throws IOException, ExpressionException, InstructionException {
         try (PrintStream hexOut = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_I/Vorlesung/06_Prozessoren/java/assembler3/z.asm.hex")) {
             new Program()
-                    .add(Opcode.XOR, 1, 1)
-                    .label("L0").add(Opcode.LDI, 0, new Constant(0xfff))
-                    .label("L1").add(Opcode.INC, 1)
-                    .add(Opcode.BRNZ, new Identifier("L1"))
+                    .add(Opcode.LDI, 0, new Constant(1000))
+                    .add(Opcode.LJMP, new Identifier("SUB"))
+                    .add(Opcode.LDI, 0, new Constant(0))
+                    .label("END").add(Opcode.JMP, new Identifier("END"))
+                    .label("SUB").add(Opcode.STS, 0, new Constant(1))
+                    .add(Opcode.RET, 1)
+
                     .link()
                     .format(new HexFormatter(hexOut))
                     .format(new AsmFormatter(System.out));
