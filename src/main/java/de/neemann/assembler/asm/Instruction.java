@@ -27,7 +27,7 @@ public class Instruction {
     }
 
     public int size() {
-        if (constant != null)
+        if (opcode.getImmed() == Opcode.Immed.Regist)
             return 2;
         else
             return 1;
@@ -42,17 +42,58 @@ public class Instruction {
     }
 
     public void createMachineCode(Context context, MachineCodeListener mc) throws ExpressionException {
-        int constBit = 0;
+        int con = 0;
         if (constant != null) {
-            int con = constant.getValue(context);
+            con = constant.getValue(context);
+        }
+
+        int constBit = 0;
+        if (opcode.getImmed() == Opcode.Immed.Regist) {
             mc.add((con & 0x7fff) | 0x8000);
             if ((con & 0x8000) != 0)
                 constBit = 1;
         }
 
-        mc.add(sourceReg
-                | (destReg << 4)
-                | (constBit << 8)
-                | (opcode.ordinal() << 9));
+        if (opcode.getImmed() == Opcode.Immed.instr) {
+            int ofs = con - context.getAddr() - 1;
+            mc.add(ofs & 0x1ff
+                    | (opcode.ordinal() << 9));
+
+        } else {
+            mc.add(sourceReg
+                    | (destReg << 4)
+                    | (constBit << 8)
+                    | (opcode.ordinal() << 9));
+        }
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        if (label != null) {
+            sb.append(label).append(':');
+        }
+
+        sb.append('\t').append(opcode.name());
+
+        switch (opcode.getRegsNeeded()) {
+            case source:
+                sb.append(" R").append(sourceReg);
+                break;
+            case dest:
+                sb.append(" R").append(destReg);
+                break;
+            case both:
+                sb.append(" R").append(destReg).append(", R").append(sourceReg);
+                break;
+        }
+
+        if (opcode.getImmedNeeded() == Opcode.ImmedNeeded.Yes) {
+            if (opcode.getRegsNeeded() != Opcode.RegsNeeded.none)
+                sb.append(",");
+            sb.append(' ').append(constant.toString());
+        }
+
+        return sb.toString();
     }
 }
