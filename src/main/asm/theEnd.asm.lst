@@ -1,0 +1,54 @@
+00  0000  (0)             LDI R0,0x0
+01  2800  (0)             STS R0,0x0
+02  2801  (0)             STS R0,0x1
+03  2805  (0)             STS R0,0x5
+04  280a  (0)             STS R0,0xa
+05  280e  (0)             STS R0,0xe
+06  280f  (0)             STS R0,0xf
+07  2810  (0)             STS R0,0x10
+08  2814  (0)             STS R0,0x14
+09  281a  (0)             STS R0,0x1a
+0a  281f  (0)             STS R0,0x1f
+0b  0080  (0)             LDI R0,0x80
+0c  2802  (0)             STS R0,0x2
+0d  2804  (0)             STS R0,0x4
+0e  0010  (0)             LDI R0,0x10
+0f  2807  (0)             STS R0,0x7
+10  2808  (0)             STS R0,0x8
+11  2817  (0)             STS R0,0x17
+12  0060  (0)             LDI R0,0x60
+13  2816  (0)             STS R0,0x16
+14  0092  (0)             LDI R0,0x92
+15  280c  (0)             STS R0,0xc
+16  280d  (0)             STS R0,0xd
+17  2812  (0)             STS R0,0x12
+18  2813  (0)             STS R0,0x13
+19  0082  (0)             LDI R0,0x82
+1a  281c  (0)             STS R0,0x1c
+1b  281d  (0)             STS R0,0x1d
+1c  000c  (0)             LDI R0,0xc
+1d  2818  (0)             STS R0,0x18
+1e  007c  (0)             LDI R0,0x7c
+1f  281e  (0)             STS R0,0x1e
+20  00fe  (0)             LDI R0,0xfe
+21  2803  (0)             STS R0,0x3
+22  2806  (0)             STS R0,0x6
+23  2809  (0)             STS R0,0x9
+24  280b  (0)             STS R0,0xb
+25  2811  (0)             STS R0,0x11
+26  2815  (0)             STS R0,0x15
+27  2819  (0)             STS R0,0x19
+28  281b  (0)             STS R0,0x1b
+
+29  0200  (37)            LDI R2,0x0
+
+2a  010f  (39)  L2:       LDI R1,0xf
+2b  1821  (40)  L1:       ADD R0,R1,R2
+2c  f01f  (41)            ANDI R0,0x1f
+2d  a400  (42)            LDR0 R4,image
+2e  d400  (43)            OUTR1 R4,lcd
+2f  9101  (44)            SBI R1,0x1
+30  9dfa  (45)            BRNC L1
+31  c010  (46)            OUT R0,0x10
+32  8a01  (47)            ADI R2,0x1
+33  98f6  (48)            JMP L2
