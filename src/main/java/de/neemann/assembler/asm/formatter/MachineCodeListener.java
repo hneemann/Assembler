@@ -1,9 +1,8 @@
-package de.neemann.assembler.asm;
+package de.neemann.assembler.asm.formatter;
 
 /**
  * @author hneemann
  */
 public interface MachineCodeListener {
-
-    public void add(int code);
+    void add(int instr);
 }

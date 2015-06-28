@@ -181,7 +181,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             try (FileWriter wr = new FileWriter(f)) {
                 wr.write("v2.0 raw");
                 wr.write("\n");
-                //p.writeHex(wr);
+                //p.format(wr);
             }
         }
     }

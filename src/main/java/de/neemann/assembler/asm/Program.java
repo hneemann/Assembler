@@ -1,9 +1,9 @@
 package de.neemann.assembler.asm;
 
-import de.neemann.assembler.expression.Context;
-import de.neemann.assembler.expression.Expression;
-import de.neemann.assembler.expression.ExpressionException;
-import de.neemann.assembler.expression.Identifier;
+import de.neemann.assembler.asm.formatter.AsmFormatter;
+import de.neemann.assembler.asm.formatter.Formatter;
+import de.neemann.assembler.asm.formatter.HexFormatter;
+import de.neemann.assembler.expression.*;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -84,24 +84,11 @@ public class Program {
         return this;
     }
 
-    public Program writeHex(String filename) throws IOException, ExpressionException {
-        try (PrintStream out = new PrintStream(filename)) {
-            writeHex(out);
-        }
-        return this;
-    }
-
-    public Program writeHex(final PrintStream out) throws ExpressionException {
-        out.println("v2.0 raw");
-
+    public Program format(Formatter formatter) throws ExpressionException {
         int addr = 0;
         for (Instruction in : prog) {
-            in.createMachineCode(context.setAddr(addr), new MachineCodeListener() {
-                @Override
-                public void add(int code) {
-                    out.println(Integer.toHexString(code));
-                }
-            });
+            context.setAddr(addr);
+            formatter.format(in, context);
             addr += in.size();
         }
         return this;
@@ -129,19 +116,17 @@ public class Program {
         return sb.toString();
     }
 
-    private Program print(PrintStream out) {
-        out.print(toString());
-        return this;
-    }
-
     public static void main(String[] args) throws IOException, ExpressionException, InstructionException {
-        new Program()
-                .add(Opcode.XOR, 1, 1)
-                .label("L1").add(Opcode.INC, 1)
-                .add(Opcode.BRNZ, new Identifier("L1"))
-                .link()
-                .writeHex("/home/hneemann/Dokumente/DHBW/Technische_Informatik_I/Vorlesung/06_Prozessoren/java/assembler3/z.asm.hex")
-                .print(System.out);
+        try (PrintStream hexOut = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_I/Vorlesung/06_Prozessoren/java/assembler3/z.asm.hex")) {
+            new Program()
+                    .add(Opcode.XOR, 1, 1)
+                    .label("L0").add(Opcode.LDI, 0, new Constant(0xfff))
+                    .label("L1").add(Opcode.INC, 1)
+                    .add(Opcode.BRNZ, new Identifier("L1"))
+                    .link()
+                    .format(new HexFormatter(hexOut))
+                    .format(new AsmFormatter(System.out));
+        }
     }
 
 

@@ -1,5 +1,6 @@
 package de.neemann.assembler.asm;
 
+import de.neemann.assembler.asm.formatter.MachineCodeListener;
 import de.neemann.assembler.expression.Context;
 import de.neemann.assembler.expression.Expression;
 import de.neemann.assembler.expression.ExpressionException;
@@ -106,5 +107,25 @@ public class Instruction {
         }
 
         return sb.toString();
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public Opcode getOpcode() {
+        return opcode;
+    }
+
+    public int getSourceReg() {
+        return sourceReg;
+    }
+
+    public int getDestReg() {
+        return destReg;
+    }
+
+    public Expression getConstant() {
+        return constant;
     }
 }

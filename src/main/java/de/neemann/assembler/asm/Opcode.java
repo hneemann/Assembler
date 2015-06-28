@@ -43,9 +43,9 @@ public enum Opcode {
     BRNC(RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRNC, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
     BRNZ(RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRNZ, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),;
 
-    enum RegsNeeded {none, source, dest, both}
+    public enum RegsNeeded {none, source, dest, both}
 
-    enum ImmedNeeded {No, Yes}
+    public enum ImmedNeeded {No, Yes}
 
     enum ReadRam {No, Yes}
 
