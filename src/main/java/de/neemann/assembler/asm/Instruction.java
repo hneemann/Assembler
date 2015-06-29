@@ -10,6 +10,59 @@ import de.neemann.assembler.expression.ExpressionException;
 public class Instruction {
 
 
+    public static Instruction make(Opcode opcode, Register dest, Register source, Expression constant) throws InstructionException {
+        if ((opcode.getImmedNeeded() == Opcode.ImmedNeeded.No) && (constant != null))
+            throw new InstructionException(opcode.name() + " does not need a constant");
+        if ((opcode.getImmedNeeded() == Opcode.ImmedNeeded.Yes) && (constant == null))
+            throw new InstructionException(opcode.name() + " needs a constant");
+
+        return new Instruction(opcode, dest, source, constant);
+    }
+
+    public static Instruction make(Opcode opcode, Register reg) throws InstructionException {
+        switch (opcode.getRegsNeeded()) {
+            case source:
+                return make(opcode, Register.R0, reg, null);
+            case dest:
+                return make(opcode, reg, Register.R0, null);
+            case none:
+                throw new InstructionException(opcode.name() + " does not need a register");
+            default:
+                throw new InstructionException(opcode.name() + " needs both registers");
+        }
+    }
+
+    public static Instruction make(Opcode opcode, Register dest, Register source) throws InstructionException {
+        if (opcode.getRegsNeeded() != Opcode.RegsNeeded.both)
+            throw new InstructionException(opcode.name() + " needs both registers");
+
+        return make(opcode, dest, source, null);
+    }
+
+
+    public static Instruction make(Opcode opcode, Register reg, Expression constant) throws InstructionException {
+        switch (opcode.getRegsNeeded()) {
+            case source:
+                return make(opcode, Register.R0, reg, constant);
+            case dest:
+                return make(opcode, reg, Register.R0, constant);
+            case none:
+                throw new InstructionException(opcode.name() + " does not need a register");
+            default:
+                throw new InstructionException(opcode.name() + " needs both registers");
+        }
+    }
+
+    public static Instruction make(Opcode opcode, Expression constant) throws InstructionException {
+        if (opcode.getRegsNeeded() != Opcode.RegsNeeded.none)
+            throw new InstructionException(opcode.name() + " does not need a register");
+
+        return make(opcode, Register.R0, Register.R0, constant);
+    }
+
+
+
+
     private final Register destReg;
     private final Register sourceReg;
     private final Opcode opcode;
@@ -17,11 +70,7 @@ public class Instruction {
     private String label;
     private int lineNumber;
 
-    public Instruction(Opcode opcode, Register destReg, Register sourceReg) {
-        this(opcode, destReg, sourceReg, null);
-    }
-
-    public Instruction(Opcode opcode, Register destReg, Register sourceReg, Expression constant) {
+    private Instruction(Opcode opcode, Register destReg, Register sourceReg, Expression constant) {
         this.destReg = destReg;
         this.sourceReg = sourceReg;
         this.opcode = opcode;

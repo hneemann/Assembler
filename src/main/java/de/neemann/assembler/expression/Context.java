@@ -20,12 +20,13 @@ public class Context {
         return v;
     }
 
-    public void addIdentifier(String name, int value) throws ExpressionException {
+    public Context addIdentifier(String name, int value) throws ExpressionException {
         Integer v = idenifier.get(name);
         if (v != null && v != value)
             throw new ExpressionException(name + " set twice");
 
         idenifier.put(name, value);
+        return this;
     }
 
     public Context setInstrAddr(int instrAddr) {

@@ -1,5 +1,6 @@
 package de.neemann.assembler.parser;
 
+import de.neemann.assembler.expression.Context;
 import de.neemann.assembler.expression.ExpressionException;
 import junit.framework.TestCase;
 
@@ -24,5 +25,9 @@ public class ExpressionTest extends TestCase {
         assertEquals(10, new Parser("(2 AND 2) OR (8 AND 8)").getExpression().getValue(null));
     }
 
+    public void testIdent() throws IOException, ParserException, ExpressionException {
+        Context context = new Context().addIdentifier("A", 3);
+        assertEquals(14, new Parser("2*(A+4)").getExpression().getValue(context));
+    }
 
 }

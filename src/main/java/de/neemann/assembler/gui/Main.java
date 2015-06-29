@@ -1,6 +1,9 @@
 package de.neemann.assembler.gui;
 
 import de.neemann.assembler.asm.Program;
+import de.neemann.assembler.asm.formatter.AsmFormatter;
+import de.neemann.assembler.asm.formatter.HexFormatter;
+import de.neemann.assembler.expression.ExpressionException;
 import de.neemann.assembler.parser.Parser;
 import de.process.utils.gui.*;
 
@@ -91,12 +94,11 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         ToolTipAction build = new ToolTipAction("Build", IconCreator.create("preferences.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                Parser p = new Parser(source.getText());
                 try {
-                    Program prog = p.getProgram();
-
-                    prog.link();
-                    System.out.println(prog);
+                    Program prog = new Parser(source.getText())
+                            .getProgram()
+                            .link()
+                            .traverse(new AsmFormatter(System.out));
 
                     writeHex(prog, filename);
                     writeLst(prog, filename);
@@ -175,22 +177,20 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         }
     }
 
-    static private void writeHex(Program p, File name) throws IOException {
+    static private void writeHex(Program p, File name) throws IOException, ExpressionException {
         if (name != null) {
             File f = new File(name.getPath() + ".hex");
-            try (FileWriter wr = new FileWriter(f)) {
-                wr.write("v2.0 raw");
-                wr.write("\n");
-                //p.format(wr);
+            try (PrintStream ps = new PrintStream(f)) {
+                p.traverse(new HexFormatter(ps));
             }
         }
     }
 
-    static private void writeLst(Program p, File name) throws IOException {
+    static private void writeLst(Program p, File name) throws IOException, ExpressionException {
         if (name != null) {
             File f = new File(name.getPath() + ".lst");
-            try (FileWriter wr = new FileWriter(f)) {
-                wr.write(p.toString());
+            try (PrintStream ps = new PrintStream(f)) {
+                p.traverse(new AsmFormatter(ps));
             }
         }
     }

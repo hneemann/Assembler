@@ -1,9 +1,6 @@
 package de.neemann.assembler.parser;
 
-import de.neemann.assembler.asm.InstructionException;
-import de.neemann.assembler.asm.Opcode;
-import de.neemann.assembler.asm.Program;
-import de.neemann.assembler.asm.Register;
+import de.neemann.assembler.asm.*;
 import de.neemann.assembler.expression.*;
 
 import java.io.*;
@@ -40,7 +37,6 @@ public class Parser implements Closeable {
                     } else {
                         parseInstruction(p, t);
                     }
-
                     switch (tokens.nextToken()) {
                         case ';':
                             skipLine();
@@ -51,11 +47,11 @@ public class Parser implements Closeable {
                         default:
                             throw makeParserException("unexpected token " + tokens);
                     }
-                    ;
-
                     break;
                 case ';':
                     skipLine();
+                    break;
+                case TT_EOL:
                     break;
                 case TT_EOF:
                     break WHILE;
@@ -81,8 +77,9 @@ public class Parser implements Closeable {
     private void parseInstruction(Program p, String t) throws IOException, ParserException, InstructionException {
         Opcode opcode = Opcode.parseStr(t);
 
+        String label = null;
         if (opcode == null) {
-            p.label(t);
+            label = t;
             consume(':');
             t = parseWord();
             opcode = Opcode.parseStr(t);
@@ -90,6 +87,7 @@ public class Parser implements Closeable {
                 throw makeParserException("opcode expected, found '" + t + "'");
         }
 
+        int line = tokens.lineno();
 
         Register dest = null;
         Register source = null;
@@ -108,26 +106,36 @@ public class Parser implements Closeable {
 
         Expression constant = null;
         if (opcode.getImmedNeeded() == Opcode.ImmedNeeded.Yes) {
+            if (opcode.getRegsNeeded() != Opcode.RegsNeeded.none)
+                consume(',');
             constant = parseExpression();
         }
 
+        Instruction i = null;
         switch (opcode.getRegsNeeded()) {
             case both:
                 if (constant != null)
-                    p.add(opcode, dest, source, constant);
+                    i = Instruction.make(opcode, dest, source, constant);
                 else
-                    p.add(opcode, dest, source);
+                    i = Instruction.make(opcode, dest, source);
                 break;
             case none:
-                p.add(opcode, constant);
+                i = Instruction.make(opcode, constant);
                 break;
             default:
                 if (constant != null)
-                    p.add(opcode, dest, constant);
+                    i = Instruction.make(opcode, dest, constant);
                 else
-                    p.add(opcode, dest);
+                    i = Instruction.make(opcode, dest);
                 break;
         }
+        if (i == null)
+            throw makeParserException("illegal state: No opcode");
+
+        if (label != null)
+            i.setLabel(label);
+        i.setLineNumber(line);
+        p.add(i);
     }
 
     private void consume(char c) throws IOException, ParserException {

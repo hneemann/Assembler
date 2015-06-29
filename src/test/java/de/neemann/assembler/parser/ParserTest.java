@@ -1,6 +1,7 @@
 package de.neemann.assembler.parser;
 
 import de.neemann.assembler.asm.*;
+import de.neemann.assembler.expression.ExpressionException;
 import junit.framework.TestCase;
 
 import java.io.IOException;
@@ -79,5 +80,28 @@ public class ParserTest extends TestCase {
         checkTwoMoves(prog);
     }
 
+    public void testConstant() throws IOException, ParserException, InstructionException, ExpressionException {
+        checkJmp(new Parser("JMP 12").getProgram());
+        checkJmp(new Parser("JMP 2*6").getProgram());
+        checkJmp(new Parser("JMP 12 ;test").getProgram());
+        checkJmp(new Parser("JMP 2*6; test").getProgram());
+    }
+
+    private void checkJmp(Program prog) throws ExpressionException {
+        assertEquals(1, prog.getInstructionCount());
+        Instruction i = prog.getInstruction(0);
+        assertEquals(Opcode.JMP, i.getOpcode());
+        assertEquals(12, i.getConstant().getValue(null));
+    }
+
+    public void testLDI() throws IOException, ParserException, InstructionException, ExpressionException {
+        Parser p = new Parser("LDI R0,5");
+        Program prog = p.getProgram();
+
+        assertEquals(1, prog.getInstructionCount());
+        Instruction i = prog.getInstruction(0);
+        assertEquals(Opcode.LDI, i.getOpcode());
+        assertEquals(5, i.getConstant().getValue(null));
+    }
 
 }
