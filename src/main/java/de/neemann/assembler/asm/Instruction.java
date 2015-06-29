@@ -1,6 +1,5 @@
 package de.neemann.assembler.asm;
 
-import de.neemann.assembler.asm.formatter.MachineCodeListener;
 import de.neemann.assembler.expression.Context;
 import de.neemann.assembler.expression.Expression;
 import de.neemann.assembler.expression.ExpressionException;
@@ -10,20 +9,21 @@ import de.neemann.assembler.expression.ExpressionException;
  */
 public class Instruction {
 
-    private final int destReg;
-    private final int sourceReg;
+
+    private final Register destReg;
+    private final Register sourceReg;
     private final Opcode opcode;
     private final Expression constant;
     private String label;
     private int lineNumber;
 
-    public Instruction(Opcode opcode, int destReg, int sourceReg) {
+    public Instruction(Opcode opcode, Register destReg, Register sourceReg) {
         this(opcode, destReg, sourceReg, null);
     }
 
-    public Instruction(Opcode opcode, int destReg, int sourceReg, Expression constant) {
-        this.destReg = destReg & 0xf;
-        this.sourceReg = sourceReg & 0xf;
+    public Instruction(Opcode opcode, Register destReg, Register sourceReg, Expression constant) {
+        this.destReg = destReg;
+        this.sourceReg = sourceReg;
         this.opcode = opcode;
         this.constant = constant;
     }
@@ -61,15 +61,15 @@ public class Instruction {
             }
 
             if (opcode.getImmed() == Opcode.Immed.instr) {
-                int ofs = con - context.getAddr() - 1;
+                int ofs = con - context.getInstrAddr() - 1;
                 if (ofs > 0x1ff || ofs < -0x1ff)
                     throw new ExpressionException("branch out of range");
                 mc.add(ofs & 0x1ff
                         | (opcode.ordinal() << 9));
 
             } else {
-                mc.add(sourceReg
-                        | (destReg << 4)
+                mc.add(sourceReg.ordinal()
+                        | (destReg.ordinal() << 4)
                         | (constBit << 8)
                         | (opcode.ordinal() << 9));
             }
@@ -117,11 +117,11 @@ public class Instruction {
         return opcode;
     }
 
-    public int getSourceReg() {
+    public Register getSourceReg() {
         return sourceReg;
     }
 
-    public int getDestReg() {
+    public Register getDestReg() {
         return destReg;
     }
 

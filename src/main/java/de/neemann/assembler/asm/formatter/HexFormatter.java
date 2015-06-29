@@ -1,6 +1,8 @@
 package de.neemann.assembler.asm.formatter;
 
 import de.neemann.assembler.asm.Instruction;
+import de.neemann.assembler.asm.InstructionVisitor;
+import de.neemann.assembler.asm.MachineCodeListener;
 import de.neemann.assembler.expression.Context;
 import de.neemann.assembler.expression.ExpressionException;
 
@@ -9,7 +11,7 @@ import java.io.PrintStream;
 /**
  * @author hneemann
  */
-public class HexFormatter implements Formatter {
+public class HexFormatter implements InstructionVisitor {
 
     private final PrintStream out;
 
@@ -19,7 +21,7 @@ public class HexFormatter implements Formatter {
     }
 
     @Override
-    public void format(Instruction in, Context context) throws ExpressionException {
+    public void visit(Instruction in, Context context) throws ExpressionException {
         in.createMachineCode(context, new MachineCodeListener() {
             @Override
             public void add(int code) {

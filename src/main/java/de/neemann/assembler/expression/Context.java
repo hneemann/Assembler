@@ -7,7 +7,7 @@ import java.util.HashMap;
  */
 public class Context {
     private final HashMap<String, Integer> idenifier;
-    private int addr;
+    private int instrAddr;
 
     public Context() {
         this.idenifier = new HashMap<>();
@@ -28,16 +28,12 @@ public class Context {
         idenifier.put(name, value);
     }
 
-    public void clear() {
-        idenifier.clear();
-    }
-
-    public Context setAddr(int addr) {
-        this.addr = addr;
+    public Context setInstrAddr(int instrAddr) {
+        this.instrAddr = instrAddr;
         return this;
     }
 
-    public int getAddr() {
-        return addr;
+    public int getInstrAddr() {
+        return instrAddr;
     }
 }

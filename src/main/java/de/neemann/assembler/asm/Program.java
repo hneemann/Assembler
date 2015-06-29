@@ -1,12 +1,9 @@
 package de.neemann.assembler.asm;
 
 import de.neemann.assembler.asm.formatter.AsmFormatter;
-import de.neemann.assembler.asm.formatter.Formatter;
-import de.neemann.assembler.asm.formatter.HexFormatter;
 import de.neemann.assembler.expression.*;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 /**
@@ -23,13 +20,13 @@ public class Program {
         context = new Context();
     }
 
-    public Program add(Opcode opcode, int dest, int source, Expression expr) throws InstructionException {
-        if ((opcode.getImmedNeeded() == Opcode.ImmedNeeded.No) && (expr != null))
+    public Program add(Opcode opcode, Register dest, Register source, Expression constant) throws InstructionException {
+        if ((opcode.getImmedNeeded() == Opcode.ImmedNeeded.No) && (constant != null))
             throw new InstructionException(opcode.name() + " does not need a constant");
-        if ((opcode.getImmedNeeded() == Opcode.ImmedNeeded.Yes) && (expr == null))
+        if ((opcode.getImmedNeeded() == Opcode.ImmedNeeded.Yes) && (constant == null))
             throw new InstructionException(opcode.name() + " needs a constant");
 
-        Instruction i = new Instruction(opcode, dest, source, expr);
+        Instruction i = new Instruction(opcode, dest, source, constant);
         if (labelPending != null) {
             i.setLabel(labelPending);
             labelPending = null;
@@ -38,12 +35,12 @@ public class Program {
         return this;
     }
 
-    public Program add(Opcode opcode, int reg) throws InstructionException {
+    public Program add(Opcode opcode, Register reg) throws InstructionException {
         switch (opcode.getRegsNeeded()) {
             case source:
-                return add(opcode, 0, reg, null);
+                return add(opcode, Register.R0, reg, null);
             case dest:
-                return add(opcode, reg, 0, null);
+                return add(opcode, reg, Register.R0, null);
             case none:
                 throw new InstructionException(opcode.name() + " does not need a register");
             default:
@@ -51,7 +48,7 @@ public class Program {
         }
     }
 
-    public Program add(Opcode opcode, int dest, int source) throws InstructionException {
+    public Program add(Opcode opcode, Register dest, Register source) throws InstructionException {
         if (opcode.getRegsNeeded() != Opcode.RegsNeeded.both)
             throw new InstructionException(opcode.name() + " needs both registers");
 
@@ -59,12 +56,12 @@ public class Program {
     }
 
 
-    public Program add(Opcode opcode, int reg, Expression expr) throws InstructionException {
+    public Program add(Opcode opcode, Register reg, Expression constant) throws InstructionException {
         switch (opcode.getRegsNeeded()) {
             case source:
-                return add(opcode, 0, reg, expr);
+                return add(opcode, Register.R0, reg, constant);
             case dest:
-                return add(opcode, reg, 0, expr);
+                return add(opcode, reg, Register.R0, constant);
             case none:
                 throw new InstructionException(opcode.name() + " does not need a register");
             default:
@@ -76,7 +73,7 @@ public class Program {
         if (opcode.getRegsNeeded() != Opcode.RegsNeeded.none)
             throw new InstructionException(opcode.name() + " does not need a register");
 
-        return add(opcode, 0, 0, expr);
+        return add(opcode, Register.R0, Register.R0, expr);
     }
 
     public Program label(String label) {
@@ -84,27 +81,25 @@ public class Program {
         return this;
     }
 
-    public Program format(Formatter formatter) throws ExpressionException {
+    public Program traverse(InstructionVisitor instructionVisitor) throws ExpressionException {
         int addr = 0;
         for (Instruction in : prog) {
-            context.setAddr(addr);
-            formatter.format(in, context);
+            context.setInstrAddr(addr);
+            instructionVisitor.visit(in, context);
             addr += in.size();
         }
         return this;
     }
 
     public Program link() throws ExpressionException {
-        context.clear();
-
-        int addr = 0;
-        for (Instruction i : prog) {
-            if (i.getLabel() != null) {
-                context.addIdentifier(i.getLabel(), addr);
+        traverse(new InstructionVisitor() {
+            @Override
+            public void visit(Instruction instruction, Context context) throws ExpressionException {
+                if (instruction.getLabel() != null) {
+                    context.addIdentifier(instruction.getLabel(), context.getInstrAddr());
+                }
             }
-            addr += i.size();
-        }
-
+        });
         return this;
     }
 
@@ -117,19 +112,19 @@ public class Program {
     }
 
     public static void main(String[] args) throws IOException, ExpressionException, InstructionException {
-        try (PrintStream hexOut = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_I/Vorlesung/06_Prozessoren/java/assembler3/z.asm.hex")) {
+//        try (PrintStream hexOut = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_I/Vorlesung/06_Prozessoren/java/assembler3/z.asm.hex")) {
             new Program()
-                    .add(Opcode.LDI, 0, new Constant(1000))
-                    .add(Opcode.CALL, 1, new Identifier("SUB"))
-                    .add(Opcode.LDI, 0, new Constant(0))
+                    .add(Opcode.LDI, Register.R0, new Constant(1000))
+                    .add(Opcode.CALL, Register.R1, new Identifier("SUB"))
+                    .add(Opcode.LDI, Register.R0, new Constant(0))
                     .label("END").add(Opcode.JMP, new Identifier("END"))
-                    .label("SUB").add(Opcode.STS, 0, new Constant(1))
-                    .add(Opcode.RET, 1)
+                    .label("SUB").add(Opcode.STS, Register.R0, new Constant(1))
+                    .add(Opcode.RET, Register.R1)
 
                     .link()
-                    .format(new HexFormatter(hexOut))
-                    .format(new AsmFormatter(System.out));
-        }
+//                    .format(new HexFormatter(hexOut))
+                    .traverse(new AsmFormatter(System.out));
+//        }
     }
 
 

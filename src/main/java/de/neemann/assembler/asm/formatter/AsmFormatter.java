@@ -1,8 +1,11 @@
 package de.neemann.assembler.asm.formatter;
 
 import de.neemann.assembler.asm.Instruction;
+import de.neemann.assembler.asm.InstructionVisitor;
+import de.neemann.assembler.asm.MachineCodeListener;
 import de.neemann.assembler.asm.Opcode;
 import de.neemann.assembler.expression.Context;
+import de.neemann.assembler.expression.Expression;
 import de.neemann.assembler.expression.ExpressionException;
 
 import java.io.PrintStream;
@@ -10,78 +13,91 @@ import java.io.PrintStream;
 /**
  * @author hneemann
  */
-public class AsmFormatter implements Formatter {
-    private final PrintStream out;
+public class AsmFormatter implements InstructionVisitor {
+    private final PrintStream o;
+    private int actCol;
 
     public AsmFormatter(PrintStream out) {
-        this.out = out;
+        this.o = out;
+        actCol = 0;
     }
 
     @Override
-    public void format(Instruction i, Context context) throws ExpressionException {
+    public void visit(Instruction i, Context context) throws ExpressionException {
         if (i.getLineNumber() > 0) {
-            form(Integer.toString(i.getLineNumber()), 3);
-        } else {
-            form("", 3);
+            print(Integer.toString(i.getLineNumber()));
         }
-        out.print(" | ");
+        tab(3);
+        print(" | ");
 
-        outHex(context.getAddr());
+        printHex(context.getInstrAddr());
 
-        out.print(": ");
+        print(": ");
 
         i.createMachineCode(context, new MachineCodeListener() {
             @Override
             public void add(int instr) {
-                outHex(instr);
-                out.print(" ");
+                printHex(instr);
+                print(" ");
             }
         });
-        if (i.size() == 1)
-            out.print("     ");
 
-        if (i.getLabel() == null)
-            form("", 12);
-        else
-            form(i.getLabel() + ":", 12);
+        tab(22);
+
+        if (i.getLabel() != null)
+            print(i.getLabel() + ":");
+        tab(32);
 
         Opcode opcode = i.getOpcode();
-        out.print(opcode.name());
+        print(opcode.name());
 
+        tab(37);
+
+        StringBuilder sb = new StringBuilder();
         switch (opcode.getRegsNeeded()) {
             case source:
-                out.print(" R");
-                out.print((i.getSourceReg()));
+                print(i.getSourceReg().name());
                 break;
             case dest:
-                out.print(" R");
-                out.print((i.getDestReg()));
+                print(i.getDestReg().name());
                 break;
             case both:
-                out.print(" R");
-                out.print((i.getDestReg()));
-                out.print(", R");
-                out.print((i.getSourceReg()));
+                print(i.getDestReg().name());
+                print(", ");
+                print(i.getSourceReg().name());
                 break;
         }
 
         if (opcode.getImmedNeeded() == Opcode.ImmedNeeded.Yes) {
             if (opcode.getRegsNeeded() != Opcode.RegsNeeded.none)
-                out.print(",");
-            out.append(' ').append(i.getConstant().toString());
+                print(", ");
+            Expression constant = i.getConstant();
+            print(constant.toString());
+            tab(55);
+            print("; 0x");
+            print(Integer.toHexString(constant.getValue(context)));
         }
-        out.print('\n');
+        newLine();
     }
 
-    private void outHex(int instr) {
+    private void printHex(int instr) {
         String s = Integer.toHexString(instr);
         while (s.length() < 4) s = '0' + s;
-        out.print(s);
+        print(s);
     }
 
-    private void form(String text, int cols) {
-        out.print(text);
-        for (int i = text.length(); i < cols; i++)
-            out.print(' ');
+    private void tab(int col) {
+        while (actCol < col)
+            print(" ");
+    }
+
+    private void print(String s) {
+        o.print(s);
+        actCol += s.length();
+    }
+
+    private void newLine() {
+        o.print('\n');
+        actCol = 0;
     }
 }

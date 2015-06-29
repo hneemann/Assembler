@@ -1,4 +1,4 @@
-package de.neemann.assembler.asm.formatter;
+package de.neemann.assembler.asm;
 
 /**
  * @author hneemann
