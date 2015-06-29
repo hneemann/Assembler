@@ -18,7 +18,7 @@ import java.util.prefs.Preferences;
  */
 public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
 
-    private static final String MESSAGE = "ASM 2\n\n" +
+    private static final String MESSAGE = "ASM 3\n\n" +
             "Simple assembler to create a hex file for a\n" +
             "simple simulated 8 bit processor.\n\n" +
             "Written by H. Neemann in 2015.";
@@ -31,7 +31,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     private String sourceOnDisk;
 
     public Main() {
-        super("ASM 2");
+        super("ASM §");
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
         addWindowListener(new ClosingWindowListener(this, this));
@@ -97,6 +97,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                 try {
                     Program prog = new Parser(source.getText())
                             .getProgram()
+                            .appendData()
                             .link()
                             .traverse(new AsmFormatter(System.out));
 
@@ -216,7 +217,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         if (file == null)
             setTitle("ASM 2");
         else {
-            setTitle("[" + file.getName() + "] ASM 2");
+            setTitle("[" + file.getName() + "] ASM 3");
             prefs.put("name", file.toString());
         }
     }

@@ -1,9 +1,12 @@
 package de.neemann.assembler.asm;
 
+import de.neemann.assembler.expression.Constant;
 import de.neemann.assembler.expression.Context;
 import de.neemann.assembler.expression.ExpressionException;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author hneemann
@@ -12,10 +15,13 @@ public class Program {
 
     private final ArrayList<Instruction> prog;
     private final Context context;
+    private int ramPos = 0;
+    private TreeMap<Integer, ArrayList<Integer>> dataMap;
 
     public Program() {
         prog = new ArrayList<>();
         context = new Context();
+        dataMap = new TreeMap<>();
     }
 
     public Program add(Instruction i) {
@@ -29,6 +35,18 @@ public class Program {
             context.setInstrAddr(addr);
             instructionVisitor.visit(in, context);
             addr += in.size();
+        }
+        return this;
+    }
+
+    public Program appendData() throws InstructionException {
+        int p = 0;
+        for (Map.Entry<Integer, ArrayList<Integer>> e : dataMap.entrySet()) {
+            int value = e.getKey();
+            prog.add(p++, Instruction.make(Opcode.LDI, Register.R0, new Constant(value)));
+            for (int addr : e.getValue()) {
+                prog.add(p++, Instruction.make(Opcode.STS, Register.R0, new Constant(addr)));
+            }
         }
         return this;
     }
@@ -61,4 +79,23 @@ public class Program {
         return prog.get(i);
     }
 
+    public int addRam(String ident, int size) throws ExpressionException {
+        int r = ramPos;
+        context.addIdentifier(ident, ramPos);
+        ramPos += size;
+        return r;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void addData(int addr, int value) {
+        ArrayList<Integer> list = dataMap.get(value);
+        if (list == null) {
+            list = new ArrayList<>();
+            dataMap.put(value, list);
+        }
+        list.add(addr);
+    }
 }

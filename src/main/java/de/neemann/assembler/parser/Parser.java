@@ -22,9 +22,14 @@ public class Parser implements Closeable {
         this.in = in;
         tokens = new StreamTokenizer(in);
         tokens.eolIsSignificant(true);
+        tokens.ordinaryChar('-');
+        tokens.ordinaryChar('.');
+        tokens.ordinaryChars('0', '9');
+        tokens.wordChars('0', '9');
+        tokens.wordChars('.', '.');
     }
 
-    public Program getProgram() throws IOException, ParserException, InstructionException {
+    public Program getProgram() throws IOException, ParserException, InstructionException, ExpressionException {
         Program p = new Program();
 
         WHILE:
@@ -33,7 +38,7 @@ public class Parser implements Closeable {
                 case TT_WORD:
                     String t = tokens.sval;
                     if (t.startsWith(".")) {
-                        parseMetaCommand(t);
+                        parseMetaCommand(p, t);
                     } else {
                         parseInstruction(p, t);
                     }
@@ -70,8 +75,29 @@ public class Parser implements Closeable {
         } while (to != TT_EOF && to != StreamTokenizer.TT_EOL);
     }
 
-    private void parseMetaCommand(String t) {
-
+    private void parseMetaCommand(Program p, String t) throws IOException, ParserException, ExpressionException {
+        switch (t) {
+            case ".word":
+                p.addRam(parseWord(), 1);
+                break;
+            case ".long":
+                p.addRam(parseWord(), 2);
+                break;
+            case ".const":
+                p.getContext().addIdentifier(parseWord(), parseExpression().getValue(p.getContext()));
+                break;
+            case ".data":
+                String ident = parseWord();
+                int addr = p.addRam(ident, 0);
+                p.addData(addr++, parseExpression().getValue(p.getContext()));
+                while (isNext(',')) {
+                    isNext(TT_EOL);
+                    p.addData(addr++, parseExpression().getValue(p.getContext()));
+                }
+                break;
+            default:
+                throw makeParserException("unknown meta command " + t);
+        }
     }
 
     private void parseInstruction(Program p, String t) throws IOException, ParserException, InstructionException {
@@ -111,7 +137,7 @@ public class Parser implements Closeable {
             constant = parseExpression();
         }
 
-        Instruction i = null;
+        Instruction i;
         switch (opcode.getRegsNeeded()) {
             case both:
                 if (constant != null)
@@ -138,9 +164,9 @@ public class Parser implements Closeable {
         p.add(i);
     }
 
-    private void consume(char c) throws IOException, ParserException {
+    private void consume(int c) throws IOException, ParserException {
         if (tokens.nextToken() != c)
-            throw makeParserException("expected '" + c + "', found '" + tokens + "'");
+            throw makeParserException("expected '" + (char) c + "', found '" + tokens + "'");
     }
 
     private Register parseReg() throws IOException, ParserException {
@@ -177,7 +203,7 @@ public class Parser implements Closeable {
         return false;
     }
 
-    private boolean isNext(char c) throws IOException {
+    private boolean isNext(int c) throws IOException {
         int t = tokens.nextToken();
         if (t == c)
             return true;
@@ -245,9 +271,12 @@ public class Parser implements Closeable {
     private Expression parseValue() throws IOException, ParserException {
         switch (tokens.nextToken()) {
             case TT_WORD:
-                return new Identifier(tokens.sval);
-            case TT_NUMBER:
-                return new Constant((int) tokens.nval);
+                String s = tokens.sval;
+                char c = s.charAt(0);
+                if (c >= '0' && c <= '9') {
+                    return new Constant(parseInteger(s.toLowerCase()));
+                } else
+                    return new Identifier(tokens.sval);
             case '(':
                 Expression ex = parseExpression();
                 consume(')');
@@ -258,6 +287,18 @@ public class Parser implements Closeable {
                 return new Not(parseExpression());
         }
         throw makeParserException("unexpected token " + tokens);
+    }
+
+    private int parseInteger(String s) throws ParserException {
+        try {
+            if (s.startsWith("0b"))
+                return Integer.parseInt(s.substring(2), 2);
+            else if (s.startsWith("0x"))
+                return Integer.parseInt(s.substring(2), 16);
+            else return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            throw makeParserException(s + " is not a number");
+        }
     }
 
 

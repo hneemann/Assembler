@@ -35,7 +35,7 @@ public enum Opcode {
     // ST R0,R1,ofs  => (R1+ofs)=R0
     STO(RegsNeeded.both, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Regist, StoreSel.ALU, ALU.ADD, EnRegWrite.No),
     // LD R0,R1,ofs  => R0=(R1+ofs)
-    LDO(RegsNeeded.both, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, StorePC.No, SourceToAlu.Yes, JmpAbs.No),
+    LDO(RegsNeeded.both, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, StorePC.No, SourceToAlu.Yes, JmpAbs.No, WriteIO.No),
 
     JMP(RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.uncond, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
     BRC(RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRC, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
@@ -44,12 +44,14 @@ public enum Opcode {
     BRNZ(RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRNZ, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
 
     ST(RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Zero, StoreSel.ALU, ALU.ADD, EnRegWrite.No),
-    LD(RegsNeeded.both, ImmedNeeded.No, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Zero, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, StorePC.No, SourceToAlu.Yes, JmpAbs.No),
+    LD(RegsNeeded.both, ImmedNeeded.No, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Zero, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, StorePC.No, SourceToAlu.Yes, JmpAbs.No, WriteIO.No),
 
-    CALL(RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes, StorePC.Yes, SourceToAlu.No, JmpAbs.Yes),
-    RET(RegsNeeded.source, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.No, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, StorePC.No, SourceToAlu.No, JmpAbs.Yes),
-    LJMP(RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, StorePC.No, SourceToAlu.No, JmpAbs.Yes),;
+    CALL(RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes, StorePC.Yes, SourceToAlu.No, JmpAbs.Yes, WriteIO.No),
+    RET(RegsNeeded.source, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.No, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, StorePC.No, SourceToAlu.No, JmpAbs.Yes, WriteIO.No),
+    LJMP(RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, StorePC.No, SourceToAlu.No, JmpAbs.Yes, WriteIO.No),
 
+    OUT(RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, StorePC.No, SourceToAlu.No, JmpAbs.No, WriteIO.Yes),
+    OUTO(RegsNeeded.both, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.ALU, ALU.ADD, EnRegWrite.No, StorePC.No, SourceToAlu.No, JmpAbs.No, WriteIO.Yes),;
 
     public enum RegsNeeded {none, source, dest, both}
 
@@ -58,6 +60,8 @@ public enum Opcode {
     enum ReadRam {No, Yes}
 
     enum WriteRam {No, Yes}
+
+    enum WriteIO {No, Yes}
 
     enum SourceToAlu {No, Yes}
 
@@ -85,11 +89,12 @@ public enum Opcode {
     private final StorePC storePC;
     private final SourceToAlu sourceToAlu;
     private final JmpAbs jmpAbs;
+    private final WriteIO io;
 
     private final RegsNeeded regsNeeded;
     private final ImmedNeeded immedNeeded;
 
-    Opcode(RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, StoreSel storeSel, ALU alu, EnRegWrite enRegWrite, StorePC storePC, SourceToAlu sourceToAlu, JmpAbs jmpAbs) {
+    Opcode(RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, StoreSel storeSel, ALU alu, EnRegWrite enRegWrite, StorePC storePC, SourceToAlu sourceToAlu, JmpAbs jmpAbs, WriteIO io) {
         this.regsNeeded = rn;
         this.immedNeeded = en;
         this.rr = rr;
@@ -102,13 +107,14 @@ public enum Opcode {
         this.storePC = storePC;
         this.sourceToAlu = sourceToAlu;
         this.jmpAbs = jmpAbs;
+        this.io = io;
 
         if (regsNeeded != RegsNeeded.none && imed == Immed.instr)
             throw new RuntimeException("immediate in instruction and registers used simultanious " + name());
     }
 
     Opcode(RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, StoreSel storeSel, ALU alu, EnRegWrite enRegWrite) {
-        this(rn, en, rr, wr, br, imed, storeSel, alu, enRegWrite, StorePC.No, SourceToAlu.No, JmpAbs.No);
+        this(rn, en, rr, wr, br, imed, storeSel, alu, enRegWrite, StorePC.No, SourceToAlu.No, JmpAbs.No, WriteIO.No);
     }
 
 
@@ -137,6 +143,7 @@ public enum Opcode {
 
                 | (alu.ordinal() << 10)
                 | (br.ordinal() << 15)
+                | (io.ordinal() << 18)
                 ;
     }
 

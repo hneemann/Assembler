@@ -32,17 +32,17 @@
 	                       0b01111100,
 	                       0b00000000
 	.const lcd 0
-	.code
 
 	LDI R2,0
 	
 L2:	LDI R1,15
-L1:	ADD R0,R1,R2
+L1:	MOV R0,R1
+	ADD R1,R2
                       ANDI R0,31
-                      LD R4,(R0)+image
-	OUTI R4,(R1)+lcd
-	SBI R1,1
+                      LDO R4,R0,image
+	;OUTI R4,(R1)+lcd
+	DEC R1
 	BRNC L1
-	OUT R0,16
-	ADI R2,1
+	;OUT R0,16
+	INC R2
 	JMP L2
