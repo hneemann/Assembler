@@ -31,6 +31,7 @@ public class Parser implements Closeable {
         tokens.eolIsSignificant(true);
         tokens.ordinaryChar('-');
         tokens.ordinaryChar('.');
+        tokens.ordinaryChar('/');
         tokens.ordinaryChars('0', '9');
         tokens.wordChars('0', '9');
         tokens.wordChars('.', '.');
@@ -275,9 +276,17 @@ public class Parser implements Closeable {
     }
 
     private Expression parseMUL() throws IOException, ParserException {
-        Expression ex = parseValue();
+        Expression ex = parseDIV();
         while (isNext('*')) {
-            ex = new Operate(ex, Operate.Operation.MUL, parseValue());
+            ex = new Operate(ex, Operate.Operation.MUL, parseDIV());
+        }
+        return ex;
+    }
+
+    private Expression parseDIV() throws IOException, ParserException {
+        Expression ex = parseValue();
+        while (isNext('/')) {
+            ex = new Operate(ex, Operate.Operation.DIV, parseValue());
         }
         return ex;
     }

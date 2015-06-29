@@ -9,7 +9,7 @@ public class Operate implements Expression {
     private final Expression b;
     private final Operation op;
 
-    public enum Operation {OR, AND, MUL, ADD, XOR, SUB}
+    public enum Operation {OR, AND, MUL, ADD, XOR, DIV, SUB}
 
     public Operate(Expression a, Operation op, Expression b) {
         this.a = a;
@@ -34,6 +34,8 @@ public class Operate implements Expression {
                 return av - bv;
             case MUL:
                 return av * bv;
+            case DIV:
+                return av / bv;
         }
         throw new ExpressionException("operation " + op.name() + " not supported!");
     }

@@ -32,6 +32,10 @@ public class ExpressionTest extends TestCase {
     }
 
     public void testSimple3() throws IOException, ParserException, ExpressionException {
+        assertEquals(3, new Parser("(2+4)/2").getExpression().getValue(null));
+    }
+
+    public void testSimple4() throws IOException, ParserException, ExpressionException {
         assertEquals(0, new Parser("2 AND (2 OR 8) AND 8").getExpression().getValue(null));
         assertEquals(10, new Parser("2 AND 2 OR 8 AND 8").getExpression().getValue(null));
         assertEquals(10, new Parser("(2 AND 2) OR (8 AND 8)").getExpression().getValue(null));
