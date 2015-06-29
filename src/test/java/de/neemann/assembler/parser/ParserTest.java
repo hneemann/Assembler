@@ -132,4 +132,10 @@ public class ParserTest extends TestCase {
         assertEquals(5, p.getContext().get("b"));
     }
 
+    public void testLabelCase() throws ExpressionException, ParserException, InstructionException, IOException {
+        Program p = new Parser(
+                "L1: mov r0,r1\n" +
+                        "l1: mov r0,r1").getProgram().link();
+    }
+
 }

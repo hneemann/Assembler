@@ -2,8 +2,13 @@ package de.neemann.assembler.parser;
 
 import de.neemann.assembler.asm.*;
 import de.neemann.assembler.expression.*;
+import de.neemann.assembler.parser.macros.Pop;
+import de.neemann.assembler.parser.macros.Push;
+import de.neemann.assembler.parser.macros.SCall;
+import de.neemann.assembler.parser.macros.SRet;
 
 import java.io.*;
+import java.util.HashMap;
 
 import static java.io.StreamTokenizer.*;
 
@@ -13,6 +18,7 @@ import static java.io.StreamTokenizer.*;
 public class Parser implements Closeable {
     private final StreamTokenizer tokens;
     private final Reader in;
+    private final HashMap<String, Macro> macros;
 
     public Parser(String source) {
         this(new StringReader(source));
@@ -20,6 +26,7 @@ public class Parser implements Closeable {
 
     public Parser(Reader in) {
         this.in = in;
+        this.macros = new HashMap<>();
         tokens = new StreamTokenizer(in);
         tokens.eolIsSignificant(true);
         tokens.ordinaryChar('-');
@@ -27,6 +34,15 @@ public class Parser implements Closeable {
         tokens.ordinaryChars('0', '9');
         tokens.wordChars('0', '9');
         tokens.wordChars('.', '.');
+
+        addMacro(new Push());
+        addMacro(new Pop());
+        addMacro(new SCall());
+        addMacro(new SRet());
+    }
+
+    public void addMacro(Macro m) {
+        macros.put(m.getName().toLowerCase(), m);
     }
 
     public Program getProgram() throws IOException, ParserException, InstructionException, ExpressionException {
@@ -40,14 +56,22 @@ public class Parser implements Closeable {
                     if (t.startsWith(".")) {
                         parseMetaCommand(p, t);
                     } else {
-                        parseInstruction(p, t);
+                        if (Opcode.parseStr(t) == null && !macros.containsKey(t)) {
+                            p.setPendingLabel(t);
+                            consume(':');
+                            t = parseWord();
+                        }
+                        if (macros.containsKey(t.toLowerCase())) {
+                            macros.get(t.toLowerCase()).parseMacro(p, t, this);
+                        } else
+                            parseInstruction(p, t);
                     }
                     switch (tokens.nextToken()) {
                         case ';':
                             skipLine();
                             break;
                         case TT_EOF:
-                        case StreamTokenizer.TT_EOL:
+                        case TT_EOL:
                             break;
                         default:
                             throw makeParserException("unexpected token " + tokens);
@@ -72,7 +96,7 @@ public class Parser implements Closeable {
         int to;
         do {
             to = tokens.nextToken();
-        } while (to != TT_EOF && to != StreamTokenizer.TT_EOL);
+        } while (to != TT_EOF && to != TT_EOL);
     }
 
     private void parseMetaCommand(Program p, String t) throws IOException, ParserException, ExpressionException {
@@ -102,16 +126,8 @@ public class Parser implements Closeable {
 
     private void parseInstruction(Program p, String t) throws IOException, ParserException, InstructionException {
         Opcode opcode = Opcode.parseStr(t);
-
-        String label = null;
-        if (opcode == null) {
-            label = t;
-            consume(':');
-            t = parseWord();
-            opcode = Opcode.parseStr(t);
-            if (opcode == null)
-                throw makeParserException("opcode expected, found '" + t + "'");
-        }
+        if (opcode == null)
+            throw makeParserException("opcode expected, found '" + t + "'");
 
         int line = tokens.lineno();
 
@@ -158,18 +174,16 @@ public class Parser implements Closeable {
         if (i == null)
             throw makeParserException("illegal state: No opcode");
 
-        if (label != null)
-            i.setLabel(label);
         i.setLineNumber(line);
         p.add(i);
     }
 
-    private void consume(int c) throws IOException, ParserException {
+    public void consume(int c) throws IOException, ParserException {
         if (tokens.nextToken() != c)
             throw makeParserException("expected '" + (char) c + "', found '" + tokens + "'");
     }
 
-    private Register parseReg() throws IOException, ParserException {
+    public Register parseReg() throws IOException, ParserException {
         String r = parseWord();
         Register reg = Register.parseStr(r);
         if (reg == null)
@@ -177,14 +191,14 @@ public class Parser implements Closeable {
         return reg;
     }
 
-    private String parseWord() throws IOException, ParserException {
+    public String parseWord() throws IOException, ParserException {
         int t = tokens.nextToken();
         if (t != TT_WORD)
             throw makeParserException("unexpected number or EOL/EOF!");
         return tokens.sval;
     }
 
-    private ParserException makeParserException(String message) {
+    public ParserException makeParserException(String message) {
         return new ParserException(message, tokens.lineno());
     }
 
@@ -194,7 +208,7 @@ public class Parser implements Closeable {
         in.close();
     }
 
-    private boolean isNext(String str) throws IOException {
+    public boolean isNext(String str) throws IOException {
         int t = tokens.nextToken();
         if (t == TT_WORD && tokens.sval.equalsIgnoreCase(str))
             return true;
@@ -203,7 +217,7 @@ public class Parser implements Closeable {
         return false;
     }
 
-    private boolean isNext(int c) throws IOException {
+    public boolean isNext(int c) throws IOException {
         int t = tokens.nextToken();
         if (t == c)
             return true;
@@ -219,7 +233,7 @@ public class Parser implements Closeable {
         return exp;
     }
 
-    private Expression parseExpression() throws IOException, ParserException {
+    public Expression parseExpression() throws IOException, ParserException {
         Expression ex = parseAnd();
         while (isNext("or")) {
             ex = new Operate(ex, Operate.Operation.OR, parseAnd());

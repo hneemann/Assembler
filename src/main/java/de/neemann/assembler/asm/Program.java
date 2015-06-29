@@ -17,6 +17,7 @@ public class Program {
     private final Context context;
     private int ramPos = 0;
     private TreeMap<Integer, ArrayList<Integer>> dataMap;
+    private String pendingLabel;
 
     public Program() {
         prog = new ArrayList<>();
@@ -25,6 +26,10 @@ public class Program {
     }
 
     public Program add(Instruction i) {
+        if (pendingLabel != null) {
+            i.setLabel(pendingLabel);
+            pendingLabel = null;
+        }
         prog.add(i);
         return this;
     }
@@ -97,5 +102,9 @@ public class Program {
             dataMap.put(value, list);
         }
         list.add(addr);
+    }
+
+    public void setPendingLabel(String pendingLabel) {
+        this.pendingLabel = pendingLabel;
     }
 }

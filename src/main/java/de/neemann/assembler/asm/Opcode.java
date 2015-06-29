@@ -27,6 +27,12 @@ public enum Opcode {
     ORI(RegsNeeded.dest, ImmedNeeded.Yes, ALU.OR, Immed.Regist),
     XORI(RegsNeeded.dest, ImmedNeeded.Yes, ALU.XOR, Immed.Regist),
 
+    LSL(RegsNeeded.dest, ImmedNeeded.No, ALU.LSL, Immed.No),
+    LSR(RegsNeeded.dest, ImmedNeeded.No, ALU.LSR, Immed.No),
+    ASL(RegsNeeded.dest, ImmedNeeded.No, ALU.ASL, Immed.No),
+    ASR(RegsNeeded.dest, ImmedNeeded.No, ALU.ASR, Immed.No),
+
+
     INC(RegsNeeded.dest, ImmedNeeded.No, ALU.ADD, Immed.One),
     DEC(RegsNeeded.dest, ImmedNeeded.No, ALU.SUB, Immed.One),
 
@@ -46,8 +52,8 @@ public enum Opcode {
     ST(RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Zero, StoreSel.ALU, ALU.ADD, EnRegWrite.No),
     LD(RegsNeeded.both, ImmedNeeded.No, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Zero, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, StorePC.No, SourceToAlu.Yes, JmpAbs.No, WriteIO.No),
 
-    CALL(RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes, StorePC.Yes, SourceToAlu.No, JmpAbs.Yes, WriteIO.No),
-    RET(RegsNeeded.source, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.No, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, StorePC.No, SourceToAlu.No, JmpAbs.Yes, WriteIO.No),
+    RCALL(RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes, StorePC.Yes, SourceToAlu.No, JmpAbs.Yes, WriteIO.No),
+    RRET(RegsNeeded.source, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.No, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, StorePC.No, SourceToAlu.No, JmpAbs.Yes, WriteIO.No),
     LJMP(RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, StorePC.No, SourceToAlu.No, JmpAbs.Yes, WriteIO.No),
 
     OUT(RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, StorePC.No, SourceToAlu.No, JmpAbs.No, WriteIO.Yes),

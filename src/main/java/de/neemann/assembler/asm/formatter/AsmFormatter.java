@@ -51,7 +51,7 @@ public class AsmFormatter implements InstructionVisitor {
         Opcode opcode = i.getOpcode();
         print(opcode.name());
 
-        tab(37);
+        tab(38);
 
         StringBuilder sb = new StringBuilder();
         switch (opcode.getRegsNeeded()) {

@@ -1,10 +1,12 @@
 package de.neemann.assembler.gui;
 
+import de.neemann.assembler.asm.InstructionException;
 import de.neemann.assembler.asm.Program;
 import de.neemann.assembler.asm.formatter.AsmFormatter;
 import de.neemann.assembler.asm.formatter.HexFormatter;
 import de.neemann.assembler.expression.ExpressionException;
 import de.neemann.assembler.parser.Parser;
+import de.neemann.assembler.parser.ParserException;
 import de.process.utils.gui.*;
 
 import javax.swing.*;
@@ -95,10 +97,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    Program prog = new Parser(source.getText())
-                            .getProgram()
-                            .appendData()
-                            .link()
+                    Program prog = createProgram()
                             .traverse(new AsmFormatter(System.out));
 
                     writeHex(prog, filename);
@@ -111,7 +110,22 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             }
         }.setToolTip("Converts the source to a hex file.");
 
+        ToolTipAction show = new ToolTipAction("Show Listing", IconCreator.create("listing.png")) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    ByteArrayOutputStream text = new ByteArrayOutputStream();
+                    createProgram().traverse(new AsmFormatter(new PrintStream(text)));
+                    new ListDialog(Main.this, text.toString()).setVisible(true);
+                } catch (Throwable e) {
+                    new ErrorMessage("Error").addCause(e).show();
+                }
+            }
+        }.setToolTip("Converts the source to a listing and shows it.");
+
+
         source = new JTextArea(40, 50);
+        source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
         String n = prefs.get("name", null);
         if (n != null)
@@ -135,6 +149,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
 
         JMenu assemble = new JMenu("ASM");
         assemble.add(build.createJMenuItem());
+        assemble.add(show.createJMenuItem());
 
         JMenu help = new JMenu("Help");
         help.add(new JMenuItem(new AbstractAction("About") {
@@ -154,12 +169,20 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         JToolBar toolBar = new JToolBar();
         toolBar.add(open.createJButtonNoText());
         toolBar.add(save.createJButtonNoText());
+        toolBar.add(show.createJButtonNoText());
         toolBar.add(build.createJButtonNoText());
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         pack();
 
         setLocationRelativeTo(null);
+    }
+
+    private Program createProgram() throws ExpressionException, InstructionException, IOException, ParserException {
+        return new Parser(source.getText())
+                .getProgram()
+                .appendData()
+                .link();
     }
 
     private File getDirectory() {
