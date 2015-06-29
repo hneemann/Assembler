@@ -31,16 +31,16 @@
 	                       0b10000010,
 	                       0b01111100,
 	                       0b00000000
-	.const lcd 0
 
 	LDI R2,0
-	
+	LDI R5,31
+	BRK	
 L2:	LDI R1,15
 L1:	MOV R0,R1
 	ADD R0,R2
-        ANDI R0,31
-        LDO R4,R0,image
-	OUTO R1,R4,lcd
+        AND R0,R5
+        LD R4,R0
+	OUTR R1,R4
 	DEC R1
 	BRNC L1
 	OUT R0,16

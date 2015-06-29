@@ -1,6 +1,7 @@
 package de.neemann.assembler.gui;
 
 import de.neemann.assembler.asm.InstructionException;
+import de.neemann.assembler.asm.Opcode;
 import de.neemann.assembler.asm.Program;
 import de.neemann.assembler.asm.formatter.AsmFormatter;
 import de.neemann.assembler.asm.formatter.HexFormatter;
@@ -123,6 +124,20 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             }
         }.setToolTip("Converts the source to a listing and shows it.");
 
+        ToolTipAction helpOpcodes = new ToolTipAction("Show help") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    StringBuilder sb = new StringBuilder();
+                    for (Opcode op : Opcode.values())
+                        sb.append(op).append("\n\n");
+                    new ListDialog(Main.this, "Instructions", sb.toString()).setVisible(true);
+                } catch (Throwable e) {
+                    new ErrorMessage("Error").addCause(e).show();
+                }
+            }
+        }.setToolTip("Shows a short description of available opcodes.");
+
 
         source = new JTextArea(40, 50);
         source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
@@ -152,6 +167,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         assemble.add(show.createJMenuItem());
 
         JMenu help = new JMenu("Help");
+        help.add(helpOpcodes.createJMenuItem());
         help.add(new JMenuItem(new AbstractAction("About") {
             @Override
             public void actionPerformed(ActionEvent e) {

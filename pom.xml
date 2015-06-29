@@ -15,6 +15,13 @@
         <version.org.slf4j>1.7.12</version.org.slf4j>
     </properties>
 
+    <distributionManagement>
+        <site>
+            <id></id>
+            <url>file://${pom.basedir}/_stage</url>
+        </site>
+    </distributionManagement>
+
     <reporting>
         <plugins>
             <plugin>

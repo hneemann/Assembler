@@ -147,6 +147,7 @@ public class Instruction {
             case both:
                 sb.append(" R").append(destReg).append(", R").append(sourceReg);
                 break;
+            default:
         }
 
         if (opcode.getImmedNeeded() == Opcode.ImmedNeeded.Yes) {

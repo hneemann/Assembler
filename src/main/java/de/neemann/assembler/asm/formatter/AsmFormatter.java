@@ -53,7 +53,6 @@ public class AsmFormatter implements InstructionVisitor {
 
         tab(38);
 
-        StringBuilder sb = new StringBuilder();
         switch (opcode.getRegsNeeded()) {
             case source:
                 print(i.getSourceReg().name());
@@ -66,6 +65,7 @@ public class AsmFormatter implements InstructionVisitor {
                 print(", ");
                 print(i.getSourceReg().name());
                 break;
+            default:
         }
 
         if (opcode.getImmedNeeded() == Opcode.ImmedNeeded.Yes) {
