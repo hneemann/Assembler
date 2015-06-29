@@ -141,7 +141,7 @@ public enum Opcode {
 
     private static final String SOURCEREG = "[Source Reg.]";
     private static final String DESTREG = "[Dest Reg.]";
-    private static final String CONSTANT = "[constant]";
+    private static final String CONSTANT = "[Constant]";
 
     private final ReadRam rr;
     private final WriteRam wr;
