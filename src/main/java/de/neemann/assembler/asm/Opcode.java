@@ -152,6 +152,14 @@ public enum Opcode {
         return imed;
     }
 
+
+    public static Opcode parseStr(String name) {
+        for (Opcode op : Opcode.values())
+            if (op.name().equalsIgnoreCase(name))
+                return op;
+        return null;
+    }
+
     public static void writeControlWords(PrintStream out) {
         out.println("v2.0 raw");
         for (Opcode oc : Opcode.values())

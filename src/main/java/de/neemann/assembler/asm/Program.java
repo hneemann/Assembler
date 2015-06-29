@@ -1,9 +1,11 @@
 package de.neemann.assembler.asm;
 
 import de.neemann.assembler.asm.formatter.AsmFormatter;
+import de.neemann.assembler.asm.formatter.HexFormatter;
 import de.neemann.assembler.expression.*;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 /**
@@ -112,7 +114,7 @@ public class Program {
     }
 
     public static void main(String[] args) throws IOException, ExpressionException, InstructionException {
-//        try (PrintStream hexOut = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_I/Vorlesung/06_Prozessoren/java/assembler3/z.asm.hex")) {
+        try (PrintStream hexOut = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_I/Vorlesung/06_Prozessoren/java/assembler3/z.asm.hex")) {
             new Program()
                     .add(Opcode.LDI, Register.R0, new Constant(1000))
                     .add(Opcode.CALL, Register.R1, new Identifier("SUB"))
@@ -122,10 +124,17 @@ public class Program {
                     .add(Opcode.RET, Register.R1)
 
                     .link()
-//                    .format(new HexFormatter(hexOut))
+                    .traverse(new HexFormatter(hexOut))
                     .traverse(new AsmFormatter(System.out));
-//        }
+        }
     }
 
 
+    public int getInstructionCount() {
+        return prog.size();
+    }
+
+    public Instruction getInstruction(int i) {
+        return prog.get(i);
+    }
 }
