@@ -20,10 +20,10 @@ import java.util.HashMap;
  * component must use the same line height for each line. TextLineNumber
  * supports wrapped lines and will highlight the line number of the current
  * line in the text component.
- * <p/>
+ * <br/>
  * This class was designed to be used as a component added to the row header
  * of a JScrollPane.
- * <p/>
+ * <br/>
  * Written by Rob Camick, May 23, 2009
  * See: https://tips4java.wordpress.com/2009/05/23/text-component-line-number/
  */
