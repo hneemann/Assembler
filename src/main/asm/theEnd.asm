@@ -37,12 +37,12 @@
 	
 L2:	LDI R1,15
 L1:	MOV R0,R1
-	ADD R1,R2
+	ADD R0,R2
                       ANDI R0,31
                       LDO R4,R0,image
-	;OUTI R4,(R1)+lcd
+	OUTO R1,R4,lcd
 	DEC R1
 	BRNC L1
-	;OUT R0,16
+	OUT R0,16
 	INC R2
 	JMP L2
