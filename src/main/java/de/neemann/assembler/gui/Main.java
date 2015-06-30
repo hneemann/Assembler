@@ -6,9 +6,9 @@ import de.neemann.assembler.asm.Program;
 import de.neemann.assembler.asm.formatter.AsmFormatter;
 import de.neemann.assembler.asm.formatter.HexFormatter;
 import de.neemann.assembler.expression.ExpressionException;
+import de.neemann.assembler.gui.utils.*;
 import de.neemann.assembler.parser.Parser;
 import de.neemann.assembler.parser.ParserException;
-import de.process.utils.gui.*;
 
 import javax.swing.*;
 import java.awt.*;
