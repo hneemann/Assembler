@@ -35,7 +35,7 @@ public enum Opcode {
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.ADC, Immed.Regist),
     SUBI("Subtracts a constant [c] from register [d] without carry",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.SUB, Immed.Regist),
-    SBCI("Subtracts a constant [c] from register [d] without carry",
+    SBCI("Subtracts a constant [c] from register [d] with carry",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.SBC, Immed.Regist),
     ANDI("Stores [d] and [c] in register [d]",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.AND, Immed.Regist),
