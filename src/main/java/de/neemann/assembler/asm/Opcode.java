@@ -50,11 +50,11 @@ public enum Opcode {
     CPI("Subtracts a constant [c] from register [d] without carry, does not store the value",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.SUB, Immed.Regist, EnRegWrite.No),
 
-    CP0("Subtracts a zero from register [d] without carry, does not store the value",
+    CP0("Subtracts zero from register [d] without carry, does not store the value",
             RegsNeeded.dest, ImmedNeeded.No, ALU.SUB, Immed.Zero, EnRegWrite.No),
-    CP1("Subtracts a one from register [d] without carry, does not store the value",
+    CP1("Subtracts one from register [d] without carry, does not store the value",
             RegsNeeded.dest, ImmedNeeded.No, ALU.SUB, Immed.One, EnRegWrite.No),
-    CP2("Subtracts a one from register [d] without carry, does not store the value",
+    CP2("Subtracts two from register [d] without carry, does not store the value",
             RegsNeeded.dest, ImmedNeeded.No, ALU.SUB, Immed.Two, EnRegWrite.No),
 
 
@@ -104,6 +104,9 @@ public enum Opcode {
     LJMP("Jumps to the address given by [c]",
             RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.Yes, WriteIO.No, ReadIO.No, Break.No),
 
+    OUTS("Writes the content of register [s] to io location given by [c]",
+            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.instDest, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
+
     OUT("Writes the content of register [s] to io location given by [c]",
             RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
     OUTO("Writes the content of register [s] to the io location ([d]+[c])",
@@ -141,7 +144,7 @@ public enum Opcode {
 
     enum Branch {No, BRC, BRZ, uncond, res, BRNC, BRNZ}
 
-    enum Immed {No, Regist, Zero, res1, One, res2, Two, instr}
+    enum Immed {No, Regist, Zero, One, Two, instSource, instr, instDest}
 
     enum StoreSel {RAM, ALU}
 

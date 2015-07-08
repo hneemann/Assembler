@@ -9,7 +9,6 @@ import de.neemann.assembler.expression.ExpressionException;
  */
 public class Instruction {
 
-
     public static Instruction make(Opcode opcode, Register dest, Register source, Expression constant) throws InstructionException {
         if ((opcode.getImmedNeeded() == Opcode.ImmedNeeded.No) && (constant != null))
             throw new InstructionException(opcode.name() + " does not need a constant");
@@ -65,8 +64,8 @@ public class Instruction {
 
     private final Register destReg;
     private final Register sourceReg;
-    private final Opcode opcode;
     private final Expression constant;
+    private Opcode opcode;
     private String label;
     private int lineNumber;
 
@@ -109,18 +108,34 @@ public class Instruction {
                     constBit = 1;
             }
 
-            if (opcode.getImmed() == Opcode.Immed.instr) {
-                int ofs = con - context.getInstrAddr() - 1;
-                if (ofs > 0x1ff || ofs < -0x1ff)
-                    throw new ExpressionException("branch out of range");
-                mc.add(ofs & 0x1ff
-                        | (opcode.ordinal() << 9));
-
-            } else {
-                mc.add(sourceReg.ordinal()
-                        | (destReg.ordinal() << 4)
-                        | (constBit << 8)
-                        | (opcode.ordinal() << 9));
+            switch (opcode.getImmed()) {
+                case instr:
+                    int ofs = con - context.getInstrAddr() - 1;
+                    if (ofs > 0xff || ofs < -0x100)
+                        throw new ExpressionException("branch out of range");
+                    mc.add(ofs & 0x1ff
+                            | (opcode.ordinal() << 9));
+                    break;
+                case instDest:
+                    if (con < 0 || con > 31)
+                        throw new ExpressionException("constant to large");
+                    mc.add(sourceReg.ordinal()
+                            | (con << 4)
+                            | (opcode.ordinal() << 9));
+                    break;
+                case instSource:
+                    if (con < 0 || con > 31)
+                        throw new ExpressionException("constant to large");
+                    mc.add(con & 0xf
+                            | (destReg.ordinal() << 4)
+                            | ((con >> 4) << 8)
+                            | (opcode.ordinal() << 9));
+                    break;
+                default:
+                    mc.add(sourceReg.ordinal()
+                            | (destReg.ordinal() << 4)
+                            | (constBit << 8)
+                            | (opcode.ordinal() << 9));
             }
         } catch (ExpressionException e) {
             e.setLineNumber(lineNumber);
@@ -165,6 +180,10 @@ public class Instruction {
 
     public Opcode getOpcode() {
         return opcode;
+    }
+
+    public void setOpcode(Opcode opcode) {
+        this.opcode = opcode;
     }
 
     public Register getSourceReg() {

@@ -107,4 +107,8 @@ public class Program {
     public void setPendingLabel(String pendingLabel) {
         this.pendingLabel = pendingLabel;
     }
+
+    public Program optimize() throws ExpressionException {
+        return traverse(new Optimizer(this));
+    }
 }

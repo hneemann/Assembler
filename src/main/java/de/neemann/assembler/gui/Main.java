@@ -34,7 +34,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     private String sourceOnDisk;
 
     public Main() {
-        super("ASM §");
+        super("ASM 3");
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setIconImages(IconCreator.createImages("asm32.png", "asm64.png", "asm128.png", "asm256.png"));
 
@@ -87,7 +87,10 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                 JFileChooser fc = new JFileChooser(getDirectory());
                 if (fc.showSaveDialog(Main.this) == JFileChooser.APPROVE_OPTION) {
                     try {
-                        save(fc.getSelectedFile());
+                        File file = fc.getSelectedFile();
+                        if (!file.getName().toLowerCase().endsWith(".asm"))
+                            file = new File(file.getParentFile(), file.getName() + ".asm");
+                        save(file);
                     } catch (IOException e) {
                         new ErrorMessage("Error storing a file").addCause(e).show();
                     }
@@ -199,6 +202,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         return new Parser(source.getText())
                 .getProgram()
                 .appendData()
+                .optimize()
                 .link();
     }
 
@@ -255,7 +259,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     private void setFilename(File file) {
         this.filename = file;
         if (file == null)
-            setTitle("ASM 2");
+            setTitle("ASM 3");
         else {
             setTitle("[" + file.getName() + "] ASM 3");
             prefs.put("name", file.toString());
