@@ -132,20 +132,20 @@ public class Instruction {
         StringBuilder sb = new StringBuilder();
 
         if (label != null) {
-            sb.append(label).append(':');
+            sb.append(label).append(":");
         }
 
-        sb.append('\t').append(opcode.name());
+        sb.append(opcode.name());
 
         switch (opcode.getRegsNeeded()) {
             case source:
-                sb.append(" R").append(sourceReg);
+                sb.append(' ').append(sourceReg);
                 break;
             case dest:
-                sb.append(" R").append(destReg);
+                sb.append(' ').append(destReg);
                 break;
             case both:
-                sb.append(" R").append(destReg).append(", R").append(sourceReg);
+                sb.append(' ').append(destReg).append(",").append(sourceReg);
                 break;
             default:
         }

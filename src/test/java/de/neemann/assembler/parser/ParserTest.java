@@ -133,9 +133,26 @@ public class ParserTest extends TestCase {
     }
 
     public void testLabelCase() throws ExpressionException, ParserException, InstructionException, IOException {
-        Program p = new Parser(
+        // make sure this does not throw an exception
+        new Parser(
                 "L1: mov r0,r1\n" +
                         "l1: mov r0,r1").getProgram().link();
+    }
+
+    public void testJmp() throws ExpressionException, ParserException, InstructionException, IOException {
+        Program p = new Parser("end: jmp end").getProgram().link();
+        assertEquals(1, p.getInstructionCount());
+        Instruction i = p.getInstruction(0);
+        assertEquals(Opcode.JMP, i.getOpcode());
+        assertEquals(0, i.getConstant().getValue(p.getContext()));
+    }
+
+    public void testJmp2() throws ExpressionException, ParserException, InstructionException, IOException {
+        Program p = new Parser(".data test \"Test\";\nend: jmp end").getProgram().appendData().link();
+        assertEquals(9, p.getInstructionCount());
+        Instruction i = p.getInstruction(8);
+        assertEquals(Opcode.JMP, i.getOpcode());
+        assertEquals(16, i.getConstant().getValue(p.getContext()));
     }
 
 }

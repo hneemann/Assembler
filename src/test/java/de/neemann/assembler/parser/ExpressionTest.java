@@ -15,6 +15,14 @@ public class ExpressionTest extends TestCase {
         assertEquals(3, new Parser("1+2").getExpression().getValue(null));
     }
 
+    public void testSimpleNeg() throws IOException, ParserException, ExpressionException {
+        assertEquals(-1, new Parser("-1").getExpression().getValue(null));
+    }
+
+    public void testSimpleInv() throws IOException, ParserException, ExpressionException {
+        assertEquals(-2, new Parser("~1").getExpression().getValue(null));
+    }
+
     public void testSimpleHex() throws IOException, ParserException, ExpressionException {
         assertEquals(255, new Parser("0xff").getExpression().getValue(null));
     }
