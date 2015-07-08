@@ -105,7 +105,7 @@ public enum Opcode {
             RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.Yes, WriteIO.No, ReadIO.No, Break.No),
 
     OUTS("Writes the content of register [s] to io location given by [c]",
-            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.instDest, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
+            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.instrDest, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
 
     OUT("Writes the content of register [s] to io location given by [c]",
             RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
@@ -144,7 +144,7 @@ public enum Opcode {
 
     enum Branch {No, BRC, BRZ, uncond, res, BRNC, BRNZ}
 
-    enum Immed {No, Regist, Zero, One, Two, instSource, instr, instDest}
+    enum Immed {No, Regist, Zero, One, Two, instrSource, instr, instrDest}
 
     enum StoreSel {RAM, ALU}
 

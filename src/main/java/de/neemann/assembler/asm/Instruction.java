@@ -42,11 +42,11 @@ public class Instruction {
     public static Instruction make(Opcode opcode, Register reg, Expression constant) throws InstructionException {
         switch (opcode.getRegsNeeded()) {
             case source:
-                if (opcode.getImmed() == Opcode.Immed.instSource)
+                if (opcode.getImmed() == Opcode.Immed.instrSource)
                     throw new InstructionException("soucse reg and const used");
                 return make(opcode, Register.R0, reg, constant);
             case dest:
-                if (opcode.getImmed() == Opcode.Immed.instDest)
+                if (opcode.getImmed() == Opcode.Immed.instrDest)
                     throw new InstructionException("dest reg and const used");
                 return make(opcode, reg, Register.R0, constant);
             case none:
@@ -120,14 +120,14 @@ public class Instruction {
                     mc.add(ofs & 0x1ff
                             | (opcode.ordinal() << 9));
                     break;
-                case instDest:
+                case instrDest:
                     if (con < 0 || con > 31)
                         throw new ExpressionException("constant to large");
                     mc.add(sourceReg.ordinal()
                             | (con << 4)
                             | (opcode.ordinal() << 9));
                     break;
-                case instSource:
+                case instrSource:
                     if (con < 0 || con > 31)
                         throw new ExpressionException("constant to large");
                     mc.add(con & 0xf
