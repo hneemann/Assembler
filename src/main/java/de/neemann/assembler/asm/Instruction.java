@@ -42,8 +42,12 @@ public class Instruction {
     public static Instruction make(Opcode opcode, Register reg, Expression constant) throws InstructionException {
         switch (opcode.getRegsNeeded()) {
             case source:
+                if (opcode.getImmed() == Opcode.Immed.instSource)
+                    throw new InstructionException("soucse reg and const used");
                 return make(opcode, Register.R0, reg, constant);
             case dest:
+                if (opcode.getImmed() == Opcode.Immed.instDest)
+                    throw new InstructionException("dest reg and const used");
                 return make(opcode, reg, Register.R0, constant);
             case none:
                 throw new InstructionException(opcode.name() + " does not need a register");
