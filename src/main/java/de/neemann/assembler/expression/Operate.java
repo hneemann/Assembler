@@ -9,7 +9,18 @@ public class Operate implements Expression {
     private final Expression b;
     private final Operation op;
 
-    public enum Operation {OR, AND, MUL, ADD, XOR, DIV, SUB}
+    public enum Operation {
+        OR("|"), AND("&"), MUL("*"), ADD("+"), XOR("^"), DIV("/"), SUB("-");
+        private final String str;
+
+        Operation(String str) {
+            this.str = str;
+        }
+
+        public String getOpStr() {
+            return str;
+        }
+    }
 
     public Operate(Expression a, Operation op, Expression b) {
         this.a = a;
@@ -40,4 +51,15 @@ public class Operate implements Expression {
         throw new ExpressionException("operation " + op.name() + " not supported!");
     }
 
+    @Override
+    public String toString() {
+        return checkBrace(a) + op.getOpStr() + checkBrace(b);
+    }
+
+    private String checkBrace(Expression expression) {
+        if (expression instanceof Operate)
+            return "(" + expression.toString() + ")";
+        else
+            return expression.toString();
+    }
 }

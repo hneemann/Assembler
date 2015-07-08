@@ -63,4 +63,11 @@ public class ExpressionTest extends TestCase {
         }
         assertEquals(5 + 'A', new Parser("5+'A'").getExpression().getValue(null));
     }
+
+    public void testToString() throws IOException, ExpressionException, ParserException {
+        assertEquals("5+'A'", new Parser("5+'A'").getExpression().toString());
+        assertEquals("2*(1+3)", new Parser("2*(1+3)").getExpression().toString());
+        assertEquals("255", new Parser("0xff").getExpression().toString());
+    }
+
 }
