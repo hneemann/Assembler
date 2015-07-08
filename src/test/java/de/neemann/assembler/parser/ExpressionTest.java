@@ -54,4 +54,13 @@ public class ExpressionTest extends TestCase {
         assertEquals(14, new Parser("2*(A+4)").getExpression().getValue(context));
     }
 
+    public void testChar() throws IOException, ExpressionException, ParserException {
+        try {
+            new Parser("5+'AA'").getExpression();
+            assertTrue(false);
+        } catch (ParserException e) {
+            assertTrue(true);
+        }
+        assertEquals(5 + 'A', new Parser("5+'A'").getExpression().getValue(null));
+    }
 }

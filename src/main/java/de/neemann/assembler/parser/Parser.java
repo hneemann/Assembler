@@ -312,6 +312,11 @@ public class Parser implements Closeable {
                     return new Constant(parseInteger(s.toLowerCase()));
                 } else
                     return new Identifier(tokens.sval);
+            case '\'':
+                String str = tokens.sval;
+                if (str.length() != 1)
+                    throw makeParserException("only a single char allowed, not '" + str + "'");
+                return new Constant(str.charAt(0));
             case '(':
                 Expression ex = parseExpression();
                 consume(')');
