@@ -23,7 +23,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
 
     private static final String MESSAGE = "ASM 3\n\n" +
             "Simple assembler to create a hex file for a\n" +
-            "simple simulated 8 bit processor.\n\n" +
+            "simple simulated 16 bit processor.\n\n" +
             "Written by H. Neemann in 2015.";
 
     private static final Preferences prefs = Preferences.userRoot().node("dt_asm2");
@@ -36,6 +36,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     public Main() {
         super("ASM §");
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setIconImages(IconCreator.createImages("asm32.png", "asm64.png", "asm128.png", "asm256.png"));
 
         addWindowListener(new ClosingWindowListener(this, this));
 

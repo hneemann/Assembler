@@ -44,6 +44,20 @@ public enum Opcode {
     XORI("Stores [d] xor [c] in register [d]",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.XOR, Immed.Regist),
 
+
+    CMP("Subtracts the content of register [s] from register [d] without carry, does not store the value",
+            RegsNeeded.both, ImmedNeeded.No, ALU.SUB, Immed.No, EnRegWrite.No),
+    CPI("Subtracts a constant [c] from register [d] without carry, does not store the value",
+            RegsNeeded.dest, ImmedNeeded.Yes, ALU.SUB, Immed.Regist, EnRegWrite.No),
+
+    CP0("Subtracts a zero from register [d] without carry, does not store the value",
+            RegsNeeded.dest, ImmedNeeded.No, ALU.SUB, Immed.Zero, EnRegWrite.No),
+    CP1("Subtracts a one from register [d] without carry, does not store the value",
+            RegsNeeded.dest, ImmedNeeded.No, ALU.SUB, Immed.One, EnRegWrite.No),
+    CP2("Subtracts a one from register [d] without carry, does not store the value",
+            RegsNeeded.dest, ImmedNeeded.No, ALU.SUB, Immed.Two, EnRegWrite.No),
+
+
     LSL("Shifts Register [d] by one bit to the left. A zero is filled in.",
             RegsNeeded.dest, ImmedNeeded.No, ALU.LSL, Immed.No),
     LSR("Shifts Register [d] by one bit to the right. A zero is filled in.",
@@ -202,6 +216,18 @@ public enum Opcode {
                 StoreSel.ALU,
                 alu,
                 EnRegWrite.Yes);
+    }
+
+    //cmp
+    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ALU alu, Immed immed, EnRegWrite enRegWrite) {
+        this(description, rn, en,
+                ReadRam.No,
+                WriteRam.No,
+                Branch.No,
+                immed,
+                StoreSel.ALU,
+                alu,
+                enRegWrite);
     }
 
 

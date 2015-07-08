@@ -114,14 +114,26 @@ public class Parser implements Closeable {
             case ".data":
                 String ident = parseWord();
                 int addr = p.addRam(ident, 0);
-                p.addData(addr++, parseExpression().getValue(p.getContext()));
+                addr = readData(p, addr);
                 while (isNext(',')) {
                     isNext(TT_EOL);
-                    p.addData(addr++, parseExpression().getValue(p.getContext()));
+                    addr = readData(p, addr);
                 }
                 break;
             default:
                 throw makeParserException("unknown meta command " + t);
+        }
+    }
+
+    private int readData(Program p, int addr) throws ExpressionException, IOException, ParserException {
+        if (isNext('"')) {
+            String text = tokens.sval;
+            for (int i = 0; i < text.length(); i++)
+                p.addData(addr++, text.charAt(i));
+            return addr;
+        } else {
+            p.addData(addr++, parseExpression().getValue(p.getContext()));
+            return addr;
         }
     }
 
