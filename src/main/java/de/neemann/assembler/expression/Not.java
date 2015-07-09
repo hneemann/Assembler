@@ -14,4 +14,10 @@ public class Not implements Expression {
     public int getValue(Context context) throws ExpressionException {
         return ~value.getValue(context);
     }
+
+    @Override
+    public String toString() {
+        return "~" + Operate.checkBrace(value);
+    }
+
 }

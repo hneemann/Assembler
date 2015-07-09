@@ -77,8 +77,9 @@ public enum Opcode {
             RegsNeeded.dest, ImmedNeeded.No, ALU.ROL, Immed.No),
     ROR("Shifts Register [d] by one bit to the right. The carry bit is filled in.",
             RegsNeeded.dest, ImmedNeeded.No, ALU.ROR, Immed.No),
+    ASR("Shifts Register [d] by one bit to the right. The MSB remains unchanged.",
+            RegsNeeded.dest, ImmedNeeded.No, ALU.ASR, Immed.No),
 
-    // es fehlt noch ASR: Alles nach rechts schieben, höchstes Bit nicht verändern!
 
     ST("Stores the content of register [s] to the memory at the address ([d])",
             RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Zero, StoreSel.ALU, ALU.ADD, EnRegWrite.No),
@@ -160,7 +161,7 @@ public enum Opcode {
     enum StoreSel {RAM, ALU}
 
     enum ALU {
-        Nothing, ADD, SUB, AND, OR, XOR, LSL, LSR, res0, res1, res2, res3, res4, res5, res6, res7,
+        Nothing, ADD, SUB, AND, OR, XOR, LSL, LSR, ASR, res1, res2, res3, res4, res5, res6, res7,
         res8, ADC, SBC, res9, res10, res11, ROL, ROR
     }
 

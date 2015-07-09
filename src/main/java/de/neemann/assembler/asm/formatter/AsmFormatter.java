@@ -75,7 +75,7 @@ public class AsmFormatter implements InstructionVisitor {
             print(constant.toString());
             tab(55);
             print("; 0x");
-            print(Integer.toHexString(constant.getValue(context)));
+            print(Integer.toHexString(constant.getValue(context) & 0xffff));
         }
         newLine();
     }

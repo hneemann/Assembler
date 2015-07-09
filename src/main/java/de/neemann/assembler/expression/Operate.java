@@ -56,7 +56,7 @@ public class Operate implements Expression {
         return checkBrace(a) + op.getOpStr() + checkBrace(b);
     }
 
-    private String checkBrace(Expression expression) {
+    public static String checkBrace(Expression expression) {
         if (expression instanceof Operate)
             return "(" + expression.toString() + ")";
         else
