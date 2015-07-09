@@ -69,7 +69,6 @@ public enum Opcode {
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.SUB, Immed.instrSource, EnRegWrite.No),
 
 
-
     LSL("Shifts Register [d] by one bit to the left. A zero is filled in.",
             RegsNeeded.dest, ImmedNeeded.No, ALU.LSL, Immed.No),
     LSR("Shifts Register [d] by one bit to the right. A zero is filled in.",
@@ -158,7 +157,10 @@ public enum Opcode {
 
     enum StoreSel {RAM, ALU}
 
-    enum ALU {Nothing, ADD, SUB, AND, OR, XOR, LSL, LSR, res1, ADC, SBC, res2, res3, res4, ASR, ASL}
+    enum ALU {
+        Nothing, ADD, SUB, AND, OR, XOR, LSL, LSR, res0, res1, res2, res3, res4, res5, res6, res7,
+        res8, ADC, SBC, res9, res10, res11, ASL, ASR
+    }
 
     enum EnRegWrite {No, Yes}
 
