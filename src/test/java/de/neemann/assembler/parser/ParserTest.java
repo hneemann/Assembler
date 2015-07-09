@@ -167,7 +167,7 @@ public class ParserTest extends TestCase {
         try {
             checkSelfJmp(new Parser("hallo:\ntest:  ;comment\n\njmp test").getProgram().link());
             assertTrue(false);
-        } catch (ParserException e) {
+        } catch (ExpressionException e) {
             assertTrue(true);
         }
     }
