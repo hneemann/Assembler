@@ -50,48 +50,58 @@ public class Parser implements Closeable {
         macros.put(m.getName().toLowerCase(), m);
     }
 
-    public Program getProgram() throws IOException, ParserException, InstructionException, ExpressionException {
+    public Program getProgram() throws IOException, ParserException {
         Program p = new Program();
 
-        WHILE:
-        while (true) {
-            switch (tokens.nextToken()) {
-                case TT_WORD:
-                    String t = tokens.sval;
-                    if (t.startsWith(".")) {
-                        parseMetaCommand(p, t);
-                    } else {
-                        if (Opcode.parseStr(t) == null && !macros.containsKey(t.toLowerCase())) {
-                            p.setPendingLabel(t);
-                            consume(':');
-                            t = parseWord();
+        try {
+            WHILE:
+            while (true) {
+                switch (tokens.nextToken()) {
+                    case TT_WORD:
+                        String word = tokens.sval;
+                        if (word.startsWith(".")) {
+                            parseMetaCommand(p, word);
+                        } else {
+                            boolean isCommand = true;
+                            if (Opcode.parseStr(word) == null && !macros.containsKey(word.toLowerCase())) {
+                                p.setPendingLabel(word);
+                                consume(':');
+                                if (isNext(TT_WORD))
+                                    word = tokens.sval;
+                                else
+                                    isCommand = false;
+                            }
+                            if (isCommand) {
+                                if (macros.containsKey(word.toLowerCase())) {
+                                    macros.get(word.toLowerCase()).parseMacro(p, word, this);
+                                } else
+                                    parseInstruction(p, word);
+                            }
                         }
-                        if (macros.containsKey(t.toLowerCase())) {
-                            macros.get(t.toLowerCase()).parseMacro(p, t, this);
-                        } else
-                            parseInstruction(p, t);
-                    }
-                    switch (tokens.nextToken()) {
-                        case ';':
-                            skipLine();
-                            break;
-                        case TT_EOF:
-                        case TT_EOL:
-                            break;
-                        default:
-                            throw makeParserException("unexpected token " + tokens);
-                    }
-                    break;
-                case ';':
-                    skipLine();
-                    break;
-                case TT_EOL:
-                    break;
-                case TT_EOF:
-                    break WHILE;
-                default:
-                    throw makeParserException("unexpected token '" + tokens + "'");
+                        switch (tokens.nextToken()) {
+                            case ';':
+                                skipLine();
+                                break;
+                            case TT_EOF:
+                            case TT_EOL:
+                                break;
+                            default:
+                                throw makeParserException("unexpected token " + tokens);
+                        }
+                        break;
+                    case ';':
+                        skipLine();
+                        break;
+                    case TT_EOL:
+                        break;
+                    case TT_EOF:
+                        break WHILE;
+                    default:
+                        throw makeParserException("unexpected token '" + tokens + "'");
+                }
             }
+        } catch (ExpressionException | InstructionException e) {
+            throw makeParserException(e.getMessage());
         }
 
         return p;
@@ -355,5 +365,8 @@ public class Parser implements Closeable {
         }
     }
 
+    public int getLineNumber() {
+        return tokens.lineno();
+    }
 
 }

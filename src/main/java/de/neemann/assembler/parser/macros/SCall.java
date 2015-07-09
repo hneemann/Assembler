@@ -21,10 +21,11 @@ public class SCall implements Macro {
     @Override
     public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException {
         Expression addr = parser.parseExpression();
-        p.add(Instruction.make(Opcode.SUBIs, Register.SP, new Constant(1)));
-        p.add(Instruction.make(Opcode.ST, Register.SP, Register.RA));
-        p.add(Instruction.make(Opcode.RCALL, Register.RA, addr));
-        p.add(Instruction.make(Opcode.LD, Register.RA, Register.SP));
-        p.add(Instruction.make(Opcode.ADDIs, Register.SP, new Constant(1)));
+        int ln = parser.getLineNumber();
+        p.add(Instruction.make(Opcode.SUBIs, Register.SP, new Constant(1)).setLineNumber(ln));
+        p.add(Instruction.make(Opcode.ST, Register.SP, Register.RA).setLineNumber(ln));
+        p.add(Instruction.make(Opcode.RCALL, Register.RA, addr).setLineNumber(ln));
+        p.add(Instruction.make(Opcode.LD, Register.RA, Register.SP).setLineNumber(ln));
+        p.add(Instruction.make(Opcode.ADDIs, Register.SP, new Constant(1)).setLineNumber(ln));
     }
 }

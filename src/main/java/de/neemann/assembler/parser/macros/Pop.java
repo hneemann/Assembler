@@ -14,13 +14,13 @@ import java.io.IOException;
 public class Pop implements Macro {
     @Override
     public String getName() {
-        return "pop";
+        return "_pop";
     }
 
     @Override
     public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException {
         Register r = parser.parseReg();
-        p.add(Instruction.make(Opcode.LD, r, Register.SP));
-        p.add(Instruction.make(Opcode.ADDIs, Register.SP, new Constant(1)));
+        p.add(Instruction.make(Opcode.LD, r, Register.SP).setLineNumber(parser.getLineNumber()));
+        p.add(Instruction.make(Opcode.ADDIs, Register.SP, new Constant(1)).setLineNumber(parser.getLineNumber()));
     }
 }

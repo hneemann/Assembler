@@ -87,8 +87,9 @@ public class Instruction {
             return 1;
     }
 
-    public void setLineNumber(int lineNumber) {
+    public Instruction setLineNumber(int lineNumber) {
         this.lineNumber = lineNumber;
+        return this;
     }
 
     public String getLabel() {

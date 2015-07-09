@@ -38,10 +38,15 @@ public class Program {
         int addr = 0;
         for (int i = 0, progSize = prog.size(); i < progSize; i++) {
             Instruction in = prog.get(i);
-            context.setInstrAddr(addr);
-            context.setSkipAddr(calcSkipAddr(addr, i));
-            instructionVisitor.visit(in, context);
-            addr += in.size();
+            try {
+                context.setInstrAddr(addr);
+                context.setSkipAddr(calcSkipAddr(addr, i));
+                instructionVisitor.visit(in, context);
+                addr += in.size();
+            } catch (ExpressionException e) {
+                e.setLineNumber(in.getLineNumber());
+                throw e;
+            }
         }
         return this;
     }
@@ -113,7 +118,9 @@ public class Program {
         list.add(addr);
     }
 
-    public void setPendingLabel(String pendingLabel) {
+    public void setPendingLabel(String pendingLabel) throws ExpressionException {
+        if (this.pendingLabel != null)
+            throw new ExpressionException("two labels for the same command: " + pendingLabel + ", " + this.pendingLabel);
         this.pendingLabel = pendingLabel;
     }
 

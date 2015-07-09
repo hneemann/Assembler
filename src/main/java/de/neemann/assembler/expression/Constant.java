@@ -32,6 +32,38 @@ public class Constant implements Expression {
         if (value instanceof Integer)
             return Integer.toString((Integer) value);
         else
-            return "'" + value + "'";
+            return "'" + escape(value.toString()) + "'";
+    }
+
+    private String escape(String s) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            switch (c) {
+                case '\n':
+                    sb.append("\\n");
+                    break;
+                case '\r':
+                    sb.append("\\r");
+                    break;
+                case '\t':
+                    sb.append("\\t");
+                    break;
+                case '\b':
+                    sb.append("\\b");
+                    break;
+                case '\'':
+                    sb.append("\\'");
+                    break;
+                case '\"':
+                    sb.append("\\\"");
+                    break;
+                case '\\':
+                    sb.append("\\");
+                    break;
+                default:
+                    sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 }
