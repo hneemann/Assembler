@@ -50,7 +50,7 @@ public class Parser implements Closeable {
         macros.put(m.getName().toLowerCase(), m);
     }
 
-    public Program getProgram() throws IOException, ParserException {
+    public Program getProgram() throws IOException, ParserException, ExpressionException {
         Program p = new Program();
 
         try {
@@ -100,8 +100,11 @@ public class Parser implements Closeable {
                         throw makeParserException("unexpected token '" + tokens + "'");
                 }
             }
-        } catch (ExpressionException | InstructionException e) {
+        } catch (InstructionException e) {
             throw makeParserException(e.getMessage());
+        } catch (ExpressionException e) {
+            e.setLineNumber(getLineNumber());
+            throw e;
         }
 
         return p;

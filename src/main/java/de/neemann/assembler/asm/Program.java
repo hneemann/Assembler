@@ -15,8 +15,8 @@ public class Program {
 
     private final ArrayList<Instruction> prog;
     private final Context context;
+    private final TreeMap<Integer, ArrayList<Integer>> dataMap;
     private int ramPos = 0;
-    private TreeMap<Integer, ArrayList<Integer>> dataMap;
     private String pendingLabel;
 
     public Program() {
