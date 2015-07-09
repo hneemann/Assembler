@@ -36,12 +36,21 @@ public class Program {
 
     public Program traverse(InstructionVisitor instructionVisitor) throws ExpressionException {
         int addr = 0;
-        for (Instruction in : prog) {
+        for (int i = 0, progSize = prog.size(); i < progSize; i++) {
+            Instruction in = prog.get(i);
             context.setInstrAddr(addr);
+            context.setSkipAddr(calcSkipAddr(addr, i));
             instructionVisitor.visit(in, context);
             addr += in.size();
         }
         return this;
+    }
+
+    private int calcSkipAddr(int addr, int i) {
+        if (i < prog.size() - 2)
+            return addr + prog.get(i).size() + prog.get(i + 1).size();
+        else
+            return addr;
     }
 
     public Program appendData() throws InstructionException {

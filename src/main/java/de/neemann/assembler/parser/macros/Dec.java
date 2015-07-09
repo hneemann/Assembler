@@ -11,16 +11,15 @@ import java.io.IOException;
 /**
  * @author hneemann
  */
-public class Push implements Macro {
+public class Dec implements Macro {
     @Override
     public String getName() {
-        return "push";
+        return "dec";
     }
 
     @Override
     public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException {
         Register r = parser.parseReg();
-        p.add(Instruction.make(Opcode.SUBIs, Register.SP, new Constant(1)));
-        p.add(Instruction.make(Opcode.ST, Register.SP, r));
+        p.add(Instruction.make(Opcode.SUBIs, r, new Constant(1)));
     }
 }

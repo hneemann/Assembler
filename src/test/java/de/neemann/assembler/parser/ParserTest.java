@@ -110,7 +110,7 @@ public class ParserTest extends TestCase {
 
         assertEquals(1, prog.getInstructionCount());
         Instruction i = prog.getInstruction(0);
-        assertEquals(Opcode.INC, i.getOpcode());
+        assertEquals(Opcode.ADDIs, i.getOpcode());
         assertEquals(Register.R5, i.getDestReg());
     }
 

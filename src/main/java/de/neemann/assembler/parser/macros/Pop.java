@@ -1,6 +1,7 @@
 package de.neemann.assembler.parser.macros;
 
 import de.neemann.assembler.asm.*;
+import de.neemann.assembler.expression.Constant;
 import de.neemann.assembler.parser.Macro;
 import de.neemann.assembler.parser.Parser;
 import de.neemann.assembler.parser.ParserException;
@@ -20,6 +21,6 @@ public class Pop implements Macro {
     public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException {
         Register r = parser.parseReg();
         p.add(Instruction.make(Opcode.LD, r, Register.SP));
-        p.add(Instruction.make(Opcode.INC, Register.SP));
+        p.add(Instruction.make(Opcode.ADDIs, Register.SP, new Constant(1)));
     }
 }

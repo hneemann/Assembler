@@ -29,33 +29,45 @@ public enum Opcode {
             RegsNeeded.both, ImmedNeeded.No, ALU.XOR, Immed.No),
     LDI("Loads Register [d] with the constant value [c]",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.Nothing, Immed.Regist),
+    LDIs("Loads Register [d] with the constant value [c]",
+            RegsNeeded.dest, ImmedNeeded.Yes, ALU.Nothing, Immed.instrSource),
     ADDI("Adds the constant [c] to Register [d] without carry",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.ADD, Immed.Regist),
+    ADDIs("Adds the constant [c] to Register [d] without carry",
+            RegsNeeded.dest, ImmedNeeded.Yes, ALU.ADD, Immed.instrSource),
     ADCI("Adds the constant [c] to Register [d] with carry",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.ADC, Immed.Regist),
+    ADCIs("Adds the constant [c] to Register [d] with carry",
+            RegsNeeded.dest, ImmedNeeded.Yes, ALU.ADC, Immed.instrSource),
     SUBI("Subtracts a constant [c] from register [d] without carry",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.SUB, Immed.Regist),
+    SUBIs("Subtracts a constant [c] from register [d] without carry",
+            RegsNeeded.dest, ImmedNeeded.Yes, ALU.SUB, Immed.instrSource),
     SBCI("Subtracts a constant [c] from register [d] with carry",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.SBC, Immed.Regist),
+    SBCIs("Subtracts a constant [c] from register [d] with carry",
+            RegsNeeded.dest, ImmedNeeded.Yes, ALU.SBC, Immed.instrSource),
     ANDI("Stores [d] and [c] in register [d]",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.AND, Immed.Regist),
+    ANDIs("Stores [d] and [c] in register [d]",
+            RegsNeeded.dest, ImmedNeeded.Yes, ALU.AND, Immed.instrSource),
     ORI("Stores [d] or [c] in register [d]",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.OR, Immed.Regist),
+    ORIs("Stores [d] or [c] in register [d]",
+            RegsNeeded.dest, ImmedNeeded.Yes, ALU.OR, Immed.instrSource),
     XORI("Stores [d] xor [c] in register [d]",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.XOR, Immed.Regist),
+    XORIs("Stores [d] xor [c] in register [d]",
+            RegsNeeded.dest, ImmedNeeded.Yes, ALU.XOR, Immed.instrSource),
 
 
     CMP("Subtracts the content of register [s] from register [d] without carry, does not store the value",
             RegsNeeded.both, ImmedNeeded.No, ALU.SUB, Immed.No, EnRegWrite.No),
     CPI("Subtracts a constant [c] from register [d] without carry, does not store the value",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.SUB, Immed.Regist, EnRegWrite.No),
+    CPIs("Subtracts a constant [c] from register [d] without carry, does not store the value",
+            RegsNeeded.dest, ImmedNeeded.Yes, ALU.SUB, Immed.instrSource, EnRegWrite.No),
 
-    CP0("Subtracts zero from register [d] without carry, does not store the value",
-            RegsNeeded.dest, ImmedNeeded.No, ALU.SUB, Immed.Zero, EnRegWrite.No),
-    CP1("Subtracts one from register [d] without carry, does not store the value",
-            RegsNeeded.dest, ImmedNeeded.No, ALU.SUB, Immed.One, EnRegWrite.No),
-    CP2("Subtracts two from register [d] without carry, does not store the value",
-            RegsNeeded.dest, ImmedNeeded.No, ALU.SUB, Immed.Two, EnRegWrite.No),
 
 
     LSL("Shifts Register [d] by one bit to the left. A zero is filled in.",
@@ -67,20 +79,18 @@ public enum Opcode {
     ROR("Shifts Register [d] by one bit to the right. The carry bit is filled in.",
             RegsNeeded.dest, ImmedNeeded.No, ALU.ASR, Immed.No),
 
-
-    INC("Register [d] is increased by one.",
-            RegsNeeded.dest, ImmedNeeded.No, ALU.ADD, Immed.One),
-    DEC("Register [d] is decreased by one.",
-            RegsNeeded.dest, ImmedNeeded.No, ALU.SUB, Immed.One),
-
     ST("Stores the content of register [s] to the memory at the address ([d])",
             RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Zero, StoreSel.ALU, ALU.ADD, EnRegWrite.No),
     LD("Loads the value at memory address ([s]) to register [d]",
             RegsNeeded.both, ImmedNeeded.No, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Zero, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes),
     STS("Stores the content of register [s] to memory at the location given by [c]",
             RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Regist, StoreSel.ALU, ALU.Nothing, EnRegWrite.No),
+    STSs("Stores the content of register [s] to memory at the location given by [c]",
+            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, Immed.instrDest, StoreSel.ALU, ALU.Nothing, EnRegWrite.No),
     LDS("Loads the memory value at the location given by [c] to register [d]",
             RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes),
+    LDSs("Loads the memory value at the location given by [c] to register [d]",
+            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.instrSource, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes),
     STO("Stores the content of register [s] to the memory at the address ([d]+[c])",
             RegsNeeded.both, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Regist, StoreSel.ALU, ALU.ADD, EnRegWrite.No),
     LDO("Loads the value at memory address ([s]+[c]) to register [d]",
@@ -104,11 +114,11 @@ public enum Opcode {
     LJMP("Jumps to the address given by [c]",
             RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.Yes, WriteIO.No, ReadIO.No, Break.No),
 
-    OUTS("Writes the content of register [s] to io location given by [c]",
-            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.instrDest, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
 
     OUT("Writes the content of register [s] to io location given by [c]",
             RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
+    OUTs("Writes the content of register [s] to io location given by [c]",
+            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.instrDest, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
     OUTO("Writes the content of register [s] to the io location ([d]+[c])",
             RegsNeeded.both, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.ALU, ALU.ADD, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
     OUTR("Writes the content of register [s] to the io location ([d])",
@@ -179,7 +189,7 @@ public enum Opcode {
     private final ImmedNeeded immedNeeded;
 
     Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, StoreSel storeSel, ALU alu, EnRegWrite enRegWrite, SourceToAlu sourceToAlu, StorePC storePC, JmpAbs jmpAbs, WriteIO wio, ReadIO rio, Break brk) {
-        this.description = description.replace("[d]", DESTREG).replace("[s]", SOURCEREG).replace("[c]", CONSTANT);
+        this.description = addConstLimit(description, imed).replace("[d]", DESTREG).replace("[s]", SOURCEREG).replace("[c]", CONSTANT);
         this.regsNeeded = rn;
         this.immedNeeded = en;
         this.rr = rr;
@@ -198,6 +208,12 @@ public enum Opcode {
 
         if (regsNeeded != RegsNeeded.none && imed == Immed.instr)
             throw new RuntimeException("immediate in instruction and registers used simultanious " + name());
+    }
+
+    private String addConstLimit(String description, Immed imed) {
+        if (imed.equals(Immed.instrDest) || imed.equals(Immed.instrSource))
+            description += " (0<=[c]<=31)";
+        return description;
     }
 
     Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, StoreSel storeSel, ALU alu, EnRegWrite enRegWrite, SourceToAlu sta) {

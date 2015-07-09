@@ -2,10 +2,7 @@ package de.neemann.assembler.parser;
 
 import de.neemann.assembler.asm.*;
 import de.neemann.assembler.expression.*;
-import de.neemann.assembler.parser.macros.Pop;
-import de.neemann.assembler.parser.macros.Push;
-import de.neemann.assembler.parser.macros.SCall;
-import de.neemann.assembler.parser.macros.SRet;
+import de.neemann.assembler.parser.macros.*;
 
 import java.io.*;
 import java.util.HashMap;
@@ -19,6 +16,7 @@ public class Parser implements Closeable {
     private final StreamTokenizer tokens;
     private final Reader in;
     private final HashMap<String, Macro> macros;
+    private final HashMap<String, Register> regsMap;
 
     public Parser(String source) {
         this(new StringReader(source));
@@ -26,6 +24,9 @@ public class Parser implements Closeable {
 
     public Parser(Reader in) {
         this.in = in;
+
+        this.regsMap = new HashMap<>();
+
         this.macros = new HashMap<>();
         tokens = new StreamTokenizer(in);
         tokens.eolIsSignificant(true);
@@ -35,7 +36,10 @@ public class Parser implements Closeable {
         tokens.ordinaryChars('0', '9');
         tokens.wordChars('0', '9');
         tokens.wordChars('.', '.');
+        tokens.wordChars('_', '_');
 
+        addMacro(new Inc());
+        addMacro(new Dec());
         addMacro(new Push());
         addMacro(new Pop());
         addMacro(new SCall());
@@ -57,7 +61,7 @@ public class Parser implements Closeable {
                     if (t.startsWith(".")) {
                         parseMetaCommand(p, t);
                     } else {
-                        if (Opcode.parseStr(t) == null && !macros.containsKey(t)) {
+                        if (Opcode.parseStr(t) == null && !macros.containsKey(t.toLowerCase())) {
                             p.setPendingLabel(t);
                             consume(':');
                             t = parseWord();
@@ -102,6 +106,11 @@ public class Parser implements Closeable {
 
     private void parseMetaCommand(Program p, String t) throws IOException, ParserException, ExpressionException {
         switch (t) {
+            case ".reg":
+                String regName = parseWord();
+                Register reg = parseReg();
+                regsMap.put(regName, reg);
+                break;
             case ".word":
                 p.addRam(parseWord(), 1);
                 break;
@@ -199,9 +208,14 @@ public class Parser implements Closeable {
     public Register parseReg() throws IOException, ParserException {
         String r = parseWord();
         Register reg = Register.parseStr(r);
-        if (reg == null)
-            throw makeParserException("expected a register, found '" + r + "'");
-        return reg;
+        if (reg != null)
+            return reg;
+
+        reg = regsMap.get(r);
+        if (reg != null)
+            return reg;
+
+        throw makeParserException("expected a register, found '" + r + "'");
     }
 
     public String parseWord() throws IOException, ParserException {
