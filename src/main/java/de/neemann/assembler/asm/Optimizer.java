@@ -26,6 +26,7 @@ public class Optimizer implements InstructionVisitor {
         shortConstantMap.put(Opcode.LDS, Opcode.LDSs);
         shortConstantMap.put(Opcode.STS, Opcode.STSs);
         shortConstantMap.put(Opcode.MULI, Opcode.MULIs);
+        shortConstantMap.put(Opcode.IN, Opcode.INs);
     }
 
     @Override

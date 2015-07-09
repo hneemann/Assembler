@@ -140,6 +140,8 @@ public enum Opcode {
 
     IN("Reads the io location given by [c] and stores it in register [d]",
             RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
+    INs("Reads the io location given by [c] and stores it in register [d]",
+            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.instrSource, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
     INO("Reads the io location given by ([s]+[c]) and stores it in register [d]",
             RegsNeeded.both, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
     INR("Reads the io location given by ([s]) and stores it in register [d]",
