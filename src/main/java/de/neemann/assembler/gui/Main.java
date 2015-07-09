@@ -31,6 +31,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     private final ToolTipAction save;
     private final ToolTipAction saveAs;
     private File filename;
+    private File lastFilename;
     private String sourceOnDisk;
 
     public Main() {
@@ -209,8 +210,12 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     private File getDirectory() {
         if (filename != null)
             return filename.getParentFile();
-        else
-            return null;
+        else {
+            if (lastFilename != null)
+                return lastFilename.getParentFile();
+            else
+                return null;
+        }
     }
 
     private void save(File file) throws IOException {
@@ -257,6 +262,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     }
 
     private void setFilename(File file) {
+        lastFilename = filename;
         this.filename = file;
         if (file == null)
             setTitle("ASM 3");
