@@ -21,23 +21,23 @@ public enum Opcode {
             RegsNeeded.both, ImmedNeeded.No, ALU.SUB, Immed.No),
     SBC("Subtracts the content of register [s] from register [d] with carry",
             RegsNeeded.both, ImmedNeeded.No, ALU.SBC, Immed.No),
-    AND("Stores [s] and [d] in Register [d].",
+    AND("Stores [s] and [d] in register [d].",
             RegsNeeded.both, ImmedNeeded.No, ALU.AND, Immed.No),
-    OR("Stores [s] or [d] in Register [d].",
+    OR("Stores [s] or [d] in register [d].",
             RegsNeeded.both, ImmedNeeded.No, ALU.OR, Immed.No),
-    XOR("Stores [s] xor [d] in Register [d].",
+    XOR("Stores [s] xor [d] in register [d].",
             RegsNeeded.both, ImmedNeeded.No, ALU.XOR, Immed.No),
     LDI("Loads Register [d] with the constant value [c]",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.Nothing, Immed.Regist),
     LDIs("Loads Register [d] with the constant value [c]",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.Nothing, Immed.instrSource),
-    ADDI("Adds the constant [c] to Register [d] without carry",
+    ADDI("Adds the constant [c] to register [d] without carry",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.ADD, Immed.Regist),
-    ADDIs("Adds the constant [c] to Register [d] without carry",
+    ADDIs("Adds the constant [c] to register [d] without carry",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.ADD, Immed.instrSource),
-    ADCI("Adds the constant [c] to Register [d] with carry",
+    ADCI("Adds the constant [c] to register [d] with carry",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.ADC, Immed.Regist),
-    ADCIs("Adds the constant [c] to Register [d] with carry",
+    ADCIs("Adds the constant [c] to register [d] with carry",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.ADC, Immed.instrSource),
     SUBI("Subtracts a constant [c] from register [d] without carry",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.SUB, Immed.Regist),
@@ -69,17 +69,21 @@ public enum Opcode {
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.SUB, Immed.instrSource, EnRegWrite.No),
 
 
-    LSL("Shifts Register [d] by one bit to the left. A zero is filled in.",
+    LSL("Shifts register [d] by one bit to the left. A zero is filled in.",
             RegsNeeded.dest, ImmedNeeded.No, ALU.LSL, Immed.No),
-    LSR("Shifts Register [d] by one bit to the right. A zero is filled in.",
+    LSR("Shifts register [d] by one bit to the right. A zero is filled in.",
             RegsNeeded.dest, ImmedNeeded.No, ALU.LSR, Immed.No),
-    ROL("Shifts Register [d] by one bit to the left. The carry bit is filled in.",
+    ROL("Shifts register [d] by one bit to the left. The carry bit is filled in.",
             RegsNeeded.dest, ImmedNeeded.No, ALU.ROL, Immed.No),
-    ROR("Shifts Register [d] by one bit to the right. The carry bit is filled in.",
+    ROR("Shifts register [d] by one bit to the right. The carry bit is filled in.",
             RegsNeeded.dest, ImmedNeeded.No, ALU.ROR, Immed.No),
-    ASR("Shifts Register [d] by one bit to the right. The MSB remains unchanged.",
+    ASR("Shifts register [d] by one bit to the right. The MSB remains unchanged.",
             RegsNeeded.dest, ImmedNeeded.No, ALU.ASR, Immed.No),
 
+    SWAP("Swaps the high and low byte in register [d].",
+            RegsNeeded.dest, ImmedNeeded.No, ALU.SWAP, Immed.No),
+    SWAPN("Swaps the high and low nibbles of both bytes in register [d].",
+            RegsNeeded.dest, ImmedNeeded.No, ALU.SWAPN, Immed.No),
 
     ST("Stores the content of register [s] to the memory at the address ([d])",
             RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Zero, StoreSel.ALU, ALU.ADD, EnRegWrite.No),
@@ -161,7 +165,7 @@ public enum Opcode {
     enum StoreSel {RAM, ALU}
 
     enum ALU {
-        Nothing, ADD, SUB, AND, OR, XOR, LSL, LSR, ASR, res1, res2, res3, res4, res5, res6, res7,
+        Nothing, ADD, SUB, AND, OR, XOR, LSL, LSR, ASR, SWAP, SWAPN, res3, res4, res5, res6, res7,
         res8, ADC, SBC, res9, res10, res11, ROL, ROR
     }
 
