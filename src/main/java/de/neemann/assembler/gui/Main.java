@@ -4,6 +4,7 @@ import de.neemann.assembler.asm.InstructionException;
 import de.neemann.assembler.asm.Opcode;
 import de.neemann.assembler.asm.Program;
 import de.neemann.assembler.asm.formatter.AsmFormatter;
+import de.neemann.assembler.asm.formatter.AsmLightFormatter;
 import de.neemann.assembler.asm.formatter.HexFormatter;
 import de.neemann.assembler.expression.ExpressionException;
 import de.neemann.assembler.gui.utils.*;
@@ -11,6 +12,7 @@ import de.neemann.assembler.parser.Parser;
 import de.neemann.assembler.parser.ParserException;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
@@ -57,6 +59,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             public void actionPerformed(ActionEvent actionEvent) {
                 if (ClosingWindowListener.checkForSave(Main.this, Main.this)) {
                     JFileChooser fc = new JFileChooser(getDirectory());
+                    fc.setFileFilter(new FileNameExtensionFilter("Assembler files", "asm"));
                     if (fc.showOpenDialog(Main.this) == JFileChooser.APPROVE_OPTION) {
                         try {
                             load(fc.getSelectedFile());
@@ -129,6 +132,20 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             }
         }.setToolTip("Converts the source to a listing and shows it.");
 
+        ToolTipAction showLight = new ToolTipAction("Show simpler Listing") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    ByteArrayOutputStream text = new ByteArrayOutputStream();
+                    createProgram().traverse(new AsmLightFormatter(new PrintStream(text)));
+                    new ListDialog(Main.this, text.toString()).setVisible(true);
+                } catch (Throwable e) {
+                    new ErrorMessage("Error").addCause(e).show();
+                }
+            }
+        }.setToolTip("Converts the source to a listing without line numbers and shows it.");
+
+
         ToolTipAction helpOpcodes = new ToolTipAction("Show help") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -170,6 +187,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         JMenu assemble = new JMenu("ASM");
         assemble.add(build.createJMenuItem());
         assemble.add(show.createJMenuItem());
+        assemble.add(showLight.createJMenuItem());
 
         JMenu help = new JMenu("Help");
         help.add(helpOpcodes.createJMenuItem());

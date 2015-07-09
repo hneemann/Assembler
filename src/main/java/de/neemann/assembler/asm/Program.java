@@ -126,6 +126,6 @@ public class Program {
     }
 
     public Program optimize() throws ExpressionException {
-        return traverse(new Optimizer(this));
+        return traverse(new Optimizer());
     }
 }

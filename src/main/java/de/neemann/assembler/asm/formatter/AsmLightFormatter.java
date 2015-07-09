@@ -1,7 +1,6 @@
 package de.neemann.assembler.asm.formatter;
 
 import de.neemann.assembler.asm.Instruction;
-import de.neemann.assembler.asm.InstructionVisitor;
 import de.neemann.assembler.asm.MachineCodeListener;
 import de.neemann.assembler.asm.Opcode;
 import de.neemann.assembler.expression.Context;
@@ -13,22 +12,21 @@ import java.io.PrintStream;
 /**
  * @author hneemann
  */
-public class AsmFormatter implements InstructionVisitor {
-    private final PrintStream o;
-    private int actCol;
+public class AsmLightFormatter extends AsmFormatter {
 
-    public AsmFormatter(PrintStream out) {
-        this.o = out;
-        actCol = 0;
+    public AsmLightFormatter(PrintStream out) {
+        super(out);
     }
 
     @Override
     public void visit(Instruction i, Context context) throws ExpressionException {
-        if (i.getLineNumber() > 0) {
-            print(Integer.toString(i.getLineNumber()));
+
+        if (i.getLabel() != null) {
+            tab(18);
+            print(i.getLabel() + ":");
+            newLine();
         }
-        tab(3);
-        print(" | ");
+
 
         printHex(context.getInstrAddr());
 
@@ -42,16 +40,12 @@ public class AsmFormatter implements InstructionVisitor {
             }
         });
 
-        tab(22);
-
-        if (i.getLabel() != null)
-            print(i.getLabel() + ":");
-        tab(32);
+        tab(28);
 
         Opcode opcode = i.getOpcode();
         print(opcode.name());
 
-        tab(38);
+        tab(34);
 
         switch (opcode.getRegsNeeded()) {
             case source:
@@ -73,31 +67,10 @@ public class AsmFormatter implements InstructionVisitor {
                 print(", ");
             Expression constant = i.getConstant();
             print(constant.toString());
-            tab(55);
+            tab(51);
             print("; 0x");
             print(Integer.toHexString(constant.getValue(context) & 0xffff));
         }
         newLine();
-    }
-
-    protected void printHex(int instr) {
-        String s = Integer.toHexString(instr);
-        while (s.length() < 4) s = '0' + s;
-        print(s);
-    }
-
-    protected void tab(int col) {
-        while (actCol < col)
-            print(" ");
-    }
-
-    protected void print(String s) {
-        o.print(s);
-        actCol += s.length();
-    }
-
-    protected void newLine() {
-        o.print('\n');
-        actCol = 0;
     }
 }

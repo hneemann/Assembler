@@ -60,6 +60,13 @@ public enum Opcode {
     XORIs("Stores [d] xor [c] in register [d]",
             RegsNeeded.dest, ImmedNeeded.Yes, ALU.XOR, Immed.instrSource),
 
+    MUL("Multiplies the content of register [s] with register [d] and stores result in [d]",
+            RegsNeeded.both, ImmedNeeded.No, ALU.MUL, Immed.No),
+    MULI("Multiplies the constant [c] with register [d] and stores result in [d]",
+            RegsNeeded.dest, ImmedNeeded.Yes, ALU.MUL, Immed.Regist),
+    MULIs("Multiplies the constant [c] with register [d] and stores result in [d]",
+            RegsNeeded.dest, ImmedNeeded.Yes, ALU.MUL, Immed.instrSource),
+
 
     CMP("Subtracts the content of register [s] from register [d] without carry, does not store the value",
             RegsNeeded.both, ImmedNeeded.No, ALU.SUB, Immed.No, EnRegWrite.No),
@@ -165,7 +172,7 @@ public enum Opcode {
     enum StoreSel {RAM, ALU}
 
     enum ALU {
-        Nothing, ADD, SUB, AND, OR, XOR, LSL, LSR, ASR, SWAP, SWAPN, res3, res4, res5, res6, res7,
+        Nothing, ADD, SUB, AND, OR, XOR, LSL, LSR, ASR, SWAP, SWAPN, MUL, res4, res5, res6, res7,
         res8, ADC, SBC, res9, res10, res11, ROL, ROR
     }
 
@@ -307,14 +314,6 @@ public enum Opcode {
             out.println(Integer.toHexString(oc.createControlWord()));
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
-        writeControlWords(System.out);
-        System.out.println(Opcode.values().length + " opcodes");
-        try (PrintStream p = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_I/Vorlesung/06_Prozessoren/java/assembler3/control.dat")) {
-            writeControlWords(p);
-        }
-    }
-
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(name());
@@ -340,4 +339,20 @@ public enum Opcode {
         return sb.toString();
     }
 
+    public static void main(String[] args) throws FileNotFoundException {
+        System.out.println(Opcode.values().length + " opcodes");
+        try (PrintStream p = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_I/Vorlesung/06_Prozessoren/java/assembler3/control.dat")) {
+            writeControlWords(p);
+        }
+
+        for (Opcode op : Opcode.values()) {
+            System.out.print(op.name() + ", ");
+        }
+        System.out.println();
+        for (Register r : Register.values()) {
+            System.out.print(r.name() + ", ");
+        }
+
+
+    }
 }
