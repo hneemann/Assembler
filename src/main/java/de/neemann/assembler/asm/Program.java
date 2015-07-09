@@ -109,13 +109,14 @@ public class Program {
         return context;
     }
 
-    public void addData(int addr, int value) {
+    public void addData(int value) {
         ArrayList<Integer> list = dataMap.get(value);
         if (list == null) {
             list = new ArrayList<>();
             dataMap.put(value, list);
         }
-        list.add(addr);
+        list.add(ramPos);
+        ramPos++;
     }
 
     public void setPendingLabel(String pendingLabel) throws ExpressionException {

@@ -167,9 +167,17 @@ public class ParserTest extends TestCase {
         try {
             checkSelfJmp(new Parser("hallo:\ntest:  ;comment\n\njmp test").getProgram().link());
             assertTrue(false);
-        } catch (ExpressionException e) {
+        } catch (ParserException e) {
             assertTrue(true);
         }
     }
 
+    public void testDataAddr() throws ExpressionException, ParserException, InstructionException, IOException {
+        Program p = new Parser(".data test \"Test\",0;\n" +
+                ".data test2 \"Test\",0;\n" +
+                "jmp _ADDR_").getProgram().appendData().link();
+
+        assertEquals(0, p.getContext().get("test"));
+        assertEquals(5, p.getContext().get("test2"));
+    }
 }

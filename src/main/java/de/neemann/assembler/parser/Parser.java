@@ -132,11 +132,11 @@ public class Parser implements Closeable {
                 break;
             case ".data":
                 String ident = parseWord();
-                int addr = p.addRam(ident, 0);
-                addr = readData(p, addr);
+                p.addRam(ident, 0);
+                readData(p);
                 while (isNext(',')) {
                     isNext(TT_EOL);
-                    addr = readData(p, addr);
+                    readData(p);
                 }
                 break;
             default:
@@ -144,15 +144,13 @@ public class Parser implements Closeable {
         }
     }
 
-    private int readData(Program p, int addr) throws ExpressionException, IOException, ParserException {
+    private void readData(Program p) throws ExpressionException, IOException, ParserException {
         if (isNext('"')) {
             String text = tokens.sval;
             for (int i = 0; i < text.length(); i++)
-                p.addData(addr++, text.charAt(i));
-            return addr;
+                p.addData(text.charAt(i));
         } else {
-            p.addData(addr++, parseExpression().getValue(p.getContext()));
-            return addr;
+            p.addData(parseExpression().getValue(p.getContext()));
         }
     }
 
