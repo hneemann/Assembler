@@ -16,7 +16,7 @@ public class ListDialog extends JDialog {
         super(main, title);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        JTextArea source = new JTextArea(listing);
+        JTextArea source = new JTextArea(listing, 45, 70);
         source.setEditable(false);
         source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         getContentPane().add(new JScrollPane(source));
