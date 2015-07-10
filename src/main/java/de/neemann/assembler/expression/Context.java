@@ -18,7 +18,7 @@ public class Context {
     public int get(String name) throws ExpressionException {
         Integer v = idenifier.get(name);
         if (v == null)
-            throw new ExpressionException(name + " not found");
+            throw new ExpressionException("'" + name + "' not found");
         return v;
     }
 
@@ -27,19 +27,21 @@ public class Context {
         if (v != null && v != value)
             throw new ExpressionException(name + " set twice");
 
+        return setIdentifier(name, value);
+    }
+
+    public Context setIdentifier(String name, int value) {
         idenifier.put(name, value);
         return this;
     }
 
     public Context setInstrAddr(int instrAddr) {
         this.instrAddr = instrAddr;
-        idenifier.put(ADDR, instrAddr);
-        return this;
+        return setIdentifier(ADDR, instrAddr);
     }
 
     public Context setSkipAddr(int addr) {
-        idenifier.put(SKIP_ADDR, addr);
-        return this;
+        return setIdentifier(SKIP_ADDR, addr);
     }
 
     public int getInstrAddr() {

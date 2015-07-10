@@ -109,8 +109,6 @@ public enum Opcode {
     LDO("Loads the value at memory address ([s]+[c]) to register [d]",
             RegsNeeded.both, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes),
 
-    JMP("Jumps to the address given by [c], Range is 512 words",
-            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.uncond, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
     BRC("Jumps to the address given by [c] if carry flag is set , Range is 512 words",
             RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRC, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
     BRZ("Jumps to the address given by [c] if zero flag is set , Range is 512 words",
@@ -124,8 +122,11 @@ public enum Opcode {
             RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes, SourceToAlu.No, StorePC.Yes, JmpAbs.Yes, WriteIO.No, ReadIO.No, Break.No),
     RRET("Jumps to the address given by register [s]",
             RegsNeeded.source, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.No, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.Yes, WriteIO.No, ReadIO.No, Break.No),
-    LJMP("Jumps to the address given by [c]",
+
+    JMP("Jumps to the address given by [c]",
             RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.Yes, WriteIO.No, ReadIO.No, Break.No),
+    JMPs("Jumps to the address given by [c]",
+            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.uncond, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
 
 
     OUT("Writes the content of register [s] to io location given by [c]",
@@ -229,8 +230,13 @@ public enum Opcode {
     }
 
     private String addConstLimit(String description, Immed imed) {
-        if (imed.equals(Immed.instrDest) || imed.equals(Immed.instrSource))
+        if (imed.equals(Immed.instrDest) || imed.equals(Immed.instrSource)) {
             description += " (0<=[c]<=31)";
+        } else {
+            if (imed.equals(Immed.instr)) {
+                description += " (-256<=[c]<=255)";
+            }
+        }
         return description;
     }
 

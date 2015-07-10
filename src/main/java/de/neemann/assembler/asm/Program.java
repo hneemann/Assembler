@@ -75,7 +75,7 @@ public class Program {
             @Override
             public void visit(Instruction instruction, Context context) throws ExpressionException {
                 if (instruction.getLabel() != null) {
-                    context.addIdentifier(instruction.getLabel(), context.getInstrAddr());
+                    context.setIdentifier(instruction.getLabel(), context.getInstrAddr());
                 }
             }
         });
@@ -128,4 +128,9 @@ public class Program {
     public Program optimize() throws ExpressionException {
         return traverse(new Optimizer());
     }
+
+    public Program optimizeJmp() throws ExpressionException {
+        return traverse(new OptimizerJmp());
+    }
+
 }

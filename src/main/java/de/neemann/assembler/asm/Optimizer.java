@@ -32,7 +32,6 @@ public class Optimizer implements InstructionVisitor {
     @Override
     public void visit(Instruction instruction, Context context) throws ExpressionException {
         Opcode op = instruction.getOpcode();
-
         Opcode opShort = shortConstantMap.get(op);
         if (opShort != null) {
             int con = instruction.getConstant().getValue(context);

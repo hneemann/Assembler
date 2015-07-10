@@ -222,6 +222,8 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                 .getProgram()
                 .appendData()
                 .optimize()
+                .link()
+                .optimizeJmp()
                 .link();
     }
 
