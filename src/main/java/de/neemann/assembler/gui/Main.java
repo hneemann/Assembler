@@ -19,6 +19,8 @@ import java.io.*;
 import java.util.prefs.Preferences;
 
 /**
+ * Main frame of the assembler GUI
+ *
  * Created by hneemann on 17.06.14.
  */
 public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
@@ -30,8 +32,6 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
 
     private static final Preferences prefs = Preferences.userRoot().node("dt_asm2");
     private final JTextArea source;
-    private final ToolTipAction save;
-    private final ToolTipAction saveAs;
     private File filename;
     private File lastFilename;
     private String sourceOnDisk;
@@ -39,7 +39,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     public Main() {
         super("ASM 3");
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        setIconImages(IconCreator.createImages("asm32.png", "asm64.png", "asm128.png", "asm256.png"));
+        setIconImages(IconCreator.createImages("asm32.png", "asm64.png", "asm128.png"));
 
         addWindowListener(new ClosingWindowListener(this, this));
 
@@ -71,14 +71,14 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             }
         }.setToolTip("Opens a file.");
 
-        save = new ToolTipAction("Save", IconCreator.create("document-save.png")) {
+        ToolTipAction save = new ToolTipAction("Save", IconCreator.create("document-save.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 save();
             }
         }.setToolTip("Saves the file to disk.");
 
-        saveAs = new ToolTipAction("Save As", IconCreator.create("document-save-as.png")) {
+        ToolTipAction saveAs = new ToolTipAction("Save As", IconCreator.create("document-save-as.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 saveAs();
@@ -149,7 +149,6 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             }
         }.setToolTip("Shows a short description of available opcodes.");
 
-
         source = new JTextArea(40, 50);
         source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
@@ -160,7 +159,6 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             } catch (IOException e) {
                 new ErrorMessage("Error loading a file").addCause(e).show();
             }
-
 
         JScrollPane scrollPane = new JScrollPane(source);
         scrollPane.setRowHeaderView(new TextLineNumber(source, 3));
@@ -187,7 +185,6 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                 InfoDialog.getInstance().showInfo(Main.this, MESSAGE);
             }
         }));
-
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(file);
@@ -286,7 +283,6 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         }
     }
 
-
     private void load(File file) throws IOException {
         try (Reader in = new FileReader(file)) {
             StringBuilder sb = new StringBuilder();
@@ -346,6 +342,6 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
 
     @Override
     public void saveChanges() {
-        save.actionPerformed(null);
+        save();
     }
 }
