@@ -74,31 +74,14 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         save = new ToolTipAction("Save", IconCreator.create("document-save.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (filename == null)
-                    saveAs.actionPerformed(actionEvent);
-                else
-                    try {
-                        save(filename);
-                    } catch (IOException e) {
-                        new ErrorMessage("Error storing a file").addCause(e).show();
-                    }
+                save();
             }
         }.setToolTip("Saves the file to disk.");
 
         saveAs = new ToolTipAction("Save As", IconCreator.create("document-save-as.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JFileChooser fc = new JFileChooser(getDirectory());
-                if (fc.showSaveDialog(Main.this) == JFileChooser.APPROVE_OPTION) {
-                    try {
-                        File file = fc.getSelectedFile();
-                        if (!file.getName().toLowerCase().endsWith(".asm"))
-                            file = new File(file.getParentFile(), file.getName() + ".asm");
-                        save(file);
-                    } catch (IOException e) {
-                        new ErrorMessage("Error storing a file").addCause(e).show();
-                    }
-                }
+                saveAs();
             }
         }.setToolTip("Saves the file with a new name to disk.");
 
@@ -106,13 +89,8 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    Program prog = createProgram()
-                            .traverse(new AsmFormatter(System.out));
-
-                    writeHex(prog, filename);
-                    writeLst(prog, filename);
-                    save(filename);
-
+                    save();
+                    writeHex(createProgram(), filename);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show();
                 }
@@ -144,6 +122,17 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                 }
             }
         }.setToolTip("Converts the source to a listing without line numbers and shows it.");
+
+        ToolTipAction saveLst = new ToolTipAction("Save Listing") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    writeLst(createProgram(), filename);
+                } catch (Throwable e) {
+                    new ErrorMessage("Error").addCause(e).show();
+                }
+            }
+        }.setToolTip("Converts the source to a listing and writes it to disk.");
 
 
         ToolTipAction helpOpcodes = new ToolTipAction("Show help") {
@@ -188,6 +177,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         assemble.add(build.createJMenuItem());
         assemble.add(show.createJMenuItem());
         assemble.add(showLight.createJMenuItem());
+        assemble.add(saveLst.createJMenuItem());
 
         JMenu help = new JMenu("Help");
         help.add(helpOpcodes.createJMenuItem());
@@ -234,7 +224,32 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         }
     }
 
-    private void save(File file) throws IOException {
+    private void save() {
+        if (filename == null)
+            saveAs();
+        else
+            try {
+                writeSource(filename);
+            } catch (IOException e) {
+                new ErrorMessage("Error storing a file").addCause(e).show();
+            }
+    }
+
+    private void saveAs() {
+        JFileChooser fc = new JFileChooser(getDirectory());
+        if (fc.showSaveDialog(Main.this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                File file = fc.getSelectedFile();
+                if (!file.getName().toLowerCase().endsWith(".asm"))
+                    file = new File(file.getParentFile(), file.getName() + ".asm");
+                writeSource(file);
+            } catch (IOException e) {
+                new ErrorMessage("Error storing a file").addCause(e).show();
+            }
+        }
+    }
+
+    private void writeSource(File file) throws IOException {
         try (Writer w = new FileWriter(file)) {
             String text = this.source.getText();
             w.write(text);
@@ -245,7 +260,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
 
     static private void writeHex(Program p, File name) throws IOException, ExpressionException {
         if (name != null) {
-            File f = new File(name.getPath() + ".hex");
+            File f = makeFilename(name, ".asm", ".hex");
             try (PrintStream ps = new PrintStream(f)) {
                 p.traverse(new HexFormatter(ps));
             }
@@ -254,10 +269,20 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
 
     static private void writeLst(Program p, File name) throws IOException, ExpressionException {
         if (name != null) {
-            File f = new File(name.getPath() + ".lst");
+            File f = makeFilename(name, ".asm", ".lst");
             try (PrintStream ps = new PrintStream(f)) {
                 p.traverse(new AsmFormatter(ps));
             }
+        }
+    }
+
+    private static File makeFilename(File f, String origExt, String newExt) {
+        String name = f.getName();
+        if (name.endsWith(origExt)) {
+            String newName = name.substring(0, name.length() - origExt.length()) + newExt;
+            return new File(f.getParentFile(), newName);
+        } else {
+            return new File(f.getParentFile(), name + newExt);
         }
     }
 
