@@ -14,7 +14,7 @@ public class OptimizerJmp implements InstructionVisitor {
         if (op.equals(Opcode.JMP)) {
             int con = instruction.getConstant().getValue(context);
             int ofs = con - context.getInstrAddr() - 1;
-            if (ofs <= 255 || ofs >= -255) {
+            if (ofs <= 255 && ofs >= -256) {
                 instruction.setOpcode(Opcode.JMPs);
             }
         }
