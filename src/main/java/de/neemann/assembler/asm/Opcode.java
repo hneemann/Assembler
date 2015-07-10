@@ -149,7 +149,7 @@ public enum Opcode {
             RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.Zero, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
 
     BRK("Stops execution by blocking the clock",
-            RegsNeeded.none, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.No, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.No, Break.Yes),;
+            RegsNeeded.none, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.No, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.No, Break.Yes);
 
 
     public enum RegsNeeded {none, source, dest, both}
@@ -288,8 +288,7 @@ public enum Opcode {
                 | (br.ordinal() << 15)
                 | (wio.ordinal() << 18)
                 | (rio.ordinal() << 19)
-                | (brk.ordinal() << 20)
-                ;
+                | (brk.ordinal() << 20);
     }
 
     public RegsNeeded getRegsNeeded() {

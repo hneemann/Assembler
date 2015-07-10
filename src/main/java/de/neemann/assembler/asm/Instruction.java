@@ -7,7 +7,7 @@ import de.neemann.assembler.expression.ExpressionException;
 /**
  * @author hneemann
  */
-public class Instruction {
+public final class Instruction {
 
     public static Instruction make(Opcode opcode, Register dest, Register source, Expression constant) throws InstructionException {
         if ((opcode.getImmedNeeded() == Opcode.ImmedNeeded.No) && (constant != null))
