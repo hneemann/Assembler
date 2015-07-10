@@ -8,10 +8,10 @@ import java.util.HashMap;
 /**
  * @author hneemann
  */
-public class Optimizer implements InstructionVisitor {
+public class OptimizerShort implements InstructionVisitor {
     private final HashMap<Opcode, Opcode> shortConstantMap;
 
-    public Optimizer() {
+    public OptimizerShort() {
         shortConstantMap = new HashMap<>();
         shortConstantMap.put(Opcode.LDI, Opcode.LDIs);
         shortConstantMap.put(Opcode.OUT, Opcode.OUTs);

@@ -58,7 +58,7 @@ public class Program {
             return addr;
     }
 
-    public Program appendData() throws InstructionException {
+    private Program appendData() throws InstructionException {
         int p = 0;
         for (Map.Entry<Integer, ArrayList<Integer>> e : dataMap.entrySet()) {
             int value = e.getKey();
@@ -67,18 +67,6 @@ public class Program {
                 prog.add(p++, Instruction.make(Opcode.STS, Register.R0, new Constant(addr)));
             }
         }
-        return this;
-    }
-
-    public Program link() throws ExpressionException {
-        traverse(new InstructionVisitor() {
-            @Override
-            public void visit(Instruction instruction, Context context) throws ExpressionException {
-                if (instruction.getLabel() != null) {
-                    context.setIdentifier(instruction.getLabel(), context.getInstrAddr());
-                }
-            }
-        });
         return this;
     }
 
@@ -125,12 +113,30 @@ public class Program {
         this.pendingLabel = pendingLabel;
     }
 
-    public Program optimize() throws ExpressionException {
-        return traverse(new Optimizer());
+    public Program optimizeAndLink() throws InstructionException, ExpressionException {
+        return appendData()
+                .traverse(new LinkAddVisitor())
+                .traverse(new OptimizerShort())
+                .traverse(new LinkSetVisitor())
+                .traverse(new OptimizerJmp())
+                .traverse(new LinkSetVisitor());
     }
 
-    public Program optimizeJmp() throws ExpressionException {
-        return traverse(new OptimizerJmp());
+    private static class LinkAddVisitor implements InstructionVisitor {
+        @Override
+        public void visit(Instruction instruction, Context context) throws ExpressionException {
+            if (instruction.getLabel() != null) {
+                context.addIdentifier(instruction.getLabel(), context.getInstrAddr());
+            }
+        }
     }
 
+    private static class LinkSetVisitor implements InstructionVisitor {
+        @Override
+        public void visit(Instruction instruction, Context context) throws ExpressionException {
+            if (instruction.getLabel() != null) {
+                context.setIdentifier(instruction.getLabel(), context.getInstrAddr());
+            }
+        }
+    }
 }

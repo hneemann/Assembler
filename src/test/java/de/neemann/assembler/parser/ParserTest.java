@@ -136,36 +136,36 @@ public class ParserTest extends TestCase {
         // make sure this does not throw an exception
         new Parser(
                 "L1: mov r0,r1\n" +
-                        "l1: mov r0,r1").getProgram().link();
+                        "l1: mov r0,r1").getProgram().optimizeAndLink();
     }
 
     public void testJmp() throws ExpressionException, ParserException, InstructionException, IOException {
-        checkSelfJmp(new Parser("end: jmp end").getProgram().link());
+        checkSelfJmp(new Parser("end: jmp end").getProgram().optimizeAndLink());
     }
 
     private void checkSelfJmp(Program p) throws ExpressionException {
         assertEquals(1, p.getInstructionCount());
         Instruction i = p.getInstruction(0);
-        assertEquals(Opcode.JMP, i.getOpcode());
+        assertEquals(Opcode.JMPs, i.getOpcode());
         assertEquals(0, i.getConstant().getValue(p.getContext()));
     }
 
     public void testJmp2() throws ExpressionException, ParserException, InstructionException, IOException {
-        Program p = new Parser(".data test \"Test\";\nend: jmp end").getProgram().appendData().link();
+        Program p = new Parser(".data test \"Test\";\nend: jmp end").getProgram().optimizeAndLink();
         assertEquals(9, p.getInstructionCount());
         Instruction i = p.getInstruction(8);
-        assertEquals(Opcode.JMP, i.getOpcode());
-        assertEquals(16, i.getConstant().getValue(p.getContext()));
+        assertEquals(Opcode.JMPs, i.getOpcode());
+        assertEquals(12, i.getConstant().getValue(p.getContext()));
     }
 
     public void testEmptyLabel() throws ExpressionException, ParserException, InstructionException, IOException {
-        checkSelfJmp(new Parser("test:\njmp test").getProgram().link());
-        checkSelfJmp(new Parser("test:  \njmp test").getProgram().link());
-        checkSelfJmp(new Parser("test:  \n\njmp test").getProgram().link());
-        checkSelfJmp(new Parser("test:  ;comment\njmp test").getProgram().link());
-        checkSelfJmp(new Parser("test:  ;comment\n\njmp test").getProgram().link());
+        checkSelfJmp(new Parser("test:\njmp test").getProgram().optimizeAndLink());
+        checkSelfJmp(new Parser("test:  \njmp test").getProgram().optimizeAndLink());
+        checkSelfJmp(new Parser("test:  \n\njmp test").getProgram().optimizeAndLink());
+        checkSelfJmp(new Parser("test:  ;comment\njmp test").getProgram().optimizeAndLink());
+        checkSelfJmp(new Parser("test:  ;comment\n\njmp test").getProgram().optimizeAndLink());
         try {
-            checkSelfJmp(new Parser("hallo:\ntest:  ;comment\n\njmp test").getProgram().link());
+            checkSelfJmp(new Parser("hallo:\ntest:  ;comment\n\njmp test").getProgram().optimizeAndLink());
             assertTrue(false);
         } catch (ExpressionException e) {
             assertTrue(true);
@@ -175,7 +175,7 @@ public class ParserTest extends TestCase {
     public void testDataAddr() throws ExpressionException, ParserException, InstructionException, IOException {
         Program p = new Parser(".data test \"Test\",0\n" +
                 ".data test2 \"Test\",0\n" +
-                "jmp _ADDR_").getProgram().appendData().link();
+                "jmp _ADDR_").getProgram().optimizeAndLink();
 
         assertEquals(0, p.getContext().get("test"));
         assertEquals(5, p.getContext().get("test2"));
