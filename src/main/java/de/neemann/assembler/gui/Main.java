@@ -30,7 +30,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             "simple simulated 16 bit processor.\n\n" +
             "Written by H. Neemann in 2015.";
 
-    private static final Preferences prefs = Preferences.userRoot().node("dt_asm2");
+    private static final Preferences prefs = Preferences.userRoot().node("dt_asm3");
     private final JTextArea source;
     private File filename;
     private File lastFilename;
