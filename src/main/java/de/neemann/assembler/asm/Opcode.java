@@ -109,13 +109,13 @@ public enum Opcode {
     LDD("Loads the value at memory address ([s]+[c]) to register [d]",
             RegsNeeded.both, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes),
 
-    BRC("Jumps to the address given by [c] if carry flag is set , Range is 512 words",
+    BRC("Jumps to the address given by [c] if carry flag is set, Range is 512 words",
             RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRC, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
-    BRZ("Jumps to the address given by [c] if zero flag is set , Range is 512 words",
+    BRZ("Jumps to the address given by [c] if zero flag is set, Range is 512 words",
             RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRZ, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
-    BRNC("Jumps to the address given by [c] if carry flag is clear , Range is 512 words",
+    BRNC("Jumps to the address given by [c] if carry flag is clear, Range is 512 words",
             RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRNC, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
-    BRNZ("Jumps to the address given by [c] if zero flag is clear , Range is 512 words",
+    BRNZ("Jumps to the address given by [c] if zero flag is clear, Range is 512 words",
             RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRNZ, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
 
     RCALL("Jumps to the address given by [c], the return address is stored in register [d]",
@@ -356,7 +356,5 @@ public enum Opcode {
         for (Register r : Register.values()) {
             System.out.print(r.name() + ", ");
         }
-
-
     }
 }

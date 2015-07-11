@@ -13,12 +13,22 @@ public class ListDialog extends JDialog {
     }
 
     public ListDialog(Main main, String title, String listing) {
+        this(main, title, listing, new Font(Font.MONOSPACED, Font.PLAIN, 12));
+    }
+
+    public ListDialog(Main main, String title, String listing, Font font) {
         super(main, title);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        JTextArea source = new JTextArea(listing, 45, 70);
+        JTextArea source;
+        if (font != null) {
+            source = new JTextArea(listing, 45, 70);
+            source.setFont(font);
+        } else {
+            source = new JTextArea(listing);
+        }
+
         source.setEditable(false);
-        source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         getContentPane().add(new JScrollPane(source));
 
         pack();

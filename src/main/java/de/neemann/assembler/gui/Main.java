@@ -162,7 +162,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                     TextFormatter tf = new TextFormatter(MAX_HELP_COLS);
                     for (Opcode op : Opcode.values())
                         tf.append(op.toString()).append("\n\n");
-                    new ListDialog(Main.this, "Instructions", tf.toString()).setVisible(true);
+                    new ListDialog(Main.this, "Instructions", tf.toString(), null).setVisible(true);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show();
                 }
