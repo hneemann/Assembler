@@ -18,6 +18,7 @@ public class Program {
     private final TreeMap<Integer, ArrayList<Integer>> dataMap;
     private int ramPos = 0;
     private String pendingLabel;
+    private String pendingMacroDescription;
     private int lineNumber;
 
     public Program() {
@@ -34,6 +35,10 @@ public class Program {
         if (pendingLabel != null) {
             i.setLabel(pendingLabel);
             pendingLabel = null;
+        }
+        if (pendingMacroDescription != null) {
+            i.setMacroDescription(pendingMacroDescription);
+            pendingMacroDescription = null;
         }
 
         i.setLineNumber(lineNumber);
@@ -120,6 +125,12 @@ public class Program {
         if (this.pendingLabel != null)
             throw new ExpressionException("two labels for the same command: " + pendingLabel + ", " + this.pendingLabel);
         this.pendingLabel = pendingLabel;
+    }
+
+    public void setPendingMacroDescription(String pendingMacroDescription) throws ExpressionException {
+        if (this.pendingMacroDescription != null)
+            throw new ExpressionException("two macro descriptions set for the same command: " + pendingMacroDescription + ", " + this.pendingMacroDescription);
+        this.pendingMacroDescription = pendingMacroDescription;
     }
 
     public Program optimizeAndLink() throws InstructionException, ExpressionException {

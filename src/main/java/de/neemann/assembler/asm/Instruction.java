@@ -64,13 +64,12 @@ public final class Instruction {
     }
 
 
-
-
     private final Register destReg;
     private final Register sourceReg;
     private final Expression constant;
     private Opcode opcode;
     private String label;
+    private String macroDescription;
     private int lineNumber;
 
     private Instruction(Opcode opcode, Register destReg, Register sourceReg, Expression constant) {
@@ -98,6 +97,14 @@ public final class Instruction {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getMacroDescription() {
+        return macroDescription;
+    }
+
+    public void setMacroDescription(String macroDescription) {
+        this.macroDescription = macroDescription;
     }
 
     public void createMachineCode(Context context, MachineCodeListener mc) throws ExpressionException {

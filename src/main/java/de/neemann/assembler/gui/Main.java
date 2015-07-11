@@ -4,7 +4,6 @@ import de.neemann.assembler.asm.InstructionException;
 import de.neemann.assembler.asm.Opcode;
 import de.neemann.assembler.asm.Program;
 import de.neemann.assembler.asm.formatter.AsmFormatter;
-import de.neemann.assembler.asm.formatter.AsmLightFormatter;
 import de.neemann.assembler.asm.formatter.HexFormatter;
 import de.neemann.assembler.expression.ExpressionException;
 import de.neemann.assembler.gui.utils.*;
@@ -125,7 +124,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     ByteArrayOutputStream text = new ByteArrayOutputStream();
-                    createProgram().traverse(new AsmLightFormatter(new PrintStream(text)));
+                    createProgram().traverse(new AsmFormatter(new PrintStream(text), false));
                     new ListDialog(Main.this, text.toString()).setVisible(true);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show();

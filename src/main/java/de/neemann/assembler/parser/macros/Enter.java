@@ -3,6 +3,7 @@ package de.neemann.assembler.parser.macros;
 import de.neemann.assembler.asm.*;
 import de.neemann.assembler.expression.Constant;
 import de.neemann.assembler.expression.Expression;
+import de.neemann.assembler.expression.ExpressionException;
 import de.neemann.assembler.parser.Macro;
 import de.neemann.assembler.parser.Parser;
 import de.neemann.assembler.parser.ParserException;
@@ -21,8 +22,11 @@ public class Enter implements Macro {
     }
 
     @Override
-    public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException {
+    public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException, ExpressionException {
         Expression size = parser.parseExpression();
+
+        p.setPendingMacroDescription(getName() + " " + size);
+
         push(Register.RA, p);
         push(Register.BP, p);
         p.add(Instruction.make(Opcode.MOV, Register.BP, Register.SP));

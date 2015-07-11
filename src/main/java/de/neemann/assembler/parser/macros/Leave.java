@@ -1,6 +1,7 @@
 package de.neemann.assembler.parser.macros;
 
 import de.neemann.assembler.asm.*;
+import de.neemann.assembler.expression.ExpressionException;
 import de.neemann.assembler.parser.Macro;
 import de.neemann.assembler.parser.Parser;
 import de.neemann.assembler.parser.ParserException;
@@ -15,11 +16,12 @@ import static de.neemann.assembler.parser.macros.Pop.pop;
 public class Leave implements Macro {
     @Override
     public String getName() {
-        return "_leave";
+        return "_LEAVE";
     }
 
     @Override
-    public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException {
+    public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException, ExpressionException {
+        p.setPendingMacroDescription(getName());
         p.add(Instruction.make(Opcode.MOV, Register.SP, Register.BP));
         pop(Register.BP, p);
         pop(Register.RA, p);

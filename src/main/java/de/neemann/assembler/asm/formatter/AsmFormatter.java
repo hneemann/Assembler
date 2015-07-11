@@ -15,15 +15,27 @@ import java.io.PrintStream;
  */
 public class AsmFormatter implements InstructionVisitor {
     private final PrintStream o;
+    private final boolean includeLineNumbers;
     private int actCol;
 
     public AsmFormatter(PrintStream out) {
+        this(out, true);
+    }
+
+    public AsmFormatter(PrintStream out, boolean includeLineNumbers) {
         this.o = out;
+        this.includeLineNumbers = includeLineNumbers;
         actCol = 0;
     }
 
     @Override
     public void visit(Instruction i, Context context) throws ExpressionException {
+
+        if (i.getMacroDescription() != null) {
+            tab(32);
+            print(i.getMacroDescription());
+            newLine();
+        }
 
         boolean labelIsPrinted = false;
         if (i.getLabel() != null && i.getLabel().length() > 8) {
