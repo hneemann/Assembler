@@ -104,9 +104,9 @@ public enum Opcode {
             RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes),
     LDSs("Loads the memory value at the location given by [c] to register [d]",
             RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.instrSource, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes),
-    STO("Stores the content of register [s] to the memory at the address ([d]+[c])",
+    STD("Stores the content of register [s] to the memory at the address ([d]+[c])",
             RegsNeeded.both, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Regist, StoreSel.ALU, ALU.ADD, EnRegWrite.No),
-    LDO("Loads the value at memory address ([s]+[c]) to register [d]",
+    LDD("Loads the value at memory address ([s]+[c]) to register [d]",
             RegsNeeded.both, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes),
 
     BRC("Jumps to the address given by [c] if carry flag is set , Range is 512 words",
@@ -237,6 +237,7 @@ public enum Opcode {
                 description += " (-256<=[c]<=255)";
             }
         }
+        description += " [Op " + this.ordinal() + "]";
         return description;
     }
 
