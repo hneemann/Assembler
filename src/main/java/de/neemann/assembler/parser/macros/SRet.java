@@ -18,6 +18,6 @@ public class SRet implements Macro {
 
     @Override
     public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException {
-        p.add(Instruction.make(Opcode.RRET, Register.RA).setLineNumber(parser.getLineNumber()));
+        p.add(Instruction.make(Opcode.RRET, Register.RA));
     }
 }

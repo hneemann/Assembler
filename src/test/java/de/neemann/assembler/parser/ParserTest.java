@@ -14,7 +14,7 @@ public class ParserTest extends TestCase {
 
     public void testSimpleMov() throws IOException, ParserException, InstructionException, ExpressionException {
         Parser p = new Parser("MOV R0,R1");
-        Program prog = p.getProgram();
+        Program prog = p.parseProgram();
 
         assertEquals(1, prog.getInstructionCount());
         Instruction i = prog.getInstruction(0);
@@ -25,7 +25,7 @@ public class ParserTest extends TestCase {
 
     public void testSimpleMovComment() throws IOException, ParserException, InstructionException, ExpressionException {
         Parser p = new Parser("MOV R0,R1 ; Testcomment");
-        Program prog = p.getProgram();
+        Program prog = p.parseProgram();
 
         assertEquals(1, prog.getInstructionCount());
         Instruction i = prog.getInstruction(0);
@@ -37,7 +37,7 @@ public class ParserTest extends TestCase {
 
     public void testSimpleMovLabel() throws IOException, ParserException, InstructionException, ExpressionException {
         Parser p = new Parser("test: MOV R0,R1");
-        Program prog = p.getProgram();
+        Program prog = p.parseProgram();
 
         assertEquals(1, prog.getInstructionCount());
         Instruction i = prog.getInstruction(0);
@@ -49,7 +49,7 @@ public class ParserTest extends TestCase {
 
     public void testSimpleTwoCommands() throws IOException, ParserException, InstructionException, ExpressionException {
         Parser p = new Parser("MOV R0,R1\nMOV R2,R3");
-        Program prog = p.getProgram();
+        Program prog = p.parseProgram();
 
         checkTwoMoves(prog);
     }
@@ -68,23 +68,23 @@ public class ParserTest extends TestCase {
 
     public void testSimpleTwoCommandsComment() throws IOException, ParserException, InstructionException, ExpressionException {
         Parser p = new Parser("MOV R0,R1;test\nMOV R2,R3");
-        Program prog = p.getProgram();
+        Program prog = p.parseProgram();
 
         checkTwoMoves(prog);
     }
 
     public void testSimpleTwoCommandsCommentLine() throws IOException, ParserException, InstructionException, ExpressionException {
         Parser p = new Parser("; test0\nMOV R0,R1;test\n ; test 2\nMOV R2,R3");
-        Program prog = p.getProgram();
+        Program prog = p.parseProgram();
 
         checkTwoMoves(prog);
     }
 
     public void testConstant() throws IOException, ParserException, InstructionException, ExpressionException {
-        checkJmp(new Parser("JMP 12").getProgram());
-        checkJmp(new Parser("JMP 2*6").getProgram());
-        checkJmp(new Parser("JMP 12 ;test").getProgram());
-        checkJmp(new Parser("JMP 2*6; test").getProgram());
+        checkJmp(new Parser("JMP 12").parseProgram());
+        checkJmp(new Parser("JMP 2*6").parseProgram());
+        checkJmp(new Parser("JMP 12 ;test").parseProgram());
+        checkJmp(new Parser("JMP 2*6; test").parseProgram());
     }
 
     private void checkJmp(Program prog) throws ExpressionException {
@@ -96,7 +96,7 @@ public class ParserTest extends TestCase {
 
     public void testLDI() throws IOException, ParserException, InstructionException, ExpressionException {
         Parser p = new Parser("LDI R0,5");
-        Program prog = p.getProgram();
+        Program prog = p.parseProgram();
 
         assertEquals(1, prog.getInstructionCount());
         Instruction i = prog.getInstruction(0);
@@ -106,7 +106,7 @@ public class ParserTest extends TestCase {
 
     public void testINC() throws IOException, ParserException, InstructionException, ExpressionException {
         Parser p = new Parser("INC R5");
-        Program prog = p.getProgram();
+        Program prog = p.parseProgram();
 
         assertEquals(1, prog.getInstructionCount());
         Instruction i = prog.getInstruction(0);
@@ -115,19 +115,19 @@ public class ParserTest extends TestCase {
     }
 
     public void testMetaWord() throws ExpressionException, ParserException, InstructionException, IOException {
-        Program p = new Parser(".word A;var a\n.word b").getProgram();
+        Program p = new Parser(".word A;var a\n.word b").parseProgram();
         assertEquals(0, p.getContext().get("A"));
         assertEquals(1, p.getContext().get("b"));
     }
 
     public void testMetaLong() throws ExpressionException, ParserException, InstructionException, IOException {
-        Program p = new Parser(".long A;var a\n.long b").getProgram();
+        Program p = new Parser(".long A;var a\n.long b").parseProgram();
         assertEquals(0, p.getContext().get("A"));
         assertEquals(2, p.getContext().get("b"));
     }
 
     public void testMetaConst() throws ExpressionException, ParserException, InstructionException, IOException {
-        Program p = new Parser(".const A 2;var a\n.const b A*2+1").getProgram();
+        Program p = new Parser(".const A 2;var a\n.const b A*2+1").parseProgram();
         assertEquals(2, p.getContext().get("A"));
         assertEquals(5, p.getContext().get("b"));
     }
@@ -136,11 +136,11 @@ public class ParserTest extends TestCase {
         // make sure this does not throw an exception
         new Parser(
                 "L1: mov r0,r1\n" +
-                        "l1: mov r0,r1").getProgram().optimizeAndLink();
+                        "l1: mov r0,r1").parseProgram().optimizeAndLink();
     }
 
     public void testJmp() throws ExpressionException, ParserException, InstructionException, IOException {
-        checkSelfJmp(new Parser("end: jmp end").getProgram().optimizeAndLink());
+        checkSelfJmp(new Parser("end: jmp end").parseProgram().optimizeAndLink());
     }
 
     private void checkSelfJmp(Program p) throws ExpressionException {
@@ -151,7 +151,7 @@ public class ParserTest extends TestCase {
     }
 
     public void testJmp2() throws ExpressionException, ParserException, InstructionException, IOException {
-        Program p = new Parser(".data test \"Test\";\nend: jmp end").getProgram().optimizeAndLink();
+        Program p = new Parser(".data test \"Test\";\nend: jmp end").parseProgram().optimizeAndLink();
         assertEquals(9, p.getInstructionCount());
         Instruction i = p.getInstruction(8);
         assertEquals(Opcode.JMPs, i.getOpcode());
@@ -159,13 +159,13 @@ public class ParserTest extends TestCase {
     }
 
     public void testEmptyLabel() throws ExpressionException, ParserException, InstructionException, IOException {
-        checkSelfJmp(new Parser("test:\njmp test").getProgram().optimizeAndLink());
-        checkSelfJmp(new Parser("test:  \njmp test").getProgram().optimizeAndLink());
-        checkSelfJmp(new Parser("test:  \n\njmp test").getProgram().optimizeAndLink());
-        checkSelfJmp(new Parser("test:  ;comment\njmp test").getProgram().optimizeAndLink());
-        checkSelfJmp(new Parser("test:  ;comment\n\njmp test").getProgram().optimizeAndLink());
+        checkSelfJmp(new Parser("test:\njmp test").parseProgram().optimizeAndLink());
+        checkSelfJmp(new Parser("test:  \njmp test").parseProgram().optimizeAndLink());
+        checkSelfJmp(new Parser("test:  \n\njmp test").parseProgram().optimizeAndLink());
+        checkSelfJmp(new Parser("test:  ;comment\njmp test").parseProgram().optimizeAndLink());
+        checkSelfJmp(new Parser("test:  ;comment\n\njmp test").parseProgram().optimizeAndLink());
         try {
-            checkSelfJmp(new Parser("hallo:\ntest:  ;comment\n\njmp test").getProgram().optimizeAndLink());
+            checkSelfJmp(new Parser("hallo:\ntest:  ;comment\n\njmp test").parseProgram().optimizeAndLink());
             assertTrue(false);
         } catch (ExpressionException e) {
             assertTrue(true);
@@ -175,7 +175,7 @@ public class ParserTest extends TestCase {
     public void testDataAddr() throws ExpressionException, ParserException, InstructionException, IOException {
         Program p = new Parser(".data test \"Test\",0\n" +
                 ".data test2 \"Test\",0\n" +
-                "jmp _ADDR_").getProgram().optimizeAndLink();
+                "jmp _ADDR_").parseProgram().optimizeAndLink();
 
         assertEquals(0, p.getContext().get("test"));
         assertEquals(5, p.getContext().get("test2"));

@@ -24,6 +24,15 @@ public class AsmFormatter implements InstructionVisitor {
 
     @Override
     public void visit(Instruction i, Context context) throws ExpressionException {
+
+        boolean labelIsPrinted = false;
+        if (i.getLabel() != null && i.getLabel().length() > 8) {
+            tab(22);
+            print(i.getLabel() + ":");
+            newLine();
+            labelIsPrinted = true;
+        }
+
         if (i.getLineNumber() > 0) {
             print(Integer.toString(i.getLineNumber()));
         }
@@ -42,10 +51,11 @@ public class AsmFormatter implements InstructionVisitor {
             }
         });
 
-        tab(22);
-
-        if (i.getLabel() != null)
-            print(i.getLabel() + ":");
+        if (!labelIsPrinted) {
+            tab(22);
+            if (i.getLabel() != null)
+                print(i.getLabel() + ":");
+        }
         tab(32);
 
         Opcode opcode = i.getOpcode();

@@ -20,6 +20,6 @@ public class Dec implements Macro {
     @Override
     public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException {
         Register r = parser.parseReg();
-        p.add(Instruction.make(Opcode.SUBIs, r, new Constant(1)).setLineNumber(parser.getLineNumber()));
+        p.add(Instruction.make(Opcode.SUBIs, r, new Constant(1)));
     }
 }

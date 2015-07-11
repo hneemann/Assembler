@@ -1,7 +1,7 @@
 package de.neemann.assembler.parser.macros;
 
 import de.neemann.assembler.asm.*;
-import de.neemann.assembler.expression.Constant;
+import de.neemann.assembler.expression.Expression;
 import de.neemann.assembler.parser.Macro;
 import de.neemann.assembler.parser.Parser;
 import de.neemann.assembler.parser.ParserException;
@@ -11,19 +11,15 @@ import java.io.IOException;
 /**
  * @author hneemann
  */
-public class Pop implements Macro {
+public class Call implements Macro {
     @Override
     public String getName() {
-        return "_pop";
+        return "call";
     }
 
     @Override
     public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException {
-        pop(parser.parseReg(), p);
-    }
-
-    public static void pop(Register r, Program p) throws InstructionException {
-        p.add(Instruction.make(Opcode.LD, r, Register.SP));
-        p.add(Instruction.make(Opcode.ADDIs, Register.SP, new Constant(1)));
+        Expression addr = parser.parseExpression();
+        p.add(Instruction.make(Opcode.RCALL, Register.RA, addr));
     }
 }

@@ -19,8 +19,11 @@ public class Push implements Macro {
 
     @Override
     public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException {
-        Register r = parser.parseReg();
-        p.add(Instruction.make(Opcode.SUBIs, Register.SP, new Constant(1)).setLineNumber(parser.getLineNumber()));
-        p.add(Instruction.make(Opcode.ST, Register.SP, r).setLineNumber(parser.getLineNumber()));
+        push(parser.parseReg(), p);
+    }
+
+    public static void push(Register r, Program p) throws InstructionException {
+        p.add(Instruction.make(Opcode.SUBIs, Register.SP, new Constant(1)));
+        p.add(Instruction.make(Opcode.ST, Register.SP, r));
     }
 }

@@ -18,6 +18,7 @@ public class Program {
     private final TreeMap<Integer, ArrayList<Integer>> dataMap;
     private int ramPos = 0;
     private String pendingLabel;
+    private int lineNumber;
 
     public Program() {
         prog = new ArrayList<>();
@@ -25,11 +26,19 @@ public class Program {
         dataMap = new TreeMap<>();
     }
 
+    public void setLineNumber(int lineNumber) {
+        this.lineNumber = lineNumber;
+    }
+
     public Program add(Instruction i) {
         if (pendingLabel != null) {
             i.setLabel(pendingLabel);
             pendingLabel = null;
         }
+
+        i.setLineNumber(lineNumber);
+        lineNumber = 0;
+
         prog.add(i);
         return this;
     }

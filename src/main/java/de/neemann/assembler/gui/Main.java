@@ -206,7 +206,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
 
     private Program createProgram() throws ExpressionException, InstructionException, IOException, ParserException {
         return new Parser(source.getText())
-                .getProgram()
+                .parseProgram()
                 .optimizeAndLink();
     }
 
@@ -323,7 +323,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             try {
                 File file = new File(args[0]);
                 try (FileReader in = new FileReader(file)) {
-                    Program prog = new Parser(in).getProgram().optimizeAndLink();
+                    Program prog = new Parser(in).parseProgram().optimizeAndLink();
                     writeHex(prog, file);
                     writeLst(prog, file);
                 }

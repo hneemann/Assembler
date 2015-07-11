@@ -26,7 +26,7 @@ public class OptimizerShortTest extends TestCase {
     }
 
     private Opcode getFirstOpcode(String command) throws ExpressionException, InstructionException, IOException, ParserException {
-        return new Parser(command).getProgram().optimizeAndLink().traverse(new AsmLightFormatter(System.out)).getInstruction(0).getOpcode();
+        return new Parser(command).parseProgram().optimizeAndLink().traverse(new AsmLightFormatter(System.out)).getInstruction(0).getOpcode();
     }
 
 }

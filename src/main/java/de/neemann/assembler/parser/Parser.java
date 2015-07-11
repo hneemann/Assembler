@@ -13,7 +13,7 @@ import static java.io.StreamTokenizer.*;
  * @author hneemann
  */
 public class Parser implements Closeable {
-    private final StreamTokenizer tokens;
+    private final StreamTokenizer tokenizer;
     private final Reader in;
     private final HashMap<String, Macro> macros;
     private final HashMap<String, Register> regsMap;
@@ -28,15 +28,16 @@ public class Parser implements Closeable {
         this.regsMap = new HashMap<>();
 
         this.macros = new HashMap<>();
-        tokens = new StreamTokenizer(in);
-        tokens.eolIsSignificant(true);
-        tokens.ordinaryChar('-');
-        tokens.ordinaryChar('.');
-        tokens.ordinaryChar('/');
-        tokens.ordinaryChars('0', '9');
-        tokens.wordChars('0', '9');
-        tokens.wordChars('.', '.');
-        tokens.wordChars('_', '_');
+        tokenizer = new StreamTokenizer(in);
+        tokenizer.eolIsSignificant(true);
+        tokenizer.ordinaryChar('-');
+        tokenizer.ordinaryChar('.');
+        tokenizer.ordinaryChar('/');
+        tokenizer.ordinaryChars('0', '9');
+        tokenizer.wordChars('0', '9');
+        tokenizer.wordChars('.', '.');
+        tokenizer.wordChars('_', '_');
+        tokenizer.commentChar(';');
 
         addMacro(new Inc());
         addMacro(new Dec());
@@ -44,21 +45,24 @@ public class Parser implements Closeable {
         addMacro(new Pop());
         addMacro(new SCall());
         addMacro(new SRet());
+        addMacro(new Call());
+        addMacro(new Enter());
+        addMacro(new Leave());
     }
 
     public void addMacro(Macro m) {
         macros.put(m.getName().toLowerCase(), m);
     }
 
-    public Program getProgram() throws IOException, ParserException, ExpressionException {
+    public Program parseProgram() throws IOException, ParserException, ExpressionException {
         Program p = new Program();
 
         try {
             WHILE:
             while (true) {
-                switch (tokens.nextToken()) {
+                switch (tokenizer.nextToken()) {
                     case TT_WORD:
-                        String word = tokens.sval;
+                        String word = tokenizer.sval;
                         if (word.startsWith(".")) {
                             parseMetaCommand(p, word);
                         } else {
@@ -67,37 +71,32 @@ public class Parser implements Closeable {
                                 p.setPendingLabel(word);
                                 consume(':');
                                 if (isNext(TT_WORD))
-                                    word = tokens.sval;
+                                    word = tokenizer.sval;
                                 else
                                     isCommand = false;
                             }
                             if (isCommand) {
+                                p.setLineNumber(tokenizer.lineno());
                                 if (macros.containsKey(word.toLowerCase())) {
                                     macros.get(word.toLowerCase()).parseMacro(p, word, this);
                                 } else
                                     parseInstruction(p, word);
                             }
                         }
-                        switch (tokens.nextToken()) {
-                            case ';':
-                                skipLine();
-                                break;
+                        switch (tokenizer.nextToken()) {
                             case TT_EOF:
                             case TT_EOL:
                                 break;
                             default:
-                                throw makeParserException("unexpected token " + tokens);
+                                throw makeParserException("unexpected token " + tokenizer);
                         }
-                        break;
-                    case ';':
-                        skipLine();
                         break;
                     case TT_EOL:
                         break;
                     case TT_EOF:
                         break WHILE;
                     default:
-                        throw makeParserException("unexpected token '" + tokens + "'");
+                        throw makeParserException("unexpected token '" + tokenizer + "'");
                 }
             }
         } catch (InstructionException e) {
@@ -108,13 +107,6 @@ public class Parser implements Closeable {
         }
 
         return p;
-    }
-
-    private void skipLine() throws IOException {
-        int to;
-        do {
-            to = tokens.nextToken();
-        } while (to != TT_EOF && to != TT_EOL);
     }
 
     private void parseMetaCommand(Program p, String t) throws IOException, ParserException, ExpressionException {
@@ -149,7 +141,7 @@ public class Parser implements Closeable {
 
     private void readData(Program p) throws ExpressionException, IOException, ParserException {
         if (isNext('"')) {
-            String text = tokens.sval;
+            String text = tokenizer.sval;
             for (int i = 0; i < text.length(); i++)
                 p.addData(text.charAt(i));
         } else {
@@ -161,8 +153,6 @@ public class Parser implements Closeable {
         Opcode opcode = Opcode.parseStr(t);
         if (opcode == null)
             throw makeParserException("opcode expected, found '" + t + "'");
-
-        int line = tokens.lineno();
 
         Register dest = null;
         Register source = null;
@@ -207,13 +197,12 @@ public class Parser implements Closeable {
         if (i == null)
             throw makeParserException("illegal state: No opcode");
 
-        i.setLineNumber(line);
         p.add(i);
     }
 
     public void consume(int c) throws IOException, ParserException {
-        if (tokens.nextToken() != c)
-            throw makeParserException("expected '" + (char) c + "', found '" + tokens + "'");
+        if (tokenizer.nextToken() != c)
+            throw makeParserException("expected '" + (char) c + "', found '" + tokenizer + "'");
     }
 
     public Register parseReg() throws IOException, ParserException {
@@ -230,14 +219,14 @@ public class Parser implements Closeable {
     }
 
     public String parseWord() throws IOException, ParserException {
-        int t = tokens.nextToken();
+        int t = tokenizer.nextToken();
         if (t != TT_WORD)
             throw makeParserException("unexpected number or EOL/EOF!");
-        return tokens.sval;
+        return tokenizer.sval;
     }
 
     public ParserException makeParserException(String message) {
-        return new ParserException(message, tokens.lineno());
+        return new ParserException(message, tokenizer.lineno());
     }
 
 
@@ -247,27 +236,27 @@ public class Parser implements Closeable {
     }
 
     public boolean isNext(String str) throws IOException {
-        int t = tokens.nextToken();
-        if (t == TT_WORD && tokens.sval.equalsIgnoreCase(str))
+        int t = tokenizer.nextToken();
+        if (t == TT_WORD && tokenizer.sval.equalsIgnoreCase(str))
             return true;
 
-        tokens.pushBack();
+        tokenizer.pushBack();
         return false;
     }
 
     public boolean isNext(int c) throws IOException {
-        int t = tokens.nextToken();
+        int t = tokenizer.nextToken();
         if (t == c)
             return true;
 
-        tokens.pushBack();
+        tokenizer.pushBack();
         return false;
     }
 
     public Expression getExpression() throws IOException, ParserException {
         Expression exp = parseExpression();
-        if (tokens.nextToken() != TT_EOF)
-            throw makeParserException("no EOF found, but " + tokens);
+        if (tokenizer.nextToken() != TT_EOF)
+            throw makeParserException("no EOF found, but " + tokenizer);
         return exp;
     }
 
@@ -329,16 +318,16 @@ public class Parser implements Closeable {
     }
 
     private Expression parseValue() throws IOException, ParserException {
-        switch (tokens.nextToken()) {
+        switch (tokenizer.nextToken()) {
             case TT_WORD:
-                String s = tokens.sval;
+                String s = tokenizer.sval;
                 char c = s.charAt(0);
                 if (c >= '0' && c <= '9') {
                     return new Constant(parseInteger(s.toLowerCase()));
                 } else
-                    return new Identifier(tokens.sval);
+                    return new Identifier(tokenizer.sval);
             case '\'':
-                String str = tokens.sval;
+                String str = tokenizer.sval;
                 if (str.length() != 1)
                     throw makeParserException("only a single char allowed, not '" + str + "'");
                 return new Constant(str.charAt(0));
@@ -351,7 +340,7 @@ public class Parser implements Closeable {
             case '~':
                 return new Not(parseExpression());
         }
-        throw makeParserException("unexpected token " + tokens);
+        throw makeParserException("unexpected token " + tokenizer);
     }
 
     private int parseInteger(String s) throws ParserException {
@@ -367,7 +356,7 @@ public class Parser implements Closeable {
     }
 
     public int getLineNumber() {
-        return tokens.lineno();
+        return tokenizer.lineno();
     }
 
 }
