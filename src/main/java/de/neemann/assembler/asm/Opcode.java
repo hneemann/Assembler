@@ -345,7 +345,7 @@ public enum Opcode {
 
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println(Opcode.values().length + " opcodes");
-        try (PrintStream p = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_I/Vorlesung/06_Prozessoren/java/assembler3/control.dat")) {
+        try (PrintStream p = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_II/Systemnahes_Programmieren/java/assembler3/control.dat")) {
             writeControlWords(p);
         }
 
