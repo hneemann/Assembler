@@ -38,6 +38,7 @@ public class Parser implements Closeable {
         tokenizer.wordChars('.', '.');
         tokenizer.wordChars('_', '_');
         tokenizer.commentChar(';');
+        tokenizer.slashStarComments(true);
 
         addMacro(new Inc());
         addMacro(new Dec());
