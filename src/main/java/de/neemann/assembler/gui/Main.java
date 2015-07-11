@@ -74,14 +74,22 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         ToolTipAction save = new ToolTipAction("Save", IconCreator.create("document-save.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                save();
+                try {
+                    save();
+                } catch (IOException e) {
+                    new ErrorMessage("Error storing a file").addCause(e).show();
+                }
             }
         }.setToolTip("Saves the file to disk.");
 
         ToolTipAction saveAs = new ToolTipAction("Save As", IconCreator.create("document-save-as.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                saveAs();
+                try {
+                    saveAs();
+                } catch (IOException e) {
+                    new ErrorMessage("Error storing a file").addCause(e).show();
+                }
             }
         }.setToolTip("Saves the file with a new name to disk.");
 
@@ -89,7 +97,6 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    save();
                     writeHex(createProgram(), filename);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show();
@@ -101,8 +108,11 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
+                    Program program = createProgram();
+                    writeHex(program, filename);
+
                     ByteArrayOutputStream text = new ByteArrayOutputStream();
-                    createProgram().traverse(new AsmFormatter(new PrintStream(text)));
+                    program.traverse(new AsmFormatter(new PrintStream(text)));
                     new ListDialog(Main.this, text.toString()).setVisible(true);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show();
@@ -205,9 +215,11 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     }
 
     private Program createProgram() throws ExpressionException, InstructionException, IOException, ParserException {
-        return new Parser(source.getText())
-                .parseProgram()
-                .optimizeAndLink();
+        save();
+        try (Parser p = new Parser(filename)) {
+            return p.parseProgram()
+                    .optimizeAndLink();
+        }
     }
 
     private File getDirectory() {
@@ -221,28 +233,20 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         }
     }
 
-    private void save() {
+    private void save() throws IOException {
         if (filename == null)
             saveAs();
         else
-            try {
-                writeSource(filename);
-            } catch (IOException e) {
-                new ErrorMessage("Error storing a file").addCause(e).show();
-            }
+            writeSource(filename);
     }
 
-    private void saveAs() {
+    private void saveAs() throws IOException {
         JFileChooser fc = new JFileChooser(getDirectory());
         if (fc.showSaveDialog(Main.this) == JFileChooser.APPROVE_OPTION) {
-            try {
-                File file = fc.getSelectedFile();
-                if (!file.getName().toLowerCase().endsWith(".asm"))
-                    file = new File(file.getParentFile(), file.getName() + ".asm");
-                writeSource(file);
-            } catch (IOException e) {
-                new ErrorMessage("Error storing a file").addCause(e).show();
-            }
+            File file = fc.getSelectedFile();
+            if (!file.getName().toLowerCase().endsWith(".asm"))
+                file = new File(file.getParentFile(), file.getName() + ".asm");
+            writeSource(file);
         }
     }
 
@@ -322,8 +326,8 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         } else {
             try {
                 File file = new File(args[0]);
-                try (FileReader in = new FileReader(file)) {
-                    Program prog = new Parser(in).parseProgram().optimizeAndLink();
+                try (Parser p = new Parser(file)) {
+                    Program prog = p.parseProgram().optimizeAndLink();
                     writeHex(prog, file);
                     writeLst(prog, file);
                 }
@@ -342,6 +346,10 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
 
     @Override
     public void saveChanges() {
-        save();
+        try {
+            save();
+        } catch (IOException e) {
+            new ErrorMessage("Error storing a file").addCause(e).show();
+        }
     }
 }

@@ -1,6 +1,7 @@
 package de.neemann.assembler.parser.macros;
 
 import de.neemann.assembler.asm.*;
+import de.neemann.assembler.expression.Constant;
 import de.neemann.assembler.expression.Expression;
 import de.neemann.assembler.parser.Macro;
 import de.neemann.assembler.parser.Parser;
@@ -16,7 +17,7 @@ import static de.neemann.assembler.parser.macros.Push.push;
 public class Enter implements Macro {
     @Override
     public String getName() {
-        return "enter";
+        return "_enter";
     }
 
     @Override
@@ -25,6 +26,10 @@ public class Enter implements Macro {
         push(Register.RA, p);
         push(Register.BP, p);
         p.add(Instruction.make(Opcode.MOV, Register.BP, Register.SP));
-        p.add(Instruction.make(Opcode.SUBI, Register.SP, size));
+
+
+        boolean skipStackFrame = (size instanceof Constant && ((Constant) size).getValue(null) == 0);
+        if (!skipStackFrame)
+            p.add(Instruction.make(Opcode.SUBI, Register.SP, size));
     }
 }

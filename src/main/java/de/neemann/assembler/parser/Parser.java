@@ -17,9 +17,15 @@ public class Parser implements Closeable {
     private final Reader in;
     private final HashMap<String, Macro> macros;
     private final HashMap<String, Register> regsMap;
+    private File baseFile;
 
     public Parser(String source) {
         this(new StringReader(source));
+    }
+
+    public Parser(File file) throws FileNotFoundException {
+        this(new FileReader(file));
+        baseFile = file;
     }
 
     public Parser(Reader in) {
@@ -56,8 +62,10 @@ public class Parser implements Closeable {
     }
 
     public Program parseProgram() throws IOException, ParserException, ExpressionException {
-        Program p = new Program();
+        return parseProgram(new Program());
+    }
 
+    private Program parseProgram(Program p) throws IOException, ParserException, ExpressionException {
         try {
             WHILE:
             while (true) {
@@ -134,6 +142,16 @@ public class Parser implements Closeable {
                     isNext(TT_EOL);
                     readData(p);
                 }
+                break;
+            case ".include":
+                if (isNext('"')) {
+                    String filename = tokenizer.sval;
+                    if (baseFile == null)
+                        throw makeParserException("no base file name available");
+                    Parser inc = new Parser(new File(baseFile.getParentFile(), filename));
+                    inc.parseProgram(p);
+                } else
+                    throw makeParserException("no filename found");
                 break;
             default:
                 throw makeParserException("unknown meta command " + t);
