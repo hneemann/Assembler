@@ -17,7 +17,7 @@ public class AsmFormatter implements InstructionVisitor {
     private final PrintStream o;
     private final int columnOfs;
     private final boolean includeLineNumbers;
-    private final boolean markCreated;
+    private final boolean indentCreated;
     private int actCol;
 
     public AsmFormatter(PrintStream out) {
@@ -35,7 +35,7 @@ public class AsmFormatter implements InstructionVisitor {
 
         actCol = 0;
 
-        markCreated=true;
+        indentCreated = true;
     }
 
     @Override
@@ -81,16 +81,16 @@ public class AsmFormatter implements InstructionVisitor {
                 print(i.getLabel() + ":");
         }
 
-        int ofs=0;
-        if (markCreated && isCreated(i))
-            ofs=2;
+        int ofs = 0;
+        if (indentCreated && isCreated(i))
+            ofs = 2;
 
-        tab(32+ofs);
+        tab(32 + ofs);
 
         Opcode opcode = i.getOpcode();
         print(opcode.name());
 
-        tab(38+ofs);
+        tab(38 + ofs);
 
         switch (opcode.getRegsNeeded()) {
             case source:
@@ -120,7 +120,7 @@ public class AsmFormatter implements InstructionVisitor {
     }
 
     private boolean isCreated(Instruction i) {
-        return i.getLineNumber()==0 || i.getMacroDescription()!=null;
+        return i.getLineNumber() == 0 || i.getMacroDescription() != null;
     }
 
     protected void printHex(int instr) {
@@ -130,7 +130,7 @@ public class AsmFormatter implements InstructionVisitor {
     }
 
     protected void tab(int col) {
-        col-=columnOfs;
+        col -= columnOfs;
 
         while (actCol < col)
             print(" ");
