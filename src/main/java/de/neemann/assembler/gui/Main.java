@@ -35,7 +35,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     private File lastFilename;
     private String sourceOnDisk;
 
-    public Main() {
+    public Main(File fileToOpen) {
         super("ASM 3");
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setIconImages(IconCreator.createImages("asm32.png", "asm64.png", "asm128.png"));
@@ -57,8 +57,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (ClosingWindowListener.checkForSave(Main.this, Main.this)) {
-                    JFileChooser fc = new JFileChooser(getDirectory());
-                    fc.setFileFilter(new FileNameExtensionFilter("Assembler files", "asm"));
+                    JFileChooser fc = getjFileChooser();
                     if (fc.showOpenDialog(Main.this) == JFileChooser.APPROVE_OPTION) {
                         try {
                             load(fc.getSelectedFile());
@@ -69,6 +68,18 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                 }
             }
         }.setToolTip("Opens a file.");
+
+        ToolTipAction openNew = new ToolTipAction("Open in New Window", IconCreator.create("document-open-new.png")) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (ClosingWindowListener.checkForSave(Main.this, Main.this)) {
+                    JFileChooser fc = getjFileChooser();
+                    if (fc.showOpenDialog(Main.this) == JFileChooser.APPROVE_OPTION) {
+                        new Main(fc.getSelectedFile()).setVisible(true);
+                    }
+                }
+            }
+        }.setToolTip("Opens a file in a new Window");
 
         ToolTipAction save = new ToolTipAction("Save", IconCreator.create("document-save.png")) {
             @Override
@@ -143,7 +154,6 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             }
         }.setToolTip("Converts the source to a listing and writes it to disk.");
 
-
         ToolTipAction helpOpcodes = new ToolTipAction("Show help") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -161,10 +171,14 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         source = new JTextArea(40, 50);
         source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
-        String n = prefs.get("name", null);
-        if (n != null)
+        if (fileToOpen == null) {
+            String n = prefs.get("name", null);
+            if (n != null)
+                fileToOpen = new File(n);
+        }
+        if (fileToOpen != null)
             try {
-                load(new File(n));
+                load(fileToOpen);
             } catch (IOException e) {
                 new ErrorMessage("Error loading a file").addCause(e).show();
             }
@@ -177,6 +191,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         JMenu file = new JMenu("File");
         file.add(newFile.createJMenuItem());
         file.add(open.createJMenuItem());
+        file.add(openNew.createJMenuItem());
         file.add(save.createJMenuItem());
         file.add(saveAs.createJMenuItem());
 
@@ -203,6 +218,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
 
         JToolBar toolBar = new JToolBar();
         toolBar.add(open.createJButtonNoText());
+        toolBar.add(openNew.createJButtonNoText());
         toolBar.add(save.createJButtonNoText());
         toolBar.add(show.createJButtonNoText());
         toolBar.add(build.createJButtonNoText());
@@ -213,22 +229,26 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         setLocationRelativeTo(null);
     }
 
+    private JFileChooser getjFileChooser() {
+        File parent = null;
+
+        if (filename != null)
+            parent = filename.getParentFile();
+        else {
+            if (lastFilename != null)
+                parent = lastFilename.getParentFile();
+        }
+
+        JFileChooser fc = new JFileChooser(parent);
+        fc.setFileFilter(new FileNameExtensionFilter("Assembler files", "asm"));
+        return fc;
+    }
+
     private Program createProgram() throws ExpressionException, InstructionException, IOException, ParserException {
         save();
         try (Parser p = new Parser(filename)) {
             return p.parseProgram()
                     .optimizeAndLink();
-        }
-    }
-
-    private File getDirectory() {
-        if (filename != null)
-            return filename.getParentFile();
-        else {
-            if (lastFilename != null)
-                return lastFilename.getParentFile();
-            else
-                return null;
         }
     }
 
@@ -240,7 +260,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     }
 
     private void saveAs() throws IOException {
-        JFileChooser fc = new JFileChooser(getDirectory());
+        JFileChooser fc = getjFileChooser();
         if (fc.showSaveDialog(Main.this) == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             if (!file.getName().toLowerCase().endsWith(".asm"))
@@ -318,7 +338,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    Main m = new Main();
+                    Main m = new Main(null);
                     m.setVisible(true);
                 }
             });

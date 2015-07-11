@@ -40,7 +40,6 @@ public class ClosingWindowListener extends WindowAdapter {
             public void closeGUI() {
                 if (doExit) {
                     parent.dispose();
-                    System.exit(0);
                 }
             }
 
