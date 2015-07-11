@@ -133,7 +133,7 @@ public enum Opcode {
             RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
     OUTs("Writes the content of register [s] to io location given by [c]",
             RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.instrDest, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
-    OUTO("Writes the content of register [s] to the io location ([d]+[c])",
+    OUTD("Writes the content of register [s] to the io location ([d]+[c])",
             RegsNeeded.both, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.ALU, ALU.ADD, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
     OUTR("Writes the content of register [s] to the io location ([d])",
             RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.Zero, StoreSel.ALU, ALU.ADD, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
@@ -143,12 +143,12 @@ public enum Opcode {
             RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
     INs("Reads the io location given by [c] and stores it in register [d]",
             RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.instrSource, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
-    INO("Reads the io location given by ([s]+[c]) and stores it in register [d]",
+    IND("Reads the io location given by ([s]+[c]) and stores it in register [d]",
             RegsNeeded.both, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
     INR("Reads the io location given by ([s]) and stores it in register [d]",
             RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.Zero, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
 
-    BRK("Stops execution by blocking the clock",
+    BRK("Stops execution by disabling the programm counter",
             RegsNeeded.none, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.No, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.No, Break.Yes);
 
 
@@ -237,7 +237,7 @@ public enum Opcode {
                 description += " (-256<=[c]<=255)";
             }
         }
-        description += " [Op " + this.ordinal() + "]";
+        description += " (Opcode 0x" + Integer.toHexString(this.ordinal()) + ")";
         return description;
     }
 

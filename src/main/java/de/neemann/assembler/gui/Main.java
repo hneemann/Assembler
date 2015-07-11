@@ -30,6 +30,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             "Written by H. Neemann in 2015.";
 
     private static final Preferences prefs = Preferences.userRoot().node("dt_asm3");
+    private static final int MAX_HELP_COLS = 70;
     private final JTextArea source;
     private File filename;
     private File lastFilename;
@@ -158,10 +159,10 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    StringBuilder sb = new StringBuilder();
+                    TextFormatter tf = new TextFormatter(MAX_HELP_COLS);
                     for (Opcode op : Opcode.values())
-                        sb.append(op).append("\n\n");
-                    new ListDialog(Main.this, "Instructions", sb.toString()).setVisible(true);
+                        tf.append(op.toString()).append("\n\n");
+                    new ListDialog(Main.this, "Instructions", tf.toString()).setVisible(true);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show();
                 }
