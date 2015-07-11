@@ -70,6 +70,7 @@ public final class Instruction {
     private Opcode opcode;
     private String label;
     private String macroDescription;
+    private String comment;
     private int lineNumber;
 
     private Instruction(Opcode opcode, Register destReg, Register sourceReg, Expression constant) {
@@ -105,6 +106,14 @@ public final class Instruction {
 
     public void setMacroDescription(String macroDescription) {
         this.macroDescription = macroDescription;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public void createMachineCode(Context context, MachineCodeListener mc) throws ExpressionException {

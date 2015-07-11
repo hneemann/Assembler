@@ -40,6 +40,9 @@ public class AsmFormatter implements InstructionVisitor {
 
     @Override
     public void visit(Instruction i, Context context) throws ExpressionException {
+        if (i.getComment() != null)
+            o.println(i.getComment());
+
 
         if (i.getMacroDescription() != null) {
             tab(32);
@@ -83,7 +86,7 @@ public class AsmFormatter implements InstructionVisitor {
 
         int ofs = 0;
         if (indentCreated && isCreated(i))
-            ofs = 2;
+            ofs = 1;
 
         tab(32 + ofs);
 

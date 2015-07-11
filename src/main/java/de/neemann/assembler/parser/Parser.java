@@ -148,6 +148,7 @@ public class Parser implements Closeable {
                     String filename = tokenizer.sval;
                     if (baseFile == null)
                         throw makeParserException("no base file name available");
+                    p.setPendingComment("\n; included " + filename + "\n");
                     Parser inc = new Parser(new File(baseFile.getParentFile(), filename));
                     inc.parseProgram(p);
                 } else

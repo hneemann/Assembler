@@ -229,23 +229,23 @@ c2:	ldi errFlag,0
 	cpi errFlag,0    ; check errflag
 	brz ok
 	ldi r0,errFlagText
-	_call textOutR0
+	call textOutR0
 	mov r0,errFlag
-	_call hexOutR0
+	call hexOutR0
 	brk
 	jmp _ADDR_	; if ok do nothing
 
 ok:	ldi r0,allPassedText
-	_call textOutR0
+	call textOutR0
 
 	jmp _ADDR_	; if ok do nothing
 
 ; is called if an error ocured
 error:	ldi r0,errorText
-	_call textOutR0
+	call textOutR0
 
 	MOV r0,errNum
-	_call hexOutR0
+	call hexOutR0
 
 	brk		; on error set a break!
 	jmp _ADDR_

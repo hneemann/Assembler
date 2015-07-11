@@ -17,8 +17,9 @@ public class Program {
     private final Context context;
     private final TreeMap<Integer, ArrayList<Integer>> dataMap;
     private int ramPos = 0;
-    private String pendingLabel;
-    private String pendingMacroDescription;
+    private PendingString pendingLabel = new PendingString("label");
+    private PendingString pendingMacroDescription = new PendingString("description");
+    private PendingString pendingComment = new PendingString("comment");
     private int lineNumber;
 
     public Program() {
@@ -32,14 +33,9 @@ public class Program {
     }
 
     public Program add(Instruction i) {
-        if (pendingLabel != null) {
-            i.setLabel(pendingLabel);
-            pendingLabel = null;
-        }
-        if (pendingMacroDescription != null) {
-            i.setMacroDescription(pendingMacroDescription);
-            pendingMacroDescription = null;
-        }
+        i.setLabel(pendingLabel.get());
+        i.setMacroDescription(pendingMacroDescription.get());
+        i.setComment(pendingComment.get());
 
         i.setLineNumber(lineNumber);
         lineNumber = 0;
@@ -122,15 +118,15 @@ public class Program {
     }
 
     public void setPendingLabel(String pendingLabel) throws ExpressionException {
-        if (this.pendingLabel != null)
-            throw new ExpressionException("two labels for the same command: " + pendingLabel + ", " + this.pendingLabel);
-        this.pendingLabel = pendingLabel;
+        this.pendingLabel.set(pendingLabel);
     }
 
     public void setPendingMacroDescription(String pendingMacroDescription) throws ExpressionException {
-        if (this.pendingMacroDescription != null)
-            throw new ExpressionException("two macro descriptions set for the same command: " + pendingMacroDescription + ", " + this.pendingMacroDescription);
-        this.pendingMacroDescription = pendingMacroDescription;
+        this.pendingMacroDescription.set(pendingMacroDescription);
+    }
+
+    public void setPendingComment(String comment) throws ExpressionException {
+        this.pendingComment.set(comment);
     }
 
     public Program optimizeAndLink() throws InstructionException, ExpressionException {
@@ -157,6 +153,28 @@ public class Program {
             if (instruction.getLabel() != null) {
                 context.setIdentifier(instruction.getLabel(), context.getInstrAddr());
             }
+        }
+    }
+
+
+    private class PendingString {
+        private String name;
+        private String str;
+
+        public PendingString(String name) {
+            this.name = name;
+        }
+
+        public void set(String s) throws ExpressionException {
+            if (this.str != null)
+                throw new ExpressionException("two " + name + " for the same command: " + str + ", " + s);
+            this.str = s;
+        }
+
+        public String get() {
+            String s = str;
+            str = null;
+            return s;
         }
     }
 }
