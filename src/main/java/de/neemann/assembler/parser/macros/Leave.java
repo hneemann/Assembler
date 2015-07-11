@@ -16,7 +16,7 @@ import static de.neemann.assembler.parser.macros.Pop.pop;
 public class Leave implements Macro {
     @Override
     public String getName() {
-        return "_LEAVE";
+        return "LEAVE";
     }
 
     @Override

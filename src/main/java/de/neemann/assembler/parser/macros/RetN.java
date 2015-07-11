@@ -15,7 +15,7 @@ import java.io.IOException;
 public class RetN implements Macro {
     @Override
     public String getName() {
-        return "_retn";
+        return "RETN";
     }
 
     @Override

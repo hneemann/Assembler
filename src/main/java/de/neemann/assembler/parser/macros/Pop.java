@@ -15,7 +15,7 @@ import java.io.IOException;
 public class Pop implements Macro {
     @Override
     public String getName() {
-        return "_POP";
+        return "POP";
     }
 
     @Override

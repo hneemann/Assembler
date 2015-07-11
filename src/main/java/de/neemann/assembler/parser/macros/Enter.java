@@ -18,7 +18,7 @@ import static de.neemann.assembler.parser.macros.Push.push;
 public class Enter implements Macro {
     @Override
     public String getName() {
-        return "_enter";
+        return "ENTER";
     }
 
     @Override

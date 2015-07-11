@@ -58,7 +58,7 @@ public final class Instruction {
 
     public static Instruction make(Opcode opcode, Expression constant) throws InstructionException {
         if (opcode.getRegsNeeded() != Opcode.RegsNeeded.none)
-            throw new InstructionException(opcode.name() + " does not need a register");
+            throw new InstructionException(opcode.name() + " does need a register");
 
         return make(opcode, Register.R0, Register.R0, constant);
     }

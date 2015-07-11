@@ -18,7 +18,7 @@ import static de.neemann.assembler.parser.macros.Push.push;
 public class SCall implements Macro {
     @Override
     public String getName() {
-        return "_scall";
+        return "_SCALL";
     }
 
     @Override

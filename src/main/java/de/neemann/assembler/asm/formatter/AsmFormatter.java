@@ -15,7 +15,9 @@ import java.io.PrintStream;
  */
 public class AsmFormatter implements InstructionVisitor {
     private final PrintStream o;
+    private final int columnOfs;
     private final boolean includeLineNumbers;
+    private final boolean markCreated;
     private int actCol;
 
     public AsmFormatter(PrintStream out) {
@@ -25,7 +27,15 @@ public class AsmFormatter implements InstructionVisitor {
     public AsmFormatter(PrintStream out, boolean includeLineNumbers) {
         this.o = out;
         this.includeLineNumbers = includeLineNumbers;
+
+        if (includeLineNumbers)
+            columnOfs = 0;
+        else
+            columnOfs = 6;
+
         actCol = 0;
+
+        markCreated=true;
     }
 
     @Override
@@ -45,11 +55,13 @@ public class AsmFormatter implements InstructionVisitor {
             labelIsPrinted = true;
         }
 
-        if (i.getLineNumber() > 0) {
-            print(Integer.toString(i.getLineNumber()));
+        if (includeLineNumbers) {
+            if (i.getLineNumber() > 0) {
+                print(Integer.toString(i.getLineNumber()));
+            }
+            tab(3);
+            print(" | ");
         }
-        tab(3);
-        print(" | ");
 
         printHex(context.getInstrAddr());
 
@@ -68,12 +80,17 @@ public class AsmFormatter implements InstructionVisitor {
             if (i.getLabel() != null)
                 print(i.getLabel() + ":");
         }
-        tab(32);
+
+        int ofs=0;
+        if (markCreated && isCreated(i))
+            ofs=2;
+
+        tab(32+ofs);
 
         Opcode opcode = i.getOpcode();
         print(opcode.name());
 
-        tab(38);
+        tab(38+ofs);
 
         switch (opcode.getRegsNeeded()) {
             case source:
@@ -102,6 +119,10 @@ public class AsmFormatter implements InstructionVisitor {
         newLine();
     }
 
+    private boolean isCreated(Instruction i) {
+        return i.getLineNumber()==0 || i.getMacroDescription()!=null;
+    }
+
     protected void printHex(int instr) {
         String s = Integer.toHexString(instr);
         while (s.length() < 4) s = '0' + s;
@@ -109,6 +130,8 @@ public class AsmFormatter implements InstructionVisitor {
     }
 
     protected void tab(int col) {
+        col-=columnOfs;
+
         while (actCol < col)
             print(" ");
     }

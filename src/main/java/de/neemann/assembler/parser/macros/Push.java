@@ -15,7 +15,7 @@ import java.io.IOException;
 public class Push implements Macro {
     @Override
     public String getName() {
-        return "_PUSH";
+        return "PUSH";
     }
 
     @Override

@@ -180,4 +180,5 @@ public class ParserTest extends TestCase {
         assertEquals(0, p.getContext().get("test"));
         assertEquals(5, p.getContext().get("test2"));
     }
+
 }
