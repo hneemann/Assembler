@@ -10,7 +10,7 @@ import java.io.PrintStream;
  */
 public enum Opcode {
     NOP("does nothing", RegsNeeded.none, ImmedNeeded.No,
-            ReadRam.No, WriteRam.No, Branch.No, Immed.No, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
+            ReadRam.No, WriteRam.No, Branch.No, Immed.No, ALUToBus.No, ALU.Nothing, EnRegWrite.No),
     MOV("Move the content of [s] to register [d]",
             RegsNeeded.both, ImmedNeeded.No, ALU.Nothing, Immed.No),
     ADD("Adds the content of register [s] to register [d] without carry",
@@ -93,59 +93,59 @@ public enum Opcode {
             RegsNeeded.dest, ImmedNeeded.No, ALU.SWAPN, Immed.No),
 
     ST("Stores the content of register [s] to the memory at the address ([d])",
-            RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Zero, StoreSel.ALU, ALU.ADD, EnRegWrite.No),
+            RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Zero, ALUToBus.Yes, ALU.ADD, EnRegWrite.No),
     LD("Loads the value at memory address ([s]) to register [d]",
-            RegsNeeded.both, ImmedNeeded.No, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Zero, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes),
+            RegsNeeded.both, ImmedNeeded.No, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Zero, ALUToBus.No, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes),
     STS("Stores the content of register [s] to memory at the location given by [c]",
-            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Regist, StoreSel.ALU, ALU.Nothing, EnRegWrite.No),
+            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Regist, ALUToBus.Yes, ALU.Nothing, EnRegWrite.No),
     STSs("Stores the content of register [s] to memory at the location given by [c]",
-            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, Immed.instrDest, StoreSel.ALU, ALU.Nothing, EnRegWrite.No),
+            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, Immed.instrDest, ALUToBus.Yes, ALU.Nothing, EnRegWrite.No),
     LDS("Loads the memory value at the location given by [c] to register [d]",
-            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes),
+            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Regist, ALUToBus.No, ALU.Nothing, EnRegWrite.Yes),
     LDSs("Loads the memory value at the location given by [c] to register [d]",
-            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.instrSource, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes),
+            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.instrSource, ALUToBus.No, ALU.Nothing, EnRegWrite.Yes),
     STD("Stores the content of register [s] to the memory at the address ([d]+[c])",
-            RegsNeeded.both, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Regist, StoreSel.ALU, ALU.ADD, EnRegWrite.No),
+            RegsNeeded.both, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, Immed.Regist, ALUToBus.Yes, ALU.ADD, EnRegWrite.No),
     LDD("Loads the value at memory address ([s]+[c]) to register [d]",
-            RegsNeeded.both, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes),
+            RegsNeeded.both, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, Immed.Regist, ALUToBus.No, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes),
 
     BRC("Jumps to the address given by [c] if carry flag is set, Range is 512 words",
-            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRC, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
+            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRC, Immed.instr, ALUToBus.No, ALU.Nothing, EnRegWrite.No),
     BRZ("Jumps to the address given by [c] if zero flag is set, Range is 512 words",
-            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRZ, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
+            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRZ, Immed.instr, ALUToBus.No, ALU.Nothing, EnRegWrite.No),
     BRNC("Jumps to the address given by [c] if carry flag is clear, Range is 512 words",
-            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRNC, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
+            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRNC, Immed.instr, ALUToBus.No, ALU.Nothing, EnRegWrite.No),
     BRNZ("Jumps to the address given by [c] if zero flag is clear, Range is 512 words",
-            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRNZ, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
+            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRNZ, Immed.instr, ALUToBus.No, ALU.Nothing, EnRegWrite.No),
 
     RCALL("Jumps to the address given by [c], the return address is stored in register [d]",
-            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes, SourceToAlu.No, StorePC.Yes, JmpAbs.Yes, WriteIO.No, ReadIO.No, Break.No),
+            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, ALUToBus.No, ALU.Nothing, EnRegWrite.Yes, SourceToAlu.No, StorePC.Yes, JmpAbs.Yes, WriteIO.No, ReadIO.No, Break.No),
     RRET("Jumps to the address given by register [s]",
-            RegsNeeded.source, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.No, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.Yes, WriteIO.No, ReadIO.No, Break.No),
+            RegsNeeded.source, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.No, ALUToBus.No, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.Yes, WriteIO.No, ReadIO.No, Break.No),
 
     JMP("Jumps to the address given by [c]",
-            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.Yes, WriteIO.No, ReadIO.No, Break.No),
+            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, ALUToBus.No, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.Yes, WriteIO.No, ReadIO.No, Break.No),
     JMPs("Jumps to the address given by [c]",
-            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.uncond, Immed.instr, StoreSel.RAM, ALU.Nothing, EnRegWrite.No),
+            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.uncond, Immed.instr, ALUToBus.No, ALU.Nothing, EnRegWrite.No),
 
 
     OUT("Writes the content of register [s] to io location given by [c]",
-            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
+            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, ALUToBus.Yes, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
     OUTs("Writes the content of register [s] to io location given by [c]",
-            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.instrDest, StoreSel.ALU, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
+            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.instrDest, ALUToBus.Yes, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
     OUTR("Writes the content of register [s] to the io location ([d])",
-            RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.Zero, StoreSel.ALU, ALU.ADD, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
+            RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.Zero, ALUToBus.Yes, ALU.ADD, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
 
 
     IN("Reads the io location given by [c] and stores it in register [d]",
-            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
+            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.Regist, ALUToBus.No, ALU.Nothing, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
     INs("Reads the io location given by [c] and stores it in register [d]",
-            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.instrSource, StoreSel.RAM, ALU.Nothing, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
+            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, Immed.instrSource, ALUToBus.No, ALU.Nothing, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
     INR("Reads the io location given by ([s]) and stores it in register [d]",
-            RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.Zero, StoreSel.RAM, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
+            RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.Zero, ALUToBus.No, ALU.ADD, EnRegWrite.Yes, SourceToAlu.Yes, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.Yes, Break.No),
 
     BRK("Stops execution by disabling the programm counter",
-            RegsNeeded.none, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.No, StoreSel.RAM, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.No, Break.Yes);
+            RegsNeeded.none, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, Immed.No, ALUToBus.No, ALU.Nothing, EnRegWrite.No, SourceToAlu.No, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.No, Break.Yes);
 
 
     public enum RegsNeeded {none, source, dest, both}
@@ -166,9 +166,9 @@ public enum Opcode {
 
     enum Branch {No, BRC, BRZ, uncond, res, BRNC, BRNZ}
 
-    enum Immed {No, Regist, Zero, One, Two, instrSource, instr, instrDest}
+    enum Immed {No, Regist, Zero, hFF, hFFF, instrSource, instr, instrDest}
 
-    enum StoreSel {RAM, ALU}
+    enum ALUToBus {No, Yes}
 
     enum ALU {
         Nothing, ADD, SUB, AND, OR, XOR, LSL, LSR, ASR, SWAP, SWAPN, MUL, res4, res5, res6, res7,
@@ -189,7 +189,7 @@ public enum Opcode {
     private final WriteRam wr;
     private final Branch br;
     private final Immed imed;
-    private final StoreSel storeSel;
+    private final ALUToBus aluToBus;
     private final ALU alu;
     private final EnRegWrite enRegWrite;
     private final StorePC storePC;
@@ -203,7 +203,7 @@ public enum Opcode {
     private final RegsNeeded regsNeeded;
     private final ImmedNeeded immedNeeded;
 
-    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, StoreSel storeSel, ALU alu, EnRegWrite enRegWrite, SourceToAlu sourceToAlu, StorePC storePC, JmpAbs jmpAbs, WriteIO wio, ReadIO rio, Break brk) {
+    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, ALUToBus aluToBus, ALU alu, EnRegWrite enRegWrite, SourceToAlu sourceToAlu, StorePC storePC, JmpAbs jmpAbs, WriteIO wio, ReadIO rio, Break brk) {
         this.description = addConstLimit(description, imed).replace("[d]", DESTREG).replace("[s]", SOURCEREG).replace("[c]", CONSTANT);
         this.regsNeeded = rn;
         this.immedNeeded = en;
@@ -211,7 +211,7 @@ public enum Opcode {
         this.wr = wr;
         this.br = br;
         this.imed = imed;
-        this.storeSel = storeSel;
+        this.aluToBus = aluToBus;
         this.alu = alu;
         this.enRegWrite = enRegWrite;
         this.storePC = storePC;
@@ -220,6 +220,10 @@ public enum Opcode {
         this.wio = wio;
         this.rio = rio;
         this.brk = brk;
+
+//        if (enRegWrite==EnRegWrite.No && aluToBus==ALUToBus.Yes)
+//            throw new RuntimeException("no store but ALU connected to Bus " + name());
+
 
         if (regsNeeded != RegsNeeded.none && imed == Immed.instr)
             throw new RuntimeException("immediate in instruction and registers used simultanious " + name());
@@ -237,12 +241,12 @@ public enum Opcode {
         return description;
     }
 
-    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, StoreSel storeSel, ALU alu, EnRegWrite enRegWrite, SourceToAlu sta) {
-        this(description, rn, en, rr, wr, br, imed, storeSel, alu, enRegWrite, sta, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.No, Break.No);
+    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, ALUToBus aluToBus, ALU alu, EnRegWrite enRegWrite, SourceToAlu sta) {
+        this(description, rn, en, rr, wr, br, imed, aluToBus, alu, enRegWrite, sta, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.No, Break.No);
     }
 
-    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, StoreSel storeSel, ALU alu, EnRegWrite enRegWrite) {
-        this(description, rn, en, rr, wr, br, imed, storeSel, alu, enRegWrite, SourceToAlu.No);
+    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, Immed imed, ALUToBus aluToBus, ALU alu, EnRegWrite enRegWrite) {
+        this(description, rn, en, rr, wr, br, imed, aluToBus, alu, enRegWrite, SourceToAlu.No);
     }
 
 
@@ -253,7 +257,7 @@ public enum Opcode {
                 WriteRam.No,
                 Branch.No,
                 immed,
-                StoreSel.ALU,
+                ALUToBus.Yes,
                 alu,
                 EnRegWrite.Yes);
     }
@@ -265,7 +269,7 @@ public enum Opcode {
                 WriteRam.No,
                 Branch.No,
                 immed,
-                StoreSel.ALU,
+                ALUToBus.Yes,
                 alu,
                 enRegWrite);
     }
@@ -276,7 +280,7 @@ public enum Opcode {
                 | (wr.ordinal() << 1)
                 | (imed.ordinal() << 2)
                 | (jmpAbs.ordinal() << 5)
-                | (storeSel.ordinal() << 6)
+                | (aluToBus.ordinal() << 6)
                 | (enRegWrite.ordinal() << 7)
                 | (storePC.ordinal() << 8)
                 | (sourceToAlu.ordinal() << 9)
