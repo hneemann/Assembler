@@ -130,12 +130,20 @@ public class Program {
     }
 
     public Program optimizeAndLink() throws InstructionException, ExpressionException {
-        return appendData()
-                .traverse(new LinkAddVisitor())
-                .traverse(new OptimizerShort())
-                .traverse(new LinkSetVisitor())
-                .traverse(new OptimizerJmp())
-                .traverse(new LinkSetVisitor());
+        appendData();
+        traverse(new LinkAddVisitor());
+        traverse(new OptimizerShort());
+
+        while (true) {
+            traverse(new LinkSetVisitor());
+            OptimizerJmp optimizerJmp = new OptimizerJmp();
+            traverse(optimizerJmp);
+            if (!optimizerJmp.wasOptimized())
+                break;
+        }
+
+        traverse(new LinkSetVisitor());
+        return this;
     }
 
     private static class LinkAddVisitor implements InstructionVisitor {

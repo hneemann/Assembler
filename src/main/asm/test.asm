@@ -224,6 +224,25 @@ c2:	ldi errFlag,0
 	brz _SKIP_ADDR_
 	jmp error
 
+
+;       test BRN   0x000E
+	LDI errNum,0x000E
+	cpi errFlag,0
+	brz _SKIP_ADDR_
+	jmp error
+	LDI errFlag,4
+	LDI R0,0x7ffe
+	brk
+	INC R0
+	BRNN _SKIP_ADDR_
+	jmp error
+	INC R0
+	BRN _SKIP_ADDR_
+	jmp error
+	LDI errFlag,0
+
+
+
 ; if this statement is reached all tests are passed
 
 	cpi errFlag,0    ; check errflag

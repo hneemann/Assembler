@@ -109,14 +109,18 @@ public enum Opcode {
     LDD("Loads the value at memory address ([s]+[c]) to register [d]",
             RegsNeeded.both, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, ALUBSel.ImReg, ALUToBus.No, ALUCmd.ADD, EnRegWrite.Yes, SourceToAluA.Yes),
 
-    BRC("Jumps to the address given by [c] if carry flag is set, Range is 512 words",
+    BRC("Jumps to the address given by [c] if carry flag is set.",
             RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRC, ALUBSel.instrSourceAndDest, ALUToBus.No, ALUCmd.Nothing, EnRegWrite.No),
-    BRZ("Jumps to the address given by [c] if zero flag is set, Range is 512 words",
+    BRZ("Jumps to the address given by [c] if zero flag is set.",
             RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRZ, ALUBSel.instrSourceAndDest, ALUToBus.No, ALUCmd.Nothing, EnRegWrite.No),
-    BRNC("Jumps to the address given by [c] if carry flag is clear, Range is 512 words",
+    BRN("Jumps to the address given by [c] if negative flag is set.",
+            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRN, ALUBSel.instrSourceAndDest, ALUToBus.No, ALUCmd.Nothing, EnRegWrite.No),
+    BRNC("Jumps to the address given by [c] if carry flag is clear.",
             RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRNC, ALUBSel.instrSourceAndDest, ALUToBus.No, ALUCmd.Nothing, EnRegWrite.No),
-    BRNZ("Jumps to the address given by [c] if zero flag is clear, Range is 512 words",
+    BRNZ("Jumps to the address given by [c] if zero flag is clear.",
             RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRNZ, ALUBSel.instrSourceAndDest, ALUToBus.No, ALUCmd.Nothing, EnRegWrite.No),
+    BRNN("Jumps to the address given by [c] if negative flag is clear.",
+            RegsNeeded.none, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.BRNN, ALUBSel.instrSourceAndDest, ALUToBus.No, ALUCmd.Nothing, EnRegWrite.No),
 
     RCALL("Jumps to the address given by [c], the return address is stored in register [d]",
             RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, ALUBSel.ImReg, ALUToBus.No, ALUCmd.Nothing, EnRegWrite.Yes, SourceToAluA.No, StorePC.Yes, JmpAbs.Yes, WriteIO.No, ReadIO.No, Break.No),
@@ -164,7 +168,7 @@ public enum Opcode {
 
     enum SourceToAluA {No, Yes}
 
-    enum Branch {No, BRC, BRZ, uncond, res, BRNC, BRNZ}
+    enum Branch {No, BRC, BRZ, BRN, uncond, BRNC, BRNZ, BRNN}
 
     enum ALUBSel {Source, ImReg, Zero, hFF, hFFF, instrSource, instrSourceAndDest, instrDest}
 
