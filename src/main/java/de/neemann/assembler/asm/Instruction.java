@@ -42,12 +42,8 @@ public final class Instruction {
     public static Instruction make(Opcode opcode, Register reg, Expression constant) throws InstructionException {
         switch (opcode.getRegsNeeded()) {
             case source:
-                if (opcode.getImmed() == Opcode.ALUBSel.instrSource)
-                    throw new InstructionException("soucse reg and const used");
                 return make(opcode, Register.R0, reg, constant);
             case dest:
-                if (opcode.getImmed() == Opcode.ALUBSel.instrDest)
-                    throw new InstructionException("dest reg and const used");
                 return make(opcode, reg, Register.R0, constant);
             case none:
                 throw new InstructionException(opcode.name() + " does not need a register");
@@ -81,7 +77,7 @@ public final class Instruction {
     }
 
     public int size() {
-        if (opcode.getImmed() == Opcode.ALUBSel.ImReg)
+        if (opcode.getALUBSel() == Opcode.ALUBSel.ImReg)
             return 2;
         else
             return 1;
@@ -123,13 +119,13 @@ public final class Instruction {
                 con = constant.getValue(context);
 
             int constBit = 0;
-            if (opcode.getImmed() == Opcode.ALUBSel.ImReg) {
+            if (opcode.getALUBSel() == Opcode.ALUBSel.ImReg) {
                 mc.add((con & 0x7fff) | 0x8000);
                 if ((con & 0x8000) != 0)
                     constBit = 1;
             }
 
-            switch (opcode.getImmed()) {
+            switch (opcode.getALUBSel()) {
                 case instrSourceAndDest:
                     int ofs = con - context.getInstrAddr() - 1;
                     if (ofs > 0xff || ofs < -0x100)

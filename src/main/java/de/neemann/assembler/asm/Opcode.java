@@ -69,11 +69,11 @@ public enum Opcode {
 
 
     CMP("Subtracts the content of register [s] from register [d] without carry, does not store the value",
-            RegsNeeded.both, ImmedNeeded.No, ALUCmd.SUB, ALUBSel.Source, EnRegWrite.No),
+            RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, ALUBSel.Source, ALUToBus.No, ALUCmd.SUB, EnRegWrite.No),
     CPI("Subtracts a constant [c] from register [d] without carry, does not store the value",
-            RegsNeeded.dest, ImmedNeeded.Yes, ALUCmd.SUB, ALUBSel.ImReg, EnRegWrite.No),
+            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, ALUBSel.ImReg, ALUToBus.No, ALUCmd.SUB, EnRegWrite.No),
     CPIs("Subtracts a constant [c] from register [d] without carry, does not store the value",
-            RegsNeeded.dest, ImmedNeeded.Yes, ALUCmd.SUB, ALUBSel.instrSource, EnRegWrite.No),
+            RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, ALUBSel.instrSource, ALUToBus.No, ALUCmd.SUB, EnRegWrite.No),
 
 
     LSL("Shifts register [d] by one bit to the left. A zero is filled in.",
@@ -93,19 +93,19 @@ public enum Opcode {
             RegsNeeded.dest, ImmedNeeded.No, ALUCmd.SWAPN, ALUBSel.Source),
 
     ST("Stores the content of register [s] to the memory at the address ([d])",
-            RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.Yes, Branch.No, ALUBSel.Zero, ALUToBus.Yes, ALUCmd.ADD, EnRegWrite.No),
+            RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.Yes, Branch.No, ALUBSel.Zero, ALUToBus.No, ALUCmd.ADD, EnRegWrite.No),
     LD("Loads the value at memory address ([s]) to register [d]",
             RegsNeeded.both, ImmedNeeded.No, ReadRam.Yes, WriteRam.No, Branch.No, ALUBSel.Zero, ALUToBus.No, ALUCmd.ADD, EnRegWrite.Yes, SourceToAluA.Yes),
     STS("Stores the content of register [s] to memory at the location given by [c]",
-            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, ALUBSel.ImReg, ALUToBus.Yes, ALUCmd.Nothing, EnRegWrite.No),
+            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, ALUBSel.ImReg, ALUToBus.No, ALUCmd.Nothing, EnRegWrite.No),
     STSs("Stores the content of register [s] to memory at the location given by [c]",
-            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, ALUBSel.instrDest, ALUToBus.Yes, ALUCmd.Nothing, EnRegWrite.No),
+            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, ALUBSel.instrDest, ALUToBus.No, ALUCmd.Nothing, EnRegWrite.No),
     LDS("Loads the memory value at the location given by [c] to register [d]",
             RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, ALUBSel.ImReg, ALUToBus.No, ALUCmd.Nothing, EnRegWrite.Yes),
     LDSs("Loads the memory value at the location given by [c] to register [d]",
             RegsNeeded.dest, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, ALUBSel.instrSource, ALUToBus.No, ALUCmd.Nothing, EnRegWrite.Yes),
     STD("Stores the content of register [s] to the memory at the address ([d]+[c])",
-            RegsNeeded.both, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, ALUBSel.ImReg, ALUToBus.Yes, ALUCmd.ADD, EnRegWrite.No),
+            RegsNeeded.both, ImmedNeeded.Yes, ReadRam.No, WriteRam.Yes, Branch.No, ALUBSel.ImReg, ALUToBus.No, ALUCmd.ADD, EnRegWrite.No),
     LDD("Loads the value at memory address ([s]+[c]) to register [d]",
             RegsNeeded.both, ImmedNeeded.Yes, ReadRam.Yes, WriteRam.No, Branch.No, ALUBSel.ImReg, ALUToBus.No, ALUCmd.ADD, EnRegWrite.Yes, SourceToAluA.Yes),
 
@@ -130,11 +130,11 @@ public enum Opcode {
 
 
     OUT("Writes the content of register [s] to io location given by [c]",
-            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, ALUBSel.ImReg, ALUToBus.Yes, ALUCmd.Nothing, EnRegWrite.No, SourceToAluA.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
+            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, ALUBSel.ImReg, ALUToBus.No, ALUCmd.Nothing, EnRegWrite.No, SourceToAluA.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
     OUTs("Writes the content of register [s] to io location given by [c]",
-            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, ALUBSel.instrDest, ALUToBus.Yes, ALUCmd.Nothing, EnRegWrite.No, SourceToAluA.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
+            RegsNeeded.source, ImmedNeeded.Yes, ReadRam.No, WriteRam.No, Branch.No, ALUBSel.instrDest, ALUToBus.No, ALUCmd.Nothing, EnRegWrite.No, SourceToAluA.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
     OUTR("Writes the content of register [s] to the io location ([d])",
-            RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, ALUBSel.Zero, ALUToBus.Yes, ALUCmd.ADD, EnRegWrite.No, SourceToAluA.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
+            RegsNeeded.both, ImmedNeeded.No, ReadRam.No, WriteRam.No, Branch.No, ALUBSel.Zero, ALUToBus.No, ALUCmd.ADD, EnRegWrite.No, SourceToAluA.No, StorePC.No, JmpAbs.No, WriteIO.Yes, ReadIO.No, Break.No),
 
 
     IN("Reads the io location given by [c] and stores it in register [d]",
@@ -188,7 +188,7 @@ public enum Opcode {
     private final ReadRam rr;
     private final WriteRam wr;
     private final Branch br;
-    private final ALUBSel imed;
+    private final ALUBSel aluBSel;
     private final ALUToBus aluToBus;
     private final ALUCmd aluCmd;
     private final EnRegWrite enRegWrite;
@@ -203,14 +203,14 @@ public enum Opcode {
     private final RegsNeeded regsNeeded;
     private final ImmedNeeded immedNeeded;
 
-    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, ALUBSel imed, ALUToBus aluToBus, ALUCmd aluCmd, EnRegWrite enRegWrite, SourceToAluA sourceToAluA, StorePC storePC, JmpAbs jmpAbs, WriteIO wio, ReadIO rio, Break brk) {
-        this.description = addConstLimit(description, imed).replace("[d]", DESTREG).replace("[s]", SOURCEREG).replace("[c]", CONSTANT);
+    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, ALUBSel aluBSel, ALUToBus aluToBus, ALUCmd aluCmd, EnRegWrite enRegWrite, SourceToAluA sourceToAluA, StorePC storePC, JmpAbs jmpAbs, WriteIO wio, ReadIO rio, Break brk) {
+        this.description = addConstLimit(description, aluBSel).replace("[d]", DESTREG).replace("[s]", SOURCEREG).replace("[c]", CONSTANT);
         this.regsNeeded = rn;
         this.immedNeeded = en;
         this.rr = rr;
         this.wr = wr;
         this.br = br;
-        this.imed = imed;
+        this.aluBSel = aluBSel;
         this.aluToBus = aluToBus;
         this.aluCmd = aluCmd;
         this.enRegWrite = enRegWrite;
@@ -220,13 +220,6 @@ public enum Opcode {
         this.wio = wio;
         this.rio = rio;
         this.brk = brk;
-
-//        if (enRegWrite==EnRegWrite.No && aluToBus==ALUToBus.Yes)
-//            throw new RuntimeException("no store but ALU connected to Bus " + name());
-
-
-        if (regsNeeded != RegsNeeded.none && imed == ALUBSel.instrSourceAndDest)
-            throw new RuntimeException("immediate in instruction and registers used simultanious " + name());
     }
 
     private String addConstLimit(String description, ALUBSel imed) {
@@ -241,12 +234,12 @@ public enum Opcode {
         return description;
     }
 
-    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, ALUBSel imed, ALUToBus aluToBus, ALUCmd aluCmd, EnRegWrite enRegWrite, SourceToAluA sta) {
-        this(description, rn, en, rr, wr, br, imed, aluToBus, aluCmd, enRegWrite, sta, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.No, Break.No);
+    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, ALUBSel aluBSel, ALUToBus aluToBus, ALUCmd aluCmd, EnRegWrite enRegWrite, SourceToAluA sta) {
+        this(description, rn, en, rr, wr, br, aluBSel, aluToBus, aluCmd, enRegWrite, sta, StorePC.No, JmpAbs.No, WriteIO.No, ReadIO.No, Break.No);
     }
 
-    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, ALUBSel imed, ALUToBus aluToBus, ALUCmd aluCmd, EnRegWrite enRegWrite) {
-        this(description, rn, en, rr, wr, br, imed, aluToBus, aluCmd, enRegWrite, SourceToAluA.No);
+    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ReadRam rr, WriteRam wr, Branch br, ALUBSel aluBSel, ALUToBus aluToBus, ALUCmd aluCmd, EnRegWrite enRegWrite) {
+        this(description, rn, en, rr, wr, br, aluBSel, aluToBus, aluCmd, enRegWrite, SourceToAluA.No);
     }
 
 
@@ -262,23 +255,10 @@ public enum Opcode {
                 EnRegWrite.Yes);
     }
 
-    //cmp
-    Opcode(String description, RegsNeeded rn, ImmedNeeded en, ALUCmd aluCmd, ALUBSel aluBSel, EnRegWrite enRegWrite) {
-        this(description, rn, en,
-                ReadRam.No,
-                WriteRam.No,
-                Branch.No,
-                aluBSel,
-                ALUToBus.Yes,
-                aluCmd,
-                enRegWrite);
-    }
-
-
     int createControlWord() {
         return rr.ordinal()
                 | (wr.ordinal() << 1)
-                | (imed.ordinal() << 2)
+                | (aluBSel.ordinal() << 2)
                 | (jmpAbs.ordinal() << 5)
                 | (aluToBus.ordinal() << 6)
                 | (enRegWrite.ordinal() << 7)
@@ -304,8 +284,32 @@ public enum Opcode {
         return description;
     }
 
-    public ALUBSel getImmed() {
-        return imed;
+    public ALUBSel getALUBSel() {
+        return aluBSel;
+    }
+
+    public ALUToBus getAluToBus() {
+        return aluToBus;
+    }
+
+    public ReadRam getReadRam() {
+        return rr;
+    }
+
+    public ReadRam getRr() {
+        return rr;
+    }
+
+    public ReadIO getReadIO() {
+        return rio;
+    }
+
+    public StorePC getStorePC() {
+        return storePC;
+    }
+
+    public EnRegWrite getEnRegWrite() {
+        return enRegWrite;
     }
 
 
