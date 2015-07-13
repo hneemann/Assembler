@@ -1,8 +1,10 @@
 package de.neemann.assembler.parser.macros;
 
 import de.neemann.assembler.asm.*;
+import de.neemann.assembler.expression.Constant;
 import de.neemann.assembler.expression.Expression;
 import de.neemann.assembler.expression.ExpressionException;
+import de.neemann.assembler.expression.Operate;
 import de.neemann.assembler.parser.Macro;
 import de.neemann.assembler.parser.Parser;
 import de.neemann.assembler.parser.ParserException;
@@ -28,8 +30,8 @@ public class Ret implements Macro {
         } else {
             Expression size = parser.parseExpression();
             p.setPendingMacroDescription(getName() + " " + size);
-            pop(Register.RA, p);
-            p.add(Instruction.make(Opcode.ADDI, Register.SP, size));
+            p.add(Instruction.make(Opcode.LD, Register.RA, Register.SP));
+            p.add(Instruction.make(Opcode.ADDI, Register.SP, new Operate(size, Operate.Operation.ADD, new Constant(1))));
         }
         p.add(Instruction.make(Opcode.RRET, Register.RA));
     }
