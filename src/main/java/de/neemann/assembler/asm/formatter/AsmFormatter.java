@@ -44,11 +44,6 @@ public class AsmFormatter implements InstructionVisitor {
             o.println(i.getComment());
 
 
-        if (i.getMacroDescription() != null) {
-            tab(32);
-            print(i.getMacroDescription());
-            newLine();
-        }
 
         boolean labelIsPrinted = false;
         if (i.getLabel() != null && i.getLabel().length() > 8) {
@@ -56,6 +51,12 @@ public class AsmFormatter implements InstructionVisitor {
             print(i.getLabel() + ":");
             newLine();
             labelIsPrinted = true;
+        }
+
+        if (i.getMacroDescription() != null) {
+            tab(32);
+            print(i.getMacroDescription());
+            newLine();
         }
 
         if (includeLineNumbers) {
