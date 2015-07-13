@@ -24,6 +24,5 @@ public class Leave implements Macro {
         p.setPendingMacroDescription(getName());
         p.add(Instruction.make(Opcode.MOV, Register.SP, Register.BP));
         pop(Register.BP, p);
-        pop(Register.RA, p);
     }
 }

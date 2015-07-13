@@ -26,11 +26,8 @@ public class Enter implements Macro {
         Expression size = parser.parseExpression();
 
         p.setPendingMacroDescription(getName() + " " + size);
-
-        push(Register.RA, p);
         push(Register.BP, p);
         p.add(Instruction.make(Opcode.MOV, Register.BP, Register.SP));
-
 
         boolean skipStackFrame = (size instanceof Constant && ((Constant) size).getValue(null) == 0);
         if (!skipStackFrame)
