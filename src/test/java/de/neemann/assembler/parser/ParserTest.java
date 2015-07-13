@@ -182,13 +182,20 @@ public class ParserTest extends TestCase {
     }
 
     public void testRet() throws ExpressionException, ParserException, InstructionException, IOException {
-        assertEquals(3, new Parser("RET").parseProgram().optimizeAndLink().getInstructionCount());
-        assertEquals(4, new Parser("RET\nLDI R0,0").parseProgram().optimizeAndLink().getInstructionCount());
-        assertEquals(4, new Parser("RET ; return\nLDI R0,0").parseProgram().optimizeAndLink().getInstructionCount());
+        checkRet(3, 1, new Parser("RET").parseProgram().optimizeAndLink());
+        checkRet(4, 1, new Parser("RET\nLDI R0,0").parseProgram().optimizeAndLink());
+        checkRet(4, 1, new Parser("RET ; return\nLDI R0,0").parseProgram().optimizeAndLink());
 
-        assertEquals(4, new Parser("RET 2").parseProgram().optimizeAndLink().getInstructionCount());
-        assertEquals(5, new Parser("RET 2\nLDI R0,0").parseProgram().optimizeAndLink().getInstructionCount());
-        assertEquals(5, new Parser("RET 2; return\nLDI R0,0").parseProgram().optimizeAndLink().getInstructionCount());
+        checkRet(3, 3, new Parser("RET 2").parseProgram().optimizeAndLink());
+        checkRet(4, 3, new Parser("RET 2\nLDI R0,0").parseProgram().optimizeAndLink());
+        checkRet(4, 3, new Parser("RET 2; return\nLDI R0,0").parseProgram().optimizeAndLink());
+    }
+
+    private void checkRet(int i, int pop, Program ret) throws ExpressionException {
+        assertEquals(i, ret.getInstructionCount());
+        Instruction instr = ret.getInstruction(1);
+        assertEquals(Opcode.ADDIs, instr.getOpcode());
+        assertEquals(pop, instr.getConstant().getValue(null));
     }
 
 }
