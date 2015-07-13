@@ -50,7 +50,9 @@ public class Program {
             Instruction in = prog.get(i);
             try {
                 context.setInstrAddr(addr);
-                context.setSkipAddr(calcSkipAddr(addr, i));
+                context.setIdentifier(Context.NEXT_ADDR, addr + calcRelAddr(i, 1));
+                context.setIdentifier(Context.SKIP_ADDR, addr + calcRelAddr(i, 2));
+                context.setIdentifier(Context.SKIP2_ADDR, addr + calcRelAddr(i, 3));
                 instructionVisitor.visit(in, context);
                 addr += in.size();
             } catch (ExpressionException e) {
@@ -61,12 +63,16 @@ public class Program {
         return this;
     }
 
-    private int calcSkipAddr(int addr, int i) {
-        if (i < prog.size() - 2)
-            return addr + prog.get(i).size() + prog.get(i + 1).size();
-        else
-            return addr;
+    private int calcRelAddr(int i, int len) {
+        int a = 0;
+        for (int j = 0; j < len; j++) {
+            if (i + j >= prog.size())
+                return a;
+            a += prog.get(i + j).size();
+        }
+        return a;
     }
+
 
     private Program appendData() throws InstructionException {
         int p = 0;

@@ -9,6 +9,8 @@ import de.neemann.assembler.parser.ParserException;
 
 import java.io.IOException;
 
+import static de.neemann.assembler.parser.macros.Pop.pop;
+
 /**
  * @author hneemann
  */
@@ -22,6 +24,7 @@ public class RetN implements Macro {
     public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException, ExpressionException {
         Expression size = parser.parseExpression();
         p.setPendingMacroDescription(getName() + " " + size);
+        pop(Register.RA, p);
         p.add(Instruction.make(Opcode.ADDI, Register.SP, size));
         p.add(Instruction.make(Opcode.RRET, Register.RA));
     }

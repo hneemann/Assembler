@@ -6,7 +6,9 @@ import java.util.HashMap;
  * @author hneemann
  */
 public class Context {
-    private static final String SKIP_ADDR = "_SKIP_ADDR_";
+    public static final String SKIP_ADDR = "_SKIP_ADDR_";
+    public static final String NEXT_ADDR = "_NEXT_ADDR_";
+    public static final String SKIP2_ADDR = "_SKIP2_ADDR_";
     private static final String ADDR = "_ADDR_";
     private final HashMap<String, Integer> idenifier;
     private int instrAddr;
@@ -38,10 +40,6 @@ public class Context {
     public Context setInstrAddr(int instrAddr) {
         this.instrAddr = instrAddr;
         return setIdentifier(ADDR, instrAddr);
-    }
-
-    public Context setSkipAddr(int addr) {
-        return setIdentifier(SKIP_ADDR, addr);
     }
 
     public int getInstrAddr() {

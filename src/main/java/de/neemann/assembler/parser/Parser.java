@@ -51,7 +51,7 @@ public class Parser implements Closeable {
         addMacro(new Push());
         addMacro(new Pop());
         addMacro(new SCall());
-        addMacro(new SRet());
+        addMacro(new Ret());
         addMacro(new Call());
         addMacro(new Enter());
         addMacro(new Leave());
