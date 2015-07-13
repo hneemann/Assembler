@@ -181,4 +181,14 @@ public class ParserTest extends TestCase {
         assertEquals(5, p.getContext().get("test2"));
     }
 
+    public void testRet() throws ExpressionException, ParserException, InstructionException, IOException {
+        assertEquals(3, new Parser("RET").parseProgram().optimizeAndLink().getInstructionCount());
+        assertEquals(4, new Parser("RET\nLDI R0,0").parseProgram().optimizeAndLink().getInstructionCount());
+        assertEquals(4, new Parser("RET ; return\nLDI R0,0").parseProgram().optimizeAndLink().getInstructionCount());
+
+        assertEquals(4, new Parser("RET 2").parseProgram().optimizeAndLink().getInstructionCount());
+        assertEquals(5, new Parser("RET 2\nLDI R0,0").parseProgram().optimizeAndLink().getInstructionCount());
+        assertEquals(5, new Parser("RET 2; return\nLDI R0,0").parseProgram().optimizeAndLink().getInstructionCount());
+    }
+
 }

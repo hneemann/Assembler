@@ -273,6 +273,13 @@ public class Parser implements Closeable {
         return false;
     }
 
+    public boolean isEOL() throws IOException {
+        int t = tokenizer.nextToken();
+        tokenizer.pushBack();
+        return t == TT_EOL || t == TT_EOF;
+    }
+
+
     public Expression getExpression() throws IOException, ParserException {
         Expression exp = parseExpression();
         if (tokenizer.nextToken() != TT_EOF)
