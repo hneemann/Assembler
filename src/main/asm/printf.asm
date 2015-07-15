@@ -22,8 +22,8 @@
         .const TERMINAL_PORT 0x1f
         .reg ARG_ADDR R4
         .reg TEXT_ADDR R3
-        .reg DATA r0  ; data
-        .reg DIGIT r1 ; a single digit
+        .reg DATA R0  ; data
+        .reg DIGIT R1 ; a single digit
 printf:
         ENTER 0
         MOV ARG_ADDR, BP        ; addr of args

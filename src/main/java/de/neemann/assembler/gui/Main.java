@@ -155,6 +155,13 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             }
         }.setToolTip("Converts the source to a listing and writes it to disk.");
 
+        ToolTipAction tabToSpace = new ToolTipAction("Tabs to Spaces") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                source.setText(new TabToSpaces(source.getText(), source.getTabSize()).convert());
+            }
+        }.setToolTip("Converts tabs to spaces");
+
         ToolTipAction helpOpcodes = new ToolTipAction("Show help") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -201,6 +208,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         assemble.add(show.createJMenuItem());
         assemble.add(showLight.createJMenuItem());
         assemble.add(saveLst.createJMenuItem());
+        assemble.add(tabToSpace.createJMenuItem());
 
         JMenu help = new JMenu("Help");
         help.add(helpOpcodes.createJMenuItem());
@@ -334,7 +342,6 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     }
 
     public static void main(String[] args) {
-
         if (args.length == 0) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
