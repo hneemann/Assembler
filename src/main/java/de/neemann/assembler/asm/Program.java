@@ -171,7 +171,7 @@ public class Program {
     }
 
 
-    private class PendingString {
+    private static class PendingString {
         private String name;
         private String str;
 
