@@ -1,16 +1,16 @@
-	.data text "Hello World!\n",0;
+        .data text "Hello World!\n",0;
 
-	.const termPort 0x1f	
+        .const termPort 0x1f    
 
-	.reg R_DATA R1
-	.reg R_ADDR R0
+        .reg R_DATA R1
+        .reg R_ADDR R0
 
 
-	LDI R_ADDR,text
-L1:	LD R_DATA,[R_ADDR]
-	OUT R_DATA,termPort
-	INC R_ADDR
-	CPI R_DATA,0
-	BRNZ L1
-	
-	BRK
+        LDI R_ADDR,text
+L1:     LD R_DATA,[R_ADDR]
+        OUT R_DATA,termPort
+        INC R_ADDR
+        CPI R_DATA,0
+        BRNZ L1
+        
+        BRK
