@@ -39,8 +39,8 @@ L2:	LDI R1,15
 L1:	MOV R0,R1
 	ADD R0,R2
         AND R0,R5
-        LD R4,R0
-	OUTR R1,R4
+        LD R4,[R0]
+	OUTR [R1],R4
 	DEC R1
 	BRNC L1
 	OUT R0,16

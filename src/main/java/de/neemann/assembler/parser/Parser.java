@@ -122,7 +122,7 @@ public class Parser implements Closeable {
         switch (t) {
             case ".reg":
                 String regName = parseWord();
-                Register reg = parseReg();
+                Register reg = parseReg(false);
                 regsMap.put(regName, reg);
                 break;
             case ".word":
@@ -178,14 +178,14 @@ public class Parser implements Closeable {
         Register source = null;
         switch (opcode.getRegsNeeded()) {
             case both:
-                dest = parseReg();
+                dest = parseReg(opcode.getRegIsAddress() == Opcode.RegIsAddress.dest);
                 consume(',');
-                source = parseReg();
+                source = parseReg(opcode.getRegIsAddress() == Opcode.RegIsAddress.source);
                 break;
             case none:
                 break;
             default:
-                dest = parseReg();
+                dest = parseReg(opcode.getRegIsAddress() != Opcode.RegIsAddress.none);
                 break;
         }
 
@@ -225,8 +225,10 @@ public class Parser implements Closeable {
             throw makeParserException("expected '" + (char) c + "', found '" + tokenizer + "'");
     }
 
-    public Register parseReg() throws IOException, ParserException {
+    public Register parseReg(boolean isAddr) throws IOException, ParserException {
+        if (isAddr) consume('[');
         String r = parseWord();
+        if (isAddr) consume(']');
         Register reg = Register.parseStr(r);
         if (reg != null)
             return reg;

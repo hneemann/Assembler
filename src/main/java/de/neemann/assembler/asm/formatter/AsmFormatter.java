@@ -1,9 +1,6 @@
 package de.neemann.assembler.asm.formatter;
 
-import de.neemann.assembler.asm.Instruction;
-import de.neemann.assembler.asm.InstructionVisitor;
-import de.neemann.assembler.asm.MachineCodeListener;
-import de.neemann.assembler.asm.Opcode;
+import de.neemann.assembler.asm.*;
 import de.neemann.assembler.expression.Context;
 import de.neemann.assembler.expression.Expression;
 import de.neemann.assembler.expression.ExpressionException;
@@ -98,15 +95,15 @@ public class AsmFormatter implements InstructionVisitor {
 
         switch (opcode.getRegsNeeded()) {
             case source:
-                print(i.getSourceReg().name());
+                printReg(i.getSourceReg(), opcode.getRegIsAddress() == Opcode.RegIsAddress.source);
                 break;
             case dest:
-                print(i.getDestReg().name());
+                printReg(i.getDestReg(), opcode.getRegIsAddress() == Opcode.RegIsAddress.dest);
                 break;
             case both:
-                print(i.getDestReg().name());
+                printReg(i.getDestReg(), opcode.getRegIsAddress() == Opcode.RegIsAddress.dest);
                 print(", ");
-                print(i.getSourceReg().name());
+                printReg(i.getSourceReg(), opcode.getRegIsAddress() == Opcode.RegIsAddress.source);
                 break;
             default:
         }
@@ -121,6 +118,13 @@ public class AsmFormatter implements InstructionVisitor {
             print(Integer.toHexString(constant.getValue(context) & 0xffff));
         }
         newLine();
+    }
+
+    private void printReg(Register r, boolean isAddr) {
+        if (isAddr)
+            print("[" + r.name() + "]");
+        else
+            print(r.name());
     }
 
     private boolean isCreated(Instruction i) {

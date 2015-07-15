@@ -177,12 +177,12 @@ c2:	ldi errFlag,0
 	brz _SKIP_ADDR_
 	jmp error
 	LDI R3,DATA1
-	LD R4,R3
+	LD R4,[R3]
 	cpi R4,5
 	brz _SKIP_ADDR_
 	jmp error
 	inc r3
-	LD R4,R3
+	LD R4,[R3]
 	cpi R4,6
 	brz _SKIP_ADDR_
 	jmp error
@@ -191,10 +191,10 @@ c2:	ldi errFlag,0
 	LDI errNum,0x000B
 	LDI R3,DATA1
 	LDI R0,5
-	ST R3,R0
+	ST [R3],R0
 	INC R0
 	INC R3
-	ST R3,R0
+	ST [R3],R0
 	LDS R2,DATA1
 	cpi R2,5
 	brz _SKIP_ADDR_
@@ -209,7 +209,7 @@ c2:	ldi errFlag,0
 	LDI R0,15
 	STS R0,DATA1
 	LDI R0,DATA1-4
-	LDD R1,R0,4
+	LDD R1,[R0],4
 	cpi R1,15
 	brz _SKIP_ADDR_
 	jmp error
@@ -218,7 +218,7 @@ c2:	ldi errFlag,0
 	LDI errNum,0x000D
 	LDI R0,16
 	LDI R1,DATA2-4
-	STD R1,R0,4
+	STD [R1],R0,4
 	LDS R1,DATA2
 	cpi R1,16
 	brz _SKIP_ADDR_
@@ -232,7 +232,6 @@ c2:	ldi errFlag,0
 	jmp error
 	LDI errFlag,4
 	LDI R0,0x7ffe
-	brk
 	INC R0
 	BRNN _SKIP_ADDR_
 	jmp error
@@ -273,7 +272,7 @@ error:	ldi r0,errorText
 	.reg TEXT r0 ; text addr
 	.reg CHAR r1 ; a single character
 textOutR0:
- 	LD CHAR, TEXT
+ 	LD CHAR, [TEXT]
 	out CHAR,TERMINAL_PORT
 	inc TEXT
 	cpi CHAR,0
