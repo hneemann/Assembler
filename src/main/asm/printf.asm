@@ -32,10 +32,10 @@ printf:
 	
 pr0:    LD DATA,[TEXT_ADDR]     ; get character
         CPI DATA,0              ; check zero
-        BRZ prEnd               ; if zero goto end
+        BREQ prEnd              ; if zero goto end
 
         CPI DATA,'%'            ; check '%'
-        BRZ prHandlePercent     ; '%' found
+        BREQ prHandlePercent    ; '%' found
 	
 pr1:    OUT TERMINAL_PORT, DATA ; output character
 pr2:    INC TEXT_ADDR           ; next character
@@ -48,7 +48,7 @@ prHandlePercent:
         INC TEXT_ADDR           ; inc text addr
         LD DATA,[TEXT_ADDR]     ; read char after '%'
         CPI DATA,'x'            ; check 'x'
-        BRNZ error              ; if not: error
+        BRNE error              ; if not: error
 	
         INC ARG_ADDR            ; next argument
         LD DATA, [ARG_ADDR]     ; read next arg
@@ -81,7 +81,7 @@ hexDigitOutR0:
         MOV DIGIT,DATA
         ANDI DIGIT,0xf
         CPI DIGIT,10
-        BRNC h3      ; larger then 10
+        BRCC h3      ; larger then 10
         ADDI DIGIT,'0'
         JMP h4
 h3:     ADDI DIGIT,'A'-10
