@@ -20,7 +20,7 @@ public class Dec implements Macro {
 
     @Override
     public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException, ExpressionException {
-        Register r = parser.parseReg(false);
+        Register r = parser.parseReg();
         p.setPendingMacroDescription(getName() + " " + r.name());
         p.add(Instruction.make(Opcode.SUBIs, r, new Constant(1)));
     }

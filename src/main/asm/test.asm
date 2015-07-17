@@ -13,7 +13,7 @@
 
 ;   test LDI CPI   0x0000
 	LDI errNum,0x0000
-	XOR r0,r0
+	EOR r0,r0
 	LDI r0,5
 	cpi r0,5
 	brz _SKIP_ADDR_
@@ -165,9 +165,9 @@ c2:	ldi errFlag,0
 ;       test LD    0x000A
 	LDI errNum,0x000A
 	LDI R0,5
-	STS R0,DATA1
+	STS DATA1,R0
 	INC R0 
-	STS R0,DATA2
+	STS DATA2,R0
 	LDS R1,DATA1
 	cpi R1,5
 	brz _SKIP_ADDR_
@@ -207,9 +207,9 @@ c2:	ldi errFlag,0
 ;       test LDO   0x000C
 	LDI errNum,0x000C
 	LDI R0,15
-	STS R0,DATA1
+	STS DATA1,R0
 	LDI R0,DATA1-4
-	LDD R1,[R0],4
+	LDD R1,[R0,4]
 	cpi R1,15
 	brz _SKIP_ADDR_
 	jmp error
@@ -218,7 +218,7 @@ c2:	ldi errFlag,0
 	LDI errNum,0x000D
 	LDI R0,16
 	LDI R1,DATA2-4
-	STD [R1],R0,4
+	STD [R1,4],R0
 	LDS R1,DATA2
 	cpi R1,16
 	brz _SKIP_ADDR_
@@ -273,7 +273,7 @@ error:	ldi r0,errorText
 	.reg CHAR r1 ; a single character
 textOutR0:
  	LD CHAR, [TEXT]
-	out CHAR,TERMINAL_PORT
+	out TERMINAL_PORT,CHAR
 	inc TEXT
 	cpi CHAR,0
 	brnz textOutR0
@@ -306,5 +306,5 @@ hexDigitOutR0:
 	addi DIGIT,'0'
 	jmp h4
 h3:	addi DIGIT,'A'-10
-h4:	out DIGIT,TERMINAL_PORT
+h4:	out TERMINAL_PORT,DIGIT
 	rret CREG

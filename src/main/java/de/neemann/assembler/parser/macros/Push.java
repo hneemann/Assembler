@@ -20,7 +20,7 @@ public class Push implements Macro {
 
     @Override
     public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException, ExpressionException {
-        Register r = parser.parseReg(false);
+        Register r = parser.parseReg();
         p.setPendingMacroDescription(getName() + " " + r.name());
         push(r, p);
     }

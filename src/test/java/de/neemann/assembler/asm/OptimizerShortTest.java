@@ -19,10 +19,10 @@ public class OptimizerShortTest extends TestCase {
         assertEquals(Opcode.LDSs, getFirstOpcode("LDS R0,0x1f"));
         assertEquals(Opcode.LDS, getFirstOpcode("LDS R0,0x20"));
 
-        assertEquals(Opcode.STSs, getFirstOpcode("STS R0,0"));
-        assertEquals(Opcode.STSs, getFirstOpcode("STS R0,1"));
-        assertEquals(Opcode.STSs, getFirstOpcode("STS R0,0x1f"));
-        assertEquals(Opcode.STS, getFirstOpcode("STS R0,0x20"));
+        assertEquals(Opcode.STSs, getFirstOpcode("STS 0,R0"));
+        assertEquals(Opcode.STSs, getFirstOpcode("STS 1,R0"));
+        assertEquals(Opcode.STSs, getFirstOpcode("STS 0x1f,R0"));
+        assertEquals(Opcode.STS, getFirstOpcode("STS 0x20,R0"));
     }
 
     private Opcode getFirstOpcode(String command) throws ExpressionException, InstructionException, IOException, ParserException {

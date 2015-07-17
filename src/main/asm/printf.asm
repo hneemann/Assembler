@@ -37,7 +37,7 @@ pr0:    LD DATA,[TEXT_ADDR]     ; get character
         CPI DATA,'%'            ; check '%'
         BRZ prHandlePercent     ; '%' found
 	
-pr1:    OUT DATA, TERMINAL_PORT ; output character
+pr1:    OUT TERMINAL_PORT, DATA ; output character
 pr2:    INC TEXT_ADDR           ; next character
         JMP pr0                 ; loop
 	
@@ -56,7 +56,7 @@ prHandlePercent:
         JMP pr2	                ; next character
 
 error:  LDI R5, '%'
-        OUT R5, TERMINAL_PORT   ; print '%'
+        OUT TERMINAL_PORT, R5   ; print '%'
         JMP pr1                 ; print DATA
 	
 
@@ -85,5 +85,5 @@ hexDigitOutR0:
         ADDI DIGIT,'0'
         JMP h4
 h3:     ADDI DIGIT,'A'-10
-h4:     OUT DIGIT,TERMINAL_PORT
+h4:     OUT TERMINAL_PORT, DIGIT
         RRET CREG

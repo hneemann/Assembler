@@ -1,8 +1,10 @@
 package de.neemann.assembler.asm.formatter;
 
-import de.neemann.assembler.asm.*;
+import de.neemann.assembler.asm.Instruction;
+import de.neemann.assembler.asm.InstructionVisitor;
+import de.neemann.assembler.asm.MachineCodeListener;
+import de.neemann.assembler.asm.Opcode;
 import de.neemann.assembler.expression.Context;
-import de.neemann.assembler.expression.Expression;
 import de.neemann.assembler.expression.ExpressionException;
 
 import java.io.PrintStream;
@@ -93,38 +95,13 @@ public class AsmFormatter implements InstructionVisitor {
 
         tab(38 + ofs);
 
-        switch (opcode.getRegsNeeded()) {
-            case source:
-                printReg(i.getSourceReg(), opcode.getRegIsAddress() == Opcode.RegIsAddress.source);
-                break;
-            case dest:
-                printReg(i.getDestReg(), opcode.getRegIsAddress() == Opcode.RegIsAddress.dest);
-                break;
-            case both:
-                printReg(i.getDestReg(), opcode.getRegIsAddress() == Opcode.RegIsAddress.dest);
-                print(", ");
-                printReg(i.getSourceReg(), opcode.getRegIsAddress() == Opcode.RegIsAddress.source);
-                break;
-            default:
-        }
-
-        if (opcode.getImmedNeeded() == Opcode.ImmedNeeded.Yes) {
-            if (opcode.getRegsNeeded() != Opcode.RegsNeeded.none)
-                print(", ");
-            Expression constant = i.getConstant();
-            print(constant.toString());
+        print(opcode.getArguments().format(i));
+        if (i.getConstant() != null) {
             tab(55);
             print("; 0x");
-            print(Integer.toHexString(constant.getValue(context) & 0xffff));
+            print(Integer.toHexString(i.getConstant().getValue(context) & 0xffff));
         }
         newLine();
-    }
-
-    private void printReg(Register r, boolean isAddr) {
-        if (isAddr)
-            print("[" + r.name() + "]");
-        else
-            print(r.name());
     }
 
     private boolean isCreated(Instruction i) {

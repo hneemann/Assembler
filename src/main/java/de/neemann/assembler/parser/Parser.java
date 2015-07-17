@@ -122,7 +122,7 @@ public class Parser implements Closeable {
         switch (t) {
             case ".reg":
                 String regName = parseWord();
-                Register reg = parseReg(false);
+                Register reg = parseReg();
                 regsMap.put(regName, reg);
                 break;
             case ".word":
@@ -174,46 +174,8 @@ public class Parser implements Closeable {
         if (opcode == null)
             throw makeParserException("opcode expected, found '" + t + "'");
 
-        Register dest = null;
-        Register source = null;
-        switch (opcode.getRegsNeeded()) {
-            case both:
-                dest = parseReg(opcode.getRegIsAddress() == Opcode.RegIsAddress.dest);
-                consume(',');
-                source = parseReg(opcode.getRegIsAddress() == Opcode.RegIsAddress.source);
-                break;
-            case none:
-                break;
-            default:
-                dest = parseReg(opcode.getRegIsAddress() != Opcode.RegIsAddress.none);
-                break;
-        }
+        Instruction i = opcode.getArguments().parse(new InstructionFactory(opcode), this).make();
 
-        Expression constant = null;
-        if (opcode.getImmedNeeded() == Opcode.ImmedNeeded.Yes) {
-            if (opcode.getRegsNeeded() != Opcode.RegsNeeded.none)
-                consume(',');
-            constant = parseExpression();
-        }
-
-        Instruction i;
-        switch (opcode.getRegsNeeded()) {
-            case both:
-                if (constant != null)
-                    i = Instruction.make(opcode, dest, source, constant);
-                else
-                    i = Instruction.make(opcode, dest, source);
-                break;
-            case none:
-                i = Instruction.make(opcode, constant);
-                break;
-            default:
-                if (constant != null)
-                    i = Instruction.make(opcode, dest, constant);
-                else
-                    i = Instruction.make(opcode, dest);
-                break;
-        }
         if (i == null)
             throw makeParserException("illegal state: No opcode");
 
@@ -225,10 +187,8 @@ public class Parser implements Closeable {
             throw makeParserException("expected '" + (char) c + "', found '" + tokenizer + "'");
     }
 
-    public Register parseReg(boolean isAddr) throws IOException, ParserException {
-        if (isAddr) consume('[');
+    public Register parseReg() throws IOException, ParserException {
         String r = parseWord();
-        if (isAddr) consume(']');
         Register reg = Register.parseStr(r);
         if (reg != null)
             return reg;

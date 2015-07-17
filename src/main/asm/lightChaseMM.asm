@@ -10,13 +10,13 @@
 
 up:	INC POS
 	LSL MASK
-	STS MASK, LedAddr
+	STS LedAddr, MASK
 	CPI POS,15
 	BRNZ up
 
 down:	DEC POS
 	LSR MASK
-	STS MASK, LedAddr
+	STS LedAddr, MASK
 	CPI POS,0
 	BRNZ down
 

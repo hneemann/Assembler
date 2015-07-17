@@ -10,13 +10,13 @@
 
 up:	INC POS
 	LSL MASK
-	OUT MASK, LedPort
+	OUT LedPort, MASK
 	CPI POS,15
 	BRNZ up
 
 down:	DEC POS
 	LSR MASK
-	OUT MASK, LedPort
+	OUT LedPort, MASK
 	CPI POS,0
 	BRNZ down
 

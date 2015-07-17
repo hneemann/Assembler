@@ -8,7 +8,7 @@
 
         LDI R_ADDR,text
 L1:     LD R_DATA,[R_ADDR]
-        OUT R_DATA,termPort
+        OUT termPort,R_DATA
         INC R_ADDR
         CPI R_DATA,0
         BRNZ L1

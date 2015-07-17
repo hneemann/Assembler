@@ -1,6 +1,6 @@
      LDI R0,10
      CALL fibonacci
-     STS R0, 0     ; store result
+     STS 0, R0     ; store result
      BRK
 
 fibonacci:

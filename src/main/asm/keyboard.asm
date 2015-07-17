@@ -5,5 +5,5 @@
 l1:	in R0, keyPort
 	cpi R0,0
 	brz l1
-	out R0,termPort
+	out termPort, R0
 	jmp l1

@@ -10,50 +10,41 @@ import de.neemann.assembler.expression.ExpressionException;
 public final class Instruction {
 
     public static Instruction make(Opcode opcode, Register dest, Register source, Expression constant) throws InstructionException {
-        if ((opcode.getImmedNeeded() == Opcode.ImmedNeeded.No) && (constant != null))
+        if (!opcode.getArguments().hasConst() && (constant != null))
             throw new InstructionException(opcode.name() + " does not need a constant");
-        if ((opcode.getImmedNeeded() == Opcode.ImmedNeeded.Yes) && (constant == null))
+        if (opcode.getArguments().hasConst() && (constant == null))
             throw new InstructionException(opcode.name() + " needs a constant");
 
         return new Instruction(opcode, dest, source, constant);
     }
 
     public static Instruction make(Opcode opcode, Register reg) throws InstructionException {
-        switch (opcode.getRegsNeeded()) {
-            case source:
-                return make(opcode, Register.R0, reg, null);
-            case dest:
-                return make(opcode, reg, Register.R0, null);
-            case none:
-                throw new InstructionException(opcode.name() + " does not need a register");
-            default:
-                throw new InstructionException(opcode.name() + " needs both registers");
+        return make(opcode, reg, (Expression) null);
+    }
+
+    public static Instruction make(Opcode opcode, Register reg, Expression constant) throws InstructionException {
+        if (opcode.getArguments().hasSource()) {
+            if (opcode.getArguments().hasDest())
+                throw new InstructionException(opcode.name() + " does not need a dest register");
+            return make(opcode, Register.R0, reg, constant);
+        } else {
+            if (opcode.getArguments().hasDest()) {
+                return make(opcode, reg, Register.R0, constant);
+            } else {
+                throw new InstructionException(opcode.name() + " does need a dest register");
+            }
         }
     }
 
     public static Instruction make(Opcode opcode, Register dest, Register source) throws InstructionException {
-        if (opcode.getRegsNeeded() != Opcode.RegsNeeded.both)
+        if (!opcode.getArguments().hasSource() || !opcode.getArguments().hasDest())
             throw new InstructionException(opcode.name() + " needs both registers");
 
         return make(opcode, dest, source, null);
     }
 
-
-    public static Instruction make(Opcode opcode, Register reg, Expression constant) throws InstructionException {
-        switch (opcode.getRegsNeeded()) {
-            case source:
-                return make(opcode, Register.R0, reg, constant);
-            case dest:
-                return make(opcode, reg, Register.R0, constant);
-            case none:
-                throw new InstructionException(opcode.name() + " does not need a register");
-            default:
-                throw new InstructionException(opcode.name() + " needs both registers");
-        }
-    }
-
     public static Instruction make(Opcode opcode, Expression constant) throws InstructionException {
-        if (opcode.getRegsNeeded() != Opcode.RegsNeeded.none)
+        if (opcode.getArguments().hasDest() || opcode.getArguments().hasSource())
             throw new InstructionException(opcode.name() + " does need a register");
 
         return make(opcode, Register.R0, Register.R0, constant);
@@ -162,32 +153,12 @@ public final class Instruction {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-
         if (label != null) {
             sb.append(label).append(":");
         }
-
         sb.append(opcode.name());
-
-        switch (opcode.getRegsNeeded()) {
-            case source:
-                sb.append(' ').append(sourceReg);
-                break;
-            case dest:
-                sb.append(' ').append(destReg);
-                break;
-            case both:
-                sb.append(' ').append(destReg).append(",").append(sourceReg);
-                break;
-            default:
-        }
-
-        if (opcode.getImmedNeeded() == Opcode.ImmedNeeded.Yes) {
-            if (opcode.getRegsNeeded() != Opcode.RegsNeeded.none)
-                sb.append(",");
-            sb.append(' ').append(constant.toString());
-        }
-
+        sb.append(" ");
+        sb.append(opcode.getArguments().format(this));
         return sb.toString();
     }
 
