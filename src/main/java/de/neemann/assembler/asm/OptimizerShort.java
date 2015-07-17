@@ -21,7 +21,7 @@ public class OptimizerShort implements InstructionVisitor {
         shortConstantMap.put(Opcode.SBCI, Opcode.SBCIs);
         shortConstantMap.put(Opcode.ANDI, Opcode.ANDIs);
         shortConstantMap.put(Opcode.ORI, Opcode.ORIs);
-        shortConstantMap.put(Opcode.XORI, Opcode.XORIs);
+        shortConstantMap.put(Opcode.EORI, Opcode.EORIs);
         shortConstantMap.put(Opcode.CPI, Opcode.CPIs);
         shortConstantMap.put(Opcode.LDS, Opcode.LDSs);
         shortConstantMap.put(Opcode.STS, Opcode.STSs);

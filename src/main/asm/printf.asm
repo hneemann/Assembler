@@ -47,12 +47,12 @@ prEnd:  LEAVE                   ; finish
 prHandlePercent:
         INC TEXT_ADDR           ; inc text addr
         LD DATA,[TEXT_ADDR]     ; read char after '%'
-        CPI DATA,'x'            ; check x'
+        CPI DATA,'x'            ; check 'x'
         BRNZ error              ; if not: error
 	
-        INC ARG_ADDR            ; inc arg addr
+        INC ARG_ADDR            ; next argument
         LD DATA, [ARG_ADDR]     ; read next arg
-        CALL hexOutR0           ; write as hex
+        RCALL RA, hexOutR0      ; write as hex
         JMP pr2	                ; next character
 
 error:  LDI R5, '%'
