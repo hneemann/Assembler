@@ -174,7 +174,7 @@ public class Parser implements Closeable {
         if (opcode == null)
             throw makeParserException("opcode expected, found '" + t + "'");
 
-        Instruction i = opcode.getArguments().parse(new InstructionFactory(opcode), this).make();
+        Instruction i = opcode.getArguments().parse(new InstructionBuilder(opcode), this).build();
 
         if (i == null)
             throw makeParserException("illegal state: No opcode");

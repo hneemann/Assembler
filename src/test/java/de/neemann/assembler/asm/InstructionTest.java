@@ -1,6 +1,5 @@
 package de.neemann.assembler.asm;
 
-import de.neemann.assembler.expression.Constant;
 import de.neemann.assembler.expression.Context;
 import de.neemann.assembler.expression.ExpressionException;
 import junit.framework.TestCase;
@@ -17,17 +16,17 @@ public class InstructionTest extends TestCase {
     };
 
     public void testConstantLDS() throws InstructionException, ExpressionException {
-        Instruction.make(Opcode.LDSs, Register.R0, new Constant(31)).createMachineCode(null, mc);
+        new InstructionBuilder(Opcode.LDSs).setDest(Register.R0).setConstant(31).build().createMachineCode(null, mc);
 
         try {
-            Instruction.make(Opcode.LDSs, Register.R0, new Constant(32)).createMachineCode(null, mc);
+            new InstructionBuilder(Opcode.LDSs).setDest(Register.R0).setConstant(32).build().createMachineCode(null, mc);
             assertTrue(false);
         } catch (ExpressionException e) {
             assertTrue(true);
         }
 
         try {
-            Instruction.make(Opcode.LDSs, Register.R0, new Constant(-1)).createMachineCode(null, mc);
+            new InstructionBuilder(Opcode.LDSs).setDest(Register.R0).setConstant(-1).build().createMachineCode(null, mc);
             assertTrue(false);
         } catch (ExpressionException e) {
             assertTrue(true);
@@ -35,17 +34,17 @@ public class InstructionTest extends TestCase {
     }
 
     public void testConstantSTS() throws InstructionException, ExpressionException {
-        Instruction.make(Opcode.STSs, Register.R0, new Constant(31)).createMachineCode(null, mc);
+        new InstructionBuilder(Opcode.STSs).setSource(Register.R0).setConstant(31).build().createMachineCode(null, mc);
 
         try {
-            Instruction.make(Opcode.STSs, Register.R0, new Constant(32)).createMachineCode(null, mc);
+            new InstructionBuilder(Opcode.STSs).setSource(Register.R0).setConstant(32).build().createMachineCode(null, mc);
             assertTrue(false);
         } catch (ExpressionException e) {
             assertTrue(true);
         }
 
         try {
-            Instruction.make(Opcode.STSs, Register.R0, new Constant(-1)).createMachineCode(null, mc);
+            new InstructionBuilder(Opcode.STSs).setSource(Register.R0).setConstant(-1).build().createMachineCode(null, mc);
             assertTrue(false);
         } catch (ExpressionException e) {
             assertTrue(true);
@@ -56,17 +55,17 @@ public class InstructionTest extends TestCase {
         Context c = new Context();
         c.setInstrAddr(1000);
 
-        Instruction.make(Opcode.JMPs, new Constant(1001 + 255)).createMachineCode(c, mc);
+        new InstructionBuilder(Opcode.JMPs).setConstant(1001 + 255).build().createMachineCode(c, mc);
         try {
-            Instruction.make(Opcode.JMPs, new Constant(1001 + 256)).createMachineCode(c, mc);
+            new InstructionBuilder(Opcode.JMPs).setConstant(1001 + 256).build().createMachineCode(c, mc);
             assertTrue(false);
         } catch (ExpressionException e) {
             assertTrue(true);
         }
 
-        Instruction.make(Opcode.JMPs, new Constant(1001 - 256)).createMachineCode(c, mc);
+        new InstructionBuilder(Opcode.JMPs).setConstant(1001 - 256).build().createMachineCode(c, mc);
         try {
-            Instruction.make(Opcode.JMPs, new Constant(1001 - 257)).createMachineCode(c, mc);
+            new InstructionBuilder(Opcode.JMPs).setConstant(1001 - 257).build().createMachineCode(c, mc);
             assertTrue(false);
         } catch (ExpressionException e) {
             assertTrue(true);

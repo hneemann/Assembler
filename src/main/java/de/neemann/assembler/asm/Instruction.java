@@ -8,49 +8,6 @@ import de.neemann.assembler.expression.ExpressionException;
  * @author hneemann
  */
 public final class Instruction {
-
-    public static Instruction make(Opcode opcode, Register dest, Register source, Expression constant) throws InstructionException {
-        if (!opcode.getArguments().hasConst() && (constant != null))
-            throw new InstructionException(opcode.name() + " does not need a constant");
-        if (opcode.getArguments().hasConst() && (constant == null))
-            throw new InstructionException(opcode.name() + " needs a constant");
-
-        return new Instruction(opcode, dest, source, constant);
-    }
-
-    public static Instruction make(Opcode opcode, Register reg) throws InstructionException {
-        return make(opcode, reg, (Expression) null);
-    }
-
-    public static Instruction make(Opcode opcode, Register reg, Expression constant) throws InstructionException {
-        if (opcode.getArguments().hasSource()) {
-            if (opcode.getArguments().hasDest())
-                throw new InstructionException(opcode.name() + " does not need a dest register");
-            return make(opcode, Register.R0, reg, constant);
-        } else {
-            if (opcode.getArguments().hasDest()) {
-                return make(opcode, reg, Register.R0, constant);
-            } else {
-                throw new InstructionException(opcode.name() + " does need a dest register");
-            }
-        }
-    }
-
-    public static Instruction make(Opcode opcode, Register dest, Register source) throws InstructionException {
-        if (!opcode.getArguments().hasSource() || !opcode.getArguments().hasDest())
-            throw new InstructionException(opcode.name() + " needs both registers");
-
-        return make(opcode, dest, source, null);
-    }
-
-    public static Instruction make(Opcode opcode, Expression constant) throws InstructionException {
-        if (opcode.getArguments().hasDest() || opcode.getArguments().hasSource())
-            throw new InstructionException(opcode.name() + " does need a register");
-
-        return make(opcode, Register.R0, Register.R0, constant);
-    }
-
-
     private final Register destReg;
     private final Register sourceReg;
     private final Expression constant;
@@ -60,7 +17,7 @@ public final class Instruction {
     private String comment;
     private int lineNumber;
 
-    private Instruction(Opcode opcode, Register destReg, Register sourceReg, Expression constant) {
+    Instruction(Opcode opcode, Register destReg, Register sourceReg, Expression constant) {
         this.destReg = destReg;
         this.sourceReg = sourceReg;
         this.opcode = opcode;

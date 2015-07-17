@@ -1,6 +1,5 @@
 package de.neemann.assembler.asm;
 
-import de.neemann.assembler.expression.Constant;
 import de.neemann.assembler.expression.Context;
 import de.neemann.assembler.expression.ExpressionException;
 
@@ -78,9 +77,9 @@ public class Program {
         int p = 0;
         for (Map.Entry<Integer, ArrayList<Integer>> e : dataMap.entrySet()) {
             int value = e.getKey();
-            prog.add(p++, Instruction.make(Opcode.LDI, Register.R0, new Constant(value)));
+            prog.add(p++, new InstructionBuilder(Opcode.LDI).setDest(Register.R0).setConstant(value).build());
             for (int addr : e.getValue()) {
-                prog.add(p++, Instruction.make(Opcode.STS, Register.R0, new Constant(addr)));
+                prog.add(p++, new InstructionBuilder(Opcode.STS).setSource(Register.R0).setConstant(addr).build());
             }
         }
         return this;

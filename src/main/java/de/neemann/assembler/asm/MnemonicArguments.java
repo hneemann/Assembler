@@ -9,7 +9,6 @@ import java.io.IOException;
  * @author hneemann
  */
 public abstract class MnemonicArguments {
-
     public static final MnemonicArguments NOTHING = new Nothing();
     public static final MnemonicArguments SOURCE = new Source();
     public static final MnemonicArguments DEST = new Dest();
@@ -19,15 +18,15 @@ public abstract class MnemonicArguments {
     public static final MnemonicArguments BDEST_SOURCE = new Comma(new Brace(DEST), SOURCE);
     public static final MnemonicArguments DEST_BSOURCE = new Comma(DEST, new Brace(SOURCE));
     public static final MnemonicArguments CONST_SOURCE = new Comma(CONST, SOURCE);
-    public static final MnemonicArguments BDEST_BCONST_SOURCE = new Comma(new Brace(new Comma(DEST, CONST)), SOURCE);
-    public static final MnemonicArguments DEST_BSOURCE_BCONST = new Comma(DEST, new Brace(new Comma(SOURCE, CONST)));
+    public static final MnemonicArguments BDEST_BCONST_SOURCE = new Comma(new Brace(new Plus(DEST, CONST)), SOURCE);
+    public static final MnemonicArguments DEST_BSOURCE_BCONST = new Comma(DEST, new Brace(new Plus(SOURCE, CONST)));
 
 
     private final boolean hasSource;
     private final boolean hasDest;
     private final boolean hasConst;
 
-    public MnemonicArguments(boolean hasSource, boolean hasDest, boolean hasConst) {
+    private MnemonicArguments(boolean hasSource, boolean hasDest, boolean hasConst) {
         this.hasSource = hasSource;
         this.hasDest = hasDest;
         this.hasConst = hasConst;
@@ -47,11 +46,11 @@ public abstract class MnemonicArguments {
 
     public abstract String format(Instruction i);
 
-    public abstract InstructionFactory parse(InstructionFactory i, Parser p) throws IOException, ParserException;
+    public abstract InstructionBuilder parse(InstructionBuilder i, Parser p) throws IOException, ParserException, InstructionException;
 
     private static final class Nothing extends MnemonicArguments {
 
-        public Nothing() {
+        private Nothing() {
             super(false, false, false);
         }
 
@@ -66,13 +65,13 @@ public abstract class MnemonicArguments {
         }
 
         @Override
-        public InstructionFactory parse(InstructionFactory i, Parser p) {
+        public InstructionBuilder parse(InstructionBuilder i, Parser p) {
             return i;
         }
     }
 
     private static final class Source extends MnemonicArguments {
-        public Source() {
+        private Source() {
             super(true, false, false);
         }
 
@@ -87,15 +86,14 @@ public abstract class MnemonicArguments {
         }
 
         @Override
-        public InstructionFactory parse(InstructionFactory i, Parser p) throws IOException, ParserException {
+        public InstructionBuilder parse(InstructionBuilder i, Parser p) throws IOException, ParserException, InstructionException {
             i.setSource(p.parseReg());
             return i;
         }
-
     }
 
     private static final class Dest extends MnemonicArguments {
-        public Dest() {
+        private Dest() {
             super(false, true, false);
         }
 
@@ -110,14 +108,14 @@ public abstract class MnemonicArguments {
         }
 
         @Override
-        public InstructionFactory parse(InstructionFactory i, Parser p) throws IOException, ParserException {
+        public InstructionBuilder parse(InstructionBuilder i, Parser p) throws IOException, ParserException, InstructionException {
             i.setDest(p.parseReg());
             return i;
         }
     }
 
     private static final class Const extends MnemonicArguments {
-        public Const() {
+        private Const() {
             super(false, false, true);
         }
 
@@ -132,17 +130,16 @@ public abstract class MnemonicArguments {
         }
 
         @Override
-        public InstructionFactory parse(InstructionFactory i, Parser p) throws IOException, ParserException {
+        public InstructionBuilder parse(InstructionBuilder i, Parser p) throws IOException, ParserException, InstructionException {
             i.setConstant(p.parseExpression());
             return i;
         }
-
     }
 
-    public static final class Brace extends MnemonicArguments {
-        private MnemonicArguments inner;
+    private static final class Brace extends MnemonicArguments {
+        private final MnemonicArguments inner;
 
-        public Brace(MnemonicArguments inner) {
+        private Brace(MnemonicArguments inner) {
             super(inner.hasSource, inner.hasDest, inner.hasConst);
             this.inner = inner;
         }
@@ -158,45 +155,57 @@ public abstract class MnemonicArguments {
         }
 
         @Override
-        public InstructionFactory parse(InstructionFactory i, Parser p) throws IOException, ParserException {
+        public InstructionBuilder parse(InstructionBuilder i, Parser p) throws IOException, ParserException, InstructionException {
             p.consume('[');
             inner.parse(i, p);
             p.consume(']');
             return i;
         }
-
     }
 
-    public static final class Comma extends MnemonicArguments {
-        private MnemonicArguments before;
-        private MnemonicArguments after;
+    private static class Concat extends MnemonicArguments {
+        private final MnemonicArguments before;
+        private final char c;
+        private final MnemonicArguments after;
 
-        public Comma(MnemonicArguments before, MnemonicArguments after) {
+        private Concat(MnemonicArguments before, char c, MnemonicArguments after) {
             super(before.hasSource || after.hasSource,
                     before.hasDest || after.hasDest,
                     before.hasConst || after.hasConst);
             this.before = before;
+            this.c = c;
             this.after = after;
         }
 
         @Override
         public String toString() {
-            return before + "," + after;
+            return before.toString() + c + after.toString();
         }
 
         @Override
         public String format(Instruction i) {
-            return before.format(i) + "," + after.format(i);
+            return before.format(i) + c + after.format(i);
         }
 
         @Override
-        public InstructionFactory parse(InstructionFactory i, Parser p) throws IOException, ParserException {
+        public InstructionBuilder parse(InstructionBuilder i, Parser p) throws IOException, ParserException, InstructionException {
             before.parse(i, p);
-            p.consume(',');
+            p.consume(c);
             after.parse(i, p);
             return i;
         }
+    }
 
+    private static class Comma extends Concat {
+        private Comma(MnemonicArguments before, MnemonicArguments after) {
+            super(before, ',', after);
+        }
+    }
+
+    private static class Plus extends Concat {
+        private Plus(MnemonicArguments before, MnemonicArguments after) {
+            super(before, '+', after);
+        }
     }
 
 }

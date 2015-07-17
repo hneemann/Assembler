@@ -30,9 +30,9 @@ public class Ret implements Macro {
         } else {
             Expression size = parser.parseExpression();
             p.setPendingMacroDescription(getName() + " " + size);
-            p.add(Instruction.make(Opcode.LD, Register.RA, Register.SP));
-            p.add(Instruction.make(Opcode.ADDI, Register.SP, new Operate(size, Operate.Operation.ADD, new Constant(1))));
+            p.add(new InstructionBuilder(Opcode.LD).setDest(Register.RA).setSource(Register.SP).build());
+            p.add(new InstructionBuilder(Opcode.ADDI).setDest(Register.SP).setConstant(new Operate(size, Operate.Operation.ADD, new Constant(1))).build());
         }
-        p.add(Instruction.make(Opcode.RRET, Register.RA));
+        p.add(new InstructionBuilder(Opcode.RRET).setSource(Register.RA).build());
     }
 }

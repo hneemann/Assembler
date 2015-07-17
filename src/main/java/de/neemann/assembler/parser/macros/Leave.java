@@ -22,7 +22,7 @@ public class Leave implements Macro {
     @Override
     public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException, ExpressionException {
         p.setPendingMacroDescription(getName());
-        p.add(Instruction.make(Opcode.MOV, Register.SP, Register.BP));
+        p.add(new InstructionBuilder(Opcode.MOV).setDest(Register.SP).setSource(Register.BP).build());
         pop(Register.BP, p);
     }
 }

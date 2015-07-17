@@ -26,7 +26,7 @@ public class SCall implements Macro {
         Expression addr = parser.parseExpression();
         p.setPendingMacroDescription(getName() + " " + addr);
         push(Register.RA, p);
-        p.add(Instruction.make(Opcode.RCALL, Register.RA, addr));
+        p.add(new InstructionBuilder(Opcode.RCALL).setDest(Register.RA).setConstant(addr).build());
         pop(Register.RA, p);
     }
 }

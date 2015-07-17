@@ -5,7 +5,7 @@
 	.reg DIGIT r1 ; a single digit
 hexOut: 
 	enter 0
-	LDD r0,[bp,2]
+	LDD r0,[bp+2]
 	swap DATA
 	swapn DATA
 	CALL hexDigitOutR0

@@ -27,10 +27,10 @@ public class Enter implements Macro {
 
         p.setPendingMacroDescription(getName() + " " + size);
         push(Register.BP, p);
-        p.add(Instruction.make(Opcode.MOV, Register.BP, Register.SP));
+        p.add(new InstructionBuilder(Opcode.MOV).setDest(Register.BP).setSource(Register.SP).build());
 
         boolean skipStackFrame = (size instanceof Constant && ((Constant) size).getValue(null) == 0);
         if (!skipStackFrame)
-            p.add(Instruction.make(Opcode.SUBI, Register.SP, size));
+            p.add(new InstructionBuilder(Opcode.SUBI).setDest(Register.SP).setConstant(size).build());
     }
 }

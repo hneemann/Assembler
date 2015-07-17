@@ -1,7 +1,6 @@
 package de.neemann.assembler.parser.macros;
 
 import de.neemann.assembler.asm.*;
-import de.neemann.assembler.expression.Constant;
 import de.neemann.assembler.expression.ExpressionException;
 import de.neemann.assembler.parser.Macro;
 import de.neemann.assembler.parser.Parser;
@@ -26,7 +25,7 @@ public class Push implements Macro {
     }
 
     public static void push(Register r, Program p) throws InstructionException {
-        p.add(Instruction.make(Opcode.SUBIs, Register.SP, new Constant(1)));
-        p.add(Instruction.make(Opcode.ST, Register.SP, r));
+        p.add(new InstructionBuilder(Opcode.SUBIs).setDest(Register.SP).setConstant(1).build());
+        p.add(new InstructionBuilder(Opcode.ST).setDest(Register.SP).setSource(r).build());
     }
 }

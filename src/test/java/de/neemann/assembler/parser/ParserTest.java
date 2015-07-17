@@ -198,4 +198,22 @@ public class ParserTest extends TestCase {
         assertEquals(pop, instr.getConstant().getValue(null));
     }
 
+    public void testEOL() throws ExpressionException, ParserException, InstructionException, IOException {
+        checkEOLException("\tLDI R0,5 R1");
+        checkEOLException("\tLDI R0,5 R1\n");
+        checkEOLException("\tLDI R0,5 A\n\tLDI R0,5");
+        checkEOLException("\tBRK A");
+        checkEOLException("\tBRK A\n");
+        checkEOLException("\tBRK A\n\tLDI R0,5");
+    }
+
+    private void checkEOLException(String code) {
+        try {
+            new Parser(code).parseProgram();
+            assertTrue(false);
+        } catch (IOException | ParserException | ExpressionException e) {
+            assertTrue(true);
+        }
+    }
+
 }

@@ -26,7 +26,7 @@ public class Pop implements Macro {
     }
 
     public static void pop(Register r, Program p) throws InstructionException {
-        p.add(Instruction.make(Opcode.LD, r, Register.SP));
-        p.add(Instruction.make(Opcode.ADDIs, Register.SP, new Constant(1)));
+        p.add(new InstructionBuilder(Opcode.LD).setDest(r).setSource(Register.SP).build());
+        p.add(new InstructionBuilder(Opcode.ADDIs).setDest(Register.SP).setConstant(new Constant(1)).build());
     }
 }

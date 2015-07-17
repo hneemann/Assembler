@@ -209,7 +209,7 @@ c2:	ldi errFlag,0
 	LDI R0,15
 	STS DATA1,R0
 	LDI R0,DATA1-4
-	LDD R1,[R0,4]
+	LDD R1,[R0+4]
 	cpi R1,15
 	brz _SKIP_ADDR_
 	jmp error
@@ -218,7 +218,7 @@ c2:	ldi errFlag,0
 	LDI errNum,0x000D
 	LDI R0,16
 	LDI R1,DATA2-4
-	STD [R1,4],R0
+	STD [R1+4],R0
 	LDS R1,DATA2
 	cpi R1,16
 	brz _SKIP_ADDR_
