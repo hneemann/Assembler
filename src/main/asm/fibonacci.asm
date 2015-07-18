@@ -1,31 +1,31 @@
-     LDI R0,10
-     PUSH R0       ; n
-     CALL fibonacci
-     STS 0, R0     ; store result
+     LDI R0,10          ; load 10
+     PUSH R0            ; put 10 an stack
+     CALL fibonacci     ; call function
+     STS 0, R0          ; store result
      BRK
 
-     .const n 2
-     .const nm1 -1
+     .const n 2         ; offset of argument
+     .const nm1 -1      ; offset of local var
 fibonacci:
-     ENTER 1
+     ENTER 1            ; one local var needed
 
-     LDD R0,[BP+n]   ; n
-     CPI R0,2
-     BRC fibEnd
+     LDD R0,[BP+n]      ; load n
+     CPI R0,2           ; compare with 2
+     BRCS fibEnd        ; if lower we are ready
 
-     SUBI R0, 1
-     PUSH R0
-     CALL fibonacci
-     STD [BP+nm1],R0
+     SUBI R0, 1         ; subtract one
+     PUSH R0            ; push on stack
+     CALL fibonacci     ; call recursive
+     STD [BP+nm1],R0    ; store result in local var
 
-     LDD R0,[BP+n]   ; n
-     SUBI R0, 2
-     PUSH R0
-     CALL fibonacci
-	
-     LDD R1,[BP+nm1] ; f(n-1)
-     ADD R0,R1
+     LDD R0,[BP+n]      ; load n again
+     SUBI R0, 2         ; subtract 2
+     PUSH R0            ; push on stack
+     CALL fibonacci     ; call recursive
+        
+     LDD R1,[BP+nm1]    ; load local var f(n-1)
+     ADD R0,R1          ; add f(n-1)+f(n-2)
 
 fibEnd:
      LEAVE
-     RET 1
+     RET 1              ; remove argument

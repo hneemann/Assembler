@@ -8,39 +8,39 @@
         LDI R0, text1    ; 1. arg
         PUSH R0
         CALL printf      ; call 
-
         ADDI SP, 3       ; clear stack
+
         LDI R0,4+5       ; 2. arg
         PUSH R0
         LDI R0, text2    ; 1. arg
         PUSH R0
         CALL printf      ; call 
         ADDI SP, 2       ; clear stack
-        BRK	
+        BRK     
 
 
         .const TERMINAL_PORT 0x1f
-        .reg ARG_ADDR R4
-        .reg TEXT_ADDR R3
-        .reg DATA R0  ; data
-        .reg DIGIT R1 ; a single digit
+        .reg ARG_ADDR R4        ; addr of args
+        .reg TEXT_ADDR R3       ; addr of text
+        .reg DATA R0            ; data
+        .reg DIGIT R1           ; a single digit
 printf:
         ENTER 0
         MOV ARG_ADDR, BP        ; addr of args
         ADDI ARG_ADDR, 2        ; set to first arg
         LD TEXT_ADDR, [ARG_ADDR]; load as text addr
-	
+        
 pr0:    LD DATA,[TEXT_ADDR]     ; get character
         CPI DATA,0              ; check zero
         BREQ prEnd              ; if zero goto end
 
         CPI DATA,'%'            ; check '%'
         BREQ prHandlePercent    ; '%' found
-	
+        
 pr1:    OUT TERMINAL_PORT, DATA ; output character
 pr2:    INC TEXT_ADDR           ; next character
         JMP pr0                 ; loop
-	
+        
 prEnd:  LEAVE                   ; finish
         RET
 
@@ -49,16 +49,16 @@ prHandlePercent:
         LD DATA,[TEXT_ADDR]     ; read char after '%'
         CPI DATA,'x'            ; check 'x'
         BRNE error              ; if not: error
-	
+        
         INC ARG_ADDR            ; next argument
         LD DATA, [ARG_ADDR]     ; read next arg
         RCALL RA, hexOutR0      ; write as hex
-        JMP pr2	                ; next character
+        JMP pr2                 ; next character
 
 error:  LDI R5, '%'
         OUT TERMINAL_PORT, R5   ; print '%'
         JMP pr1                 ; print DATA
-	
+        
 
 ; write R0 to console as 4 digit hex number
         .reg CREG r2  ; return adress register
