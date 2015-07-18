@@ -216,4 +216,9 @@ public class ParserTest extends TestCase {
         }
     }
 
+    public void testPlus() throws ExpressionException, ParserException, InstructionException, IOException {
+        assertEquals(5, new Parser("LDD R0,[R1+5]").parseProgram().optimizeAndLink().getInstruction(0).getConstant().getValue(null));
+        assertEquals(-5, new Parser("LDD R0,[R1-5]").parseProgram().optimizeAndLink().getInstruction(0).getConstant().getValue(null));
+    }
+
 }

@@ -2,6 +2,7 @@ package de.neemann.assembler.asm;
 
 import de.neemann.assembler.expression.Constant;
 import de.neemann.assembler.expression.Expression;
+import de.neemann.assembler.expression.Neg;
 
 /**
  * @author hneemann
@@ -51,6 +52,11 @@ public class InstructionBuilder {
         return this;
     }
 
+    public InstructionBuilder negConstant() {
+        constant = new Neg(constant);
+        return this;
+    }
+
     public Instruction build() throws InstructionException {
         if (opcode.getArguments().hasSource() && source == null)
             throw new InstructionException(opcode.name() + " needs a source register!");
@@ -64,4 +70,5 @@ public class InstructionBuilder {
 
         return new Instruction(opcode, dest, source, constant);
     }
+
 }

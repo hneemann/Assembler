@@ -12,7 +12,7 @@ public abstract class MnemonicArguments {
     public static final MnemonicArguments NOTHING = new Nothing();
     public static final MnemonicArguments SOURCE = new Source();
     public static final MnemonicArguments DEST = new Dest();
-    public static final MnemonicArguments CONST = new Const();
+    public static final Const CONST = new Const();
     public static final MnemonicArguments DEST_SOURCE = new Comma(DEST, SOURCE);
     public static final MnemonicArguments DEST_CONST = new Comma(DEST, CONST);
     public static final MnemonicArguments BDEST_SOURCE = new Comma(new Brace(DEST), SOURCE);
@@ -164,9 +164,9 @@ public abstract class MnemonicArguments {
     }
 
     private static class Concat extends MnemonicArguments {
-        private final MnemonicArguments before;
+        protected final MnemonicArguments before;
         private final char c;
-        private final MnemonicArguments after;
+        protected final MnemonicArguments after;
 
         private Concat(MnemonicArguments before, char c, MnemonicArguments after) {
             super(before.hasSource || after.hasSource,
@@ -203,9 +203,23 @@ public abstract class MnemonicArguments {
     }
 
     private static class Plus extends Concat {
-        private Plus(MnemonicArguments before, MnemonicArguments after) {
+        private Plus(MnemonicArguments before, Const after) {
             super(before, '+', after);
         }
+
+        @Override
+        public InstructionBuilder parse(InstructionBuilder i, Parser p) throws IOException, ParserException, InstructionException {
+            before.parse(i, p);
+            if (p.isNext('-')) {
+                after.parse(i, p);
+                i.negConstant();
+            } else {
+                p.consume('+');
+                after.parse(i, p);
+            }
+            return i;
+        }
+
     }
 
 }

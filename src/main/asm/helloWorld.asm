@@ -2,15 +2,16 @@
 
         .const termPort 0x1f    
 
-        .reg R_DATA R1
-        .reg R_ADDR R0
+        .reg DATA R1      ; alias for R1
+        .reg ADDR R0      ; alias for R0
 
 
-        LDI R_ADDR,text
-L1:     LD R_DATA,[R_ADDR]
-        OUT termPort,R_DATA
-        INC R_ADDR
-        CPI R_DATA,0
-        BRNZ L1
+        LDI ADDR,text     ; load text addr
+L1:     LD DATA,[ADDR]    ; load a character
+        CPI DATA,0        ; is character zero?
+        BREQ L2           ; yes, goto end
+        OUT termPort,DATA ; write character to console
+        INC ADDR          ; increment ADDR to next character
+        JMP L1         
         
-        BRK
+L2:     BRK
