@@ -168,10 +168,13 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     TextFormatter tf = new TextFormatter(MAX_HELP_COLS);
+                    tf.append("Mnemonics\n\n");
                     for (Opcode op : Opcode.values())
                         tf.append(op.toString()).append("\n\n");
+                    tf.append("Macros\n\n");
                     for (Macro m : Parser.macros.values())
                         tf.append(m.toString()).append("\n\n");
+                    tf.append(Parser.HELP).append("\n");
                     new ListDialog(Main.this, "Instructions", tf.toString(), null).setVisible(true);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show();

@@ -13,6 +13,14 @@ import static java.io.StreamTokenizer.*;
  * @author hneemann
  */
 public class Parser implements Closeable {
+    public static final String HELP =
+            "Assembler commands\n\n" +
+                    ".reg alias Rs\n\tSets an alias name for a register\n\n" +
+                    ".word addr\n\tReserves a single word in the RAM. Its address is stored in addr\n\n" +
+                    ".long addr\n\tReserves two words in the RAM. Its address is stored in addr\n\n" +
+                    ".const ident const\n\tcreates the given constant\n\n" +
+                    ".data addr value(,value)*\n\tcopies the given values to the RAM. The address of the values is stored in addr.\n\n" +
+                    ".include \"filename\"\n\tincludes the given file";
     private final StreamTokenizer tokenizer;
     private final Reader in;
     public static final HashMap<String, Macro> macros = new HashMap<>();
