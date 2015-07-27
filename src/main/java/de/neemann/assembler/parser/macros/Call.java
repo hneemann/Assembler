@@ -14,10 +14,10 @@ import java.io.IOException;
 /**
  * @author hneemann
  */
-public class Call implements Macro {
-    @Override
-    public String getName() {
-        return "CALL";
+public class Call extends Macro {
+
+    public Call() {
+        super("CALL", MnemonicArguments.CONST, "Jumps to the given Address, stores the return address on thze stack.");
     }
 
     @Override

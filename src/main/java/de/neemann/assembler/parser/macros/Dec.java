@@ -11,10 +11,10 @@ import java.io.IOException;
 /**
  * @author hneemann
  */
-public class Dec implements Macro {
-    @Override
-    public String getName() {
-        return "DEC";
+public class Dec extends Macro {
+
+    public Dec() {
+        super("DEC", MnemonicArguments.DEST, "decreases the given register by one");
     }
 
     @Override

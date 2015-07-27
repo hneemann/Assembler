@@ -12,10 +12,9 @@ import java.io.IOException;
 /**
  * @author hneemann
  */
-public class Pop implements Macro {
-    @Override
-    public String getName() {
-        return "POP";
+public class Pop extends Macro {
+    public Pop() {
+        super("POP", MnemonicArguments.DEST, "copy value from the stack to the given register, adds one to the stack pointer");
     }
 
     @Override

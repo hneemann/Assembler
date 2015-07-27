@@ -15,9 +15,26 @@ import static java.io.StreamTokenizer.*;
 public class Parser implements Closeable {
     private final StreamTokenizer tokenizer;
     private final Reader in;
-    private final HashMap<String, Macro> macros;
+    public static final HashMap<String, Macro> macros = new HashMap<>();
     private final HashMap<String, Register> regsMap;
     private File baseFile;
+
+    static {
+        addMacro(new Inc());
+        addMacro(new Dec());
+        addMacro(new Push());
+        addMacro(new Pop());
+        addMacro(new SCall());
+        addMacro(new Ret());
+        addMacro(new Call());
+        addMacro(new Enter());
+        addMacro(new Leave());
+    }
+
+    private static void addMacro(Macro m) {
+        macros.put(m.getName().toLowerCase(), m);
+    }
+
 
     public Parser(String source) {
         this(new StringReader(source));
@@ -33,7 +50,6 @@ public class Parser implements Closeable {
 
         this.regsMap = new HashMap<>();
 
-        this.macros = new HashMap<>();
         tokenizer = new StreamTokenizer(in);
         tokenizer.eolIsSignificant(true);
         tokenizer.ordinaryChar('-');
@@ -46,19 +62,6 @@ public class Parser implements Closeable {
         tokenizer.commentChar(';');
         tokenizer.slashStarComments(true);
 
-        addMacro(new Inc());
-        addMacro(new Dec());
-        addMacro(new Push());
-        addMacro(new Pop());
-        addMacro(new SCall());
-        addMacro(new Ret());
-        addMacro(new Call());
-        addMacro(new Enter());
-        addMacro(new Leave());
-    }
-
-    public void addMacro(Macro m) {
-        macros.put(m.getName().toLowerCase(), m);
     }
 
     public Program parseProgram() throws IOException, ParserException, ExpressionException {

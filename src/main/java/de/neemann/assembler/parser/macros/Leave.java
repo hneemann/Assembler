@@ -13,10 +13,10 @@ import static de.neemann.assembler.parser.macros.Pop.pop;
 /**
  * @author hneemann
  */
-public class Leave implements Macro {
-    @Override
-    public String getName() {
-        return "LEAVE";
+public class Leave extends Macro {
+
+    public Leave() {
+        super("LEAVE", MnemonicArguments.NOTHING, "moves BP to SP and pops BP from the stack");
     }
 
     @Override

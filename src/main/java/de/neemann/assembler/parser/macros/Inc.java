@@ -11,10 +11,9 @@ import java.io.IOException;
 /**
  * @author hneemann
  */
-public class Inc implements Macro {
-    @Override
-    public String getName() {
-        return "INC";
+public class Inc extends Macro {
+    public Inc() {
+        super("INC", MnemonicArguments.DEST, "increases the given register by one");
     }
 
     @Override

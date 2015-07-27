@@ -15,10 +15,11 @@ import static de.neemann.assembler.parser.macros.Push.push;
 /**
  * @author hneemann
  */
-public class SCall implements Macro {
-    @Override
-    public String getName() {
-        return "_SCALL";
+public class SCall extends Macro {
+
+
+    public SCall() {
+        super("_SCALL", MnemonicArguments.CONST, "jumps to the address given in const and stores the return address in the register RA. Before that RA ist pushed to the stack, and after the return RA is poped of the stack again.");
     }
 
     @Override

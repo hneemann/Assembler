@@ -15,10 +15,10 @@ import static de.neemann.assembler.parser.macros.Push.push;
 /**
  * @author hneemann
  */
-public class Enter implements Macro {
-    @Override
-    public String getName() {
-        return "ENTER";
+public class Enter extends Macro {
+
+    public Enter() {
+        super("ENTER", MnemonicArguments.CONST, "pushes BP on stack, copies SP to BP and reduces SP by the given constant");
     }
 
     @Override

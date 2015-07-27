@@ -16,10 +16,9 @@ import static de.neemann.assembler.parser.macros.Pop.pop;
 /**
  * @author hneemann
  */
-public class Ret implements Macro {
-    @Override
-    public String getName() {
-        return "RET";
+public class Ret extends Macro {
+    public Ret() {
+        super("RET", MnemonicArguments.CONST, "jumps to the address which is stored on top of the stack. decreases the stack pointer by 1+const. const is optional");
     }
 
     @Override

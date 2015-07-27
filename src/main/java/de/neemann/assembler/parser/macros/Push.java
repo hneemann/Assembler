@@ -11,10 +11,9 @@ import java.io.IOException;
 /**
  * @author hneemann
  */
-public class Push implements Macro {
-    @Override
-    public String getName() {
-        return "PUSH";
+public class Push extends Macro {
+    public Push() {
+        super("PUSH", MnemonicArguments.SOURCE, "copies the value in the given register to the stack, decreases the stack pointer by one");
     }
 
     @Override

@@ -7,6 +7,7 @@ import de.neemann.assembler.asm.formatter.AsmFormatter;
 import de.neemann.assembler.asm.formatter.HexFormatter;
 import de.neemann.assembler.expression.ExpressionException;
 import de.neemann.assembler.gui.utils.*;
+import de.neemann.assembler.parser.Macro;
 import de.neemann.assembler.parser.Parser;
 import de.neemann.assembler.parser.ParserException;
 
@@ -169,6 +170,8 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                     TextFormatter tf = new TextFormatter(MAX_HELP_COLS);
                     for (Opcode op : Opcode.values())
                         tf.append(op.toString()).append("\n\n");
+                    for (Macro m : Parser.macros.values())
+                        tf.append(m.toString()).append("\n\n");
                     new ListDialog(Main.this, "Instructions", tf.toString(), null).setVisible(true);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show();
