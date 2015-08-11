@@ -2,7 +2,7 @@
 
 In this repo you can find an simulated 16 bit microprocessor as a [LogiSim](http://www.cburch.com/logisim/) simulation.
 A assembler for this processor is implemented in Java. It is implemented to teach my students programming in assembler. This is the third iteration therefore the name ASM 3.
-The processor is a harvard single cycle cpu and its architecture is inspired by the MIPS architecture.
+The processor is a harvard single cycle cpu and its architecture is inspired by the MIPS architecture, but the assembler supports pseudo instructions like push, pop, enter, leave or call. So it is also possible to program it like a x86 processor.
 
 ### Usage ###
 
