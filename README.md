@@ -6,15 +6,15 @@ The processor is a harvard single cycle cpu and its architecture is inspired by 
 
 ### Usage ###
 
-* In the folder src/main/logisim you can find the processor.
-* In the folder src/main/asm are some sample programs in assembler. The assembler creates a hex file for loading to the instruction memory of the processor.
-* You can find the assembler in the folder src/main/java
+* In the folder *src/main/logisim* you can find the processor.
+* In the folder *src/main/asm* are some sample programs in assembler. The assembler creates a hex file for loading to the instruction memory of the processor.
+* You can find the assembler in the folder *src/main/java*
 
 ### Set up? ###
 
 * The Processor can directly opened with LogiSim
-* The Assembler is a maven project. So you can build it calling "mvn build" on the command line
-* Most Java-IDE's are able to import the pom.xml file. Best maven support you can get using NetBeans.
+* The assembler is a maven project. So you can build it calling `mvn build` on the command line
+* Most Java-IDE's are able to import the *pom.xml* file. Best maven support you can get using NetBeans.
 
 ### Who do I talk to? ###
 

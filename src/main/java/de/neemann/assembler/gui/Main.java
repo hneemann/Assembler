@@ -35,7 +35,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     private final JTextArea source;
     private File filename;
     private File lastFilename;
-    private String sourceOnDisk;
+    private String sourceOnDisk = "";
 
     public Main(File fileToOpen) {
         super("ASM 3");
@@ -109,7 +109,9 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    writeHex(createProgram(), filename);
+                    Program program = createProgram();
+                    if (program != null)
+                        writeHex(program, filename);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show();
                 }
@@ -121,11 +123,13 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     Program program = createProgram();
-                    writeHex(program, filename);
+                    if (program != null) {
+                        writeHex(program, filename);
 
-                    ByteArrayOutputStream text = new ByteArrayOutputStream();
-                    program.traverse(new AsmFormatter(new PrintStream(text)));
-                    new ListDialog(Main.this, text.toString()).setVisible(true);
+                        ByteArrayOutputStream text = new ByteArrayOutputStream();
+                        program.traverse(new AsmFormatter(new PrintStream(text)));
+                        new ListDialog(Main.this, text.toString()).setVisible(true);
+                    }
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show();
                 }
@@ -137,8 +141,11 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     ByteArrayOutputStream text = new ByteArrayOutputStream();
-                    createProgram().traverse(new AsmFormatter(new PrintStream(text), false));
-                    new ListDialog(Main.this, text.toString()).setVisible(true);
+                    Program program = createProgram();
+                    if (program != null) {
+                        program.traverse(new AsmFormatter(new PrintStream(text), false));
+                        new ListDialog(Main.this, text.toString()).setVisible(true);
+                    }
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show();
                 }
@@ -149,7 +156,9 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    writeLst(createProgram(), filename);
+                    Program program = createProgram();
+                    if (program != null)
+                        writeLst(program, filename);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show();
                 }
@@ -260,28 +269,34 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     }
 
     private Program createProgram() throws ExpressionException, InstructionException, IOException, ParserException {
-        save();
-        try (Parser p = new Parser(filename)) {
-            return p.parseProgram()
-                    .optimizeAndLink();
+        if (save()) {
+            try (Parser p = new Parser(filename)) {
+                return p.parseProgram()
+                        .optimizeAndLink();
+            }
+        }
+        return null;
+    }
+
+    private boolean save() throws IOException {
+        if (filename == null)
+            return saveAs();
+        else {
+            writeSource(filename);
+            return true;
         }
     }
 
-    private void save() throws IOException {
-        if (filename == null)
-            saveAs();
-        else
-            writeSource(filename);
-    }
-
-    private void saveAs() throws IOException {
+    private boolean saveAs() throws IOException {
         JFileChooser fc = getjFileChooser();
         if (fc.showSaveDialog(Main.this) == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             if (!file.getName().toLowerCase().endsWith(".asm"))
                 file = new File(file.getParentFile(), file.getName() + ".asm");
             writeSource(file);
+            return true;
         }
+        return false;
     }
 
     private void writeSource(File file) throws IOException {
