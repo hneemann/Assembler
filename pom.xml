@@ -168,6 +168,20 @@
                             </arguments>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>script-cp</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>cp</executable>
+                            <arguments>
+                                <argument>target/asm3.jar</argument>
+                                <argument>/home/hneemann/Dokumente/DHBW/Software/</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
