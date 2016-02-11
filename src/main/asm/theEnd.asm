@@ -42,7 +42,7 @@ L1:	MOV R0,R1
         LD R4,[R0]
 	OUTR [R1],R4
 	DEC R1
-	BRNC L1
+	BRCC L1
 	OUT 16,R0
 	INC R2
 	JMP L2
