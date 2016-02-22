@@ -317,9 +317,11 @@ public enum Opcode {
     }
 
     public static void writeControlWords(PrintStream out) {
-        out.println("v2.0 raw");
-        for (Opcode oc : Opcode.values())
-            out.println(Integer.toHexString(oc.createControlWord()));
+        out.print("v2.0 raw\n");
+        for (Opcode oc : Opcode.values()) {
+            out.print(Integer.toHexString(oc.createControlWord()));
+            out.print("\n");
+        }
     }
 
     public String toString() {

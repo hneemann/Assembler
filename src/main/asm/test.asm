@@ -240,6 +240,48 @@ c2:	ldi errFlag,0
 	jmp error
 	LDI errFlag,0
 
+;       test AND and flags 0x000F
+	LDI errNum,0x000F
+	LDI errFlag,1
+	LDI R0,3
+	ANDI R0,8
+	BREQ _SKIP_ADDR_
+	JMP error
+	LDI errFlag,2
+	LDI R0,3
+	ANDI R0,3
+	BRNE _SKIP_ADDR_
+	JMP error
+	LDI errFlag,0
+
+;       test OR and flags 0x0010
+	LDI errNum,0x0010
+	LDI errFlag,1
+	LDI R0,0
+	ORI R0,0
+	BREQ _SKIP_ADDR_
+	JMP error
+	LDI errFlag,2
+	LDI R0,3
+	ORI R0,3
+	BRNE _SKIP_ADDR_
+	JMP error
+	LDI errFlag,0
+
+;       test EOR and flags 0x0011
+	LDI errNum,0x0011
+	LDI errFlag,1
+	LDI R0,1
+	EORI R0,1
+	BREQ _SKIP_ADDR_
+	JMP error
+	LDI errFlag,2
+	LDI R0,3
+	EORI R0,2
+	BRNE _SKIP_ADDR_
+	JMP error
+	LDI errFlag,0
+
 
 
 ; if this statement is reached all tests are passed
