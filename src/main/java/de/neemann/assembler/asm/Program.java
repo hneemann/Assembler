@@ -130,8 +130,8 @@ public class Program {
         this.pendingMacroDescription.set(pendingMacroDescription);
     }
 
-    public void setPendingComment(String comment) throws ExpressionException {
-        this.pendingComment.set(comment);
+    public void addPendingComment(String comment) throws ExpressionException {
+        this.pendingComment.add(comment);
     }
 
     public Program optimizeAndLink() throws InstructionException, ExpressionException {
@@ -182,6 +182,13 @@ public class Program {
             if (this.str != null)
                 throw new ExpressionException("two " + name + " for the same command: " + str + ", " + s);
             this.str = s;
+        }
+
+        public void add(String s) throws ExpressionException {
+            if (str == null)
+                str = s;
+            else
+                str += s;
         }
 
         public String get() {

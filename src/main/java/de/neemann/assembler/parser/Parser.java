@@ -130,27 +130,39 @@ public class Parser implements Closeable {
     }
 
     private void parseMetaCommand(Program p, String t) throws IOException, ParserException, ExpressionException {
+        p.addPendingComment("\n " + t);
         switch (t) {
             case ".reg":
                 String regName = parseWord();
+                p.addPendingComment(" " + regName);
                 Register reg = parseReg();
+                p.addPendingComment(" " + reg);
                 regsMap.put(regName, reg);
                 break;
             case ".word":
-                p.addRam(parseWord(), 1);
+                String word = parseWord();
+                p.addPendingComment(" " + word);
+                p.addRam(word, 1);
                 break;
             case ".long":
-                p.addRam(parseWord(), 2);
+                word = parseWord();
+                p.addPendingComment(" " + word);
+                p.addRam(word, 2);
                 break;
             case ".const":
-                p.getContext().addIdentifier(parseWord(), parseExpression().getValue(p.getContext()));
+                word = parseWord();
+                int value = parseExpression().getValue(p.getContext());
+                p.addPendingComment(" " + word + " " + value);
+                p.getContext().addIdentifier(word, value);
                 break;
             case ".data":
                 String ident = parseWord();
+                p.addPendingComment(" " + ident);
                 p.addRam(ident, 0);
                 readData(p);
                 while (isNext(',')) {
                     isNext(TT_EOL);
+                    p.addPendingComment(", ");
                     readData(p);
                 }
                 break;
@@ -159,7 +171,7 @@ public class Parser implements Closeable {
                     String filename = tokenizer.sval;
                     if (baseFile == null)
                         throw makeParserException("no base file name available");
-                    p.setPendingComment("\n; included " + filename + "\n");
+                    p.addPendingComment("\n; included " + filename + "\n");
                     Parser inc = new Parser(new File(baseFile.getParentFile(), filename));
                     inc.parseProgram(p);
                 } else
@@ -175,9 +187,38 @@ public class Parser implements Closeable {
             String text = tokenizer.sval;
             for (int i = 0; i < text.length(); i++)
                 p.addData(text.charAt(i));
+            p.addPendingComment(" \"" + escapeText(text) + "\"");
         } else {
-            p.addData(parseExpression().getValue(p.getContext()));
+            int value = parseExpression().getValue(p.getContext());
+            p.addPendingComment(" " + value);
+            p.addData(value);
         }
+    }
+
+    private String escapeText(String text) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (c >= 32)
+                sb.append(c);
+            else {
+                switch (c) {
+                    case '\n':
+                        sb.append("\\n");
+                        break;
+                    case '\r':
+                        sb.append("\\r");
+                        break;
+                    case '\t':
+                        sb.append("\\t");
+                        break;
+                    default:
+                        sb.append("\\u").append(Integer.toHexString(c));
+                        break;
+                }
+            }
+        }
+        return sb.toString();
     }
 
     private void parseInstruction(Program p, String t) throws IOException, ParserException, InstructionException {
