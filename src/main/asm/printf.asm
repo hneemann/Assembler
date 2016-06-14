@@ -1,6 +1,6 @@
         .data text1 "the sum of %x and %x\n",0;
         .data text2 "gives %x\n",0;
-
+START:
         LDI R0,5         ; 3. arg
         PUSH R0
         LDI R0,4         ; 2. arg
@@ -17,6 +17,7 @@
         CALL printf      ; call 
         ADDI SP, 2       ; clear stack
         BRK     
+	JMP START
 
 
         .const TERMINAL_PORT 0x1f

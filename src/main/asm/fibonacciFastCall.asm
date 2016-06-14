@@ -1,11 +1,13 @@
-     LDI R0,10
+Start:
+     LDI R0,20
      CALL fibonacci
      STS 0, R0     ; store result
      BRK
+     JMP Start
 
 fibonacci:
      CPI R0,2
-     BRC fibEnd
+     BRCS fibEnd
 
      PUSH R0      ; keep n
      SUBI R0, 1

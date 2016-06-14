@@ -5,7 +5,8 @@
         .reg DATA R1      ; alias for R1
         .reg ADDR R0      ; alias for R0
 
-
+START:
+	BRK
         LDI ADDR,text     ; load text addr
 L1:     LD DATA,[ADDR]    ; load a character
         CPI DATA,0        ; is character zero?
@@ -14,4 +15,4 @@ L1:     LD DATA,[ADDR]    ; load a character
         INC ADDR          ; increment ADDR to next character
         JMP L1         
         
-L2:     BRK
+L2:     JMP START

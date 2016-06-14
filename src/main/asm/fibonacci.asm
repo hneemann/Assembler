@@ -1,8 +1,10 @@
-     LDI R0,10          ; load 10
-     PUSH R0            ; put 10 an stack
+Start:
+     LDI R0,15          ; load 15
+     PUSH R0            ; put 15 an stack
      CALL fibonacci     ; call function
      STS 0, R0          ; store result
      BRK
+     JMP Start
 
      .const n 2         ; offset of argument
      .const nm1 -1      ; offset of local var
