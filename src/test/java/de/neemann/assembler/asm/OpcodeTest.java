@@ -42,6 +42,7 @@ public class OpcodeTest extends TestCase {
 
     public void checkBusAccess(Opcode op) {
         int toBusCounter = 0;
+        if (op.getSrcToBus() == Opcode.SrcToBus.Yes) toBusCounter++;
         if (op.getAluToBus() == Opcode.ALUToBus.Yes) toBusCounter++;
         if (op.getReadRam() == Opcode.ReadRam.Yes) toBusCounter++;
         if (op.getReadIO() == Opcode.ReadIO.Yes) toBusCounter++;
@@ -49,7 +50,10 @@ public class OpcodeTest extends TestCase {
         assertFalse("more than one write access to bus! " + op.name(),
                 toBusCounter > 1);
         assertFalse("value written to bus but no store! " + op.name(),
-                toBusCounter == 1 && op.getEnRegWrite() == Opcode.EnRegWrite.No);
+                toBusCounter == 1
+                        && op.getEnRegWrite() == Opcode.EnRegWrite.No
+                        && op.getWriteIO() == Opcode.WriteIO.No
+                        && op.getWriteRam() == Opcode.WriteRam.No);
         assertFalse("value stored but no one writes to bus! " + op.name(),
                 toBusCounter == 0 && op.getEnRegWrite() == Opcode.EnRegWrite.Yes);
     }
@@ -63,7 +67,7 @@ public class OpcodeTest extends TestCase {
 
         assertEquals("v2.0 raw\n" +
                 "0\n" +
-                "c0\n" +
+                "200080\n" +
                 "4c0\n" +
                 "44c0\n" +
                 "8c0\n" +

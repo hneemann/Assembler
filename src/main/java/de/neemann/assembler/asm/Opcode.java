@@ -12,7 +12,7 @@ public enum Opcode {
     NOP("does nothing", MnemonicArguments.NOTHING, new Flags()),
     MOV("Move the content of Rs to register Rd",
             MnemonicArguments.DEST_SOURCE, new Flags()
-            .set(ALUToBus.Yes)
+            .set(SrcToBus.Yes)
             .set(EnRegWrite.Yes)),
     ADD("Adds the content of register Rs to register Rd without carry",
             MnemonicArguments.DEST_SOURCE, new Flags()
@@ -521,12 +521,24 @@ public enum Opcode {
         return f.aluToBus;
     }
 
+    public SrcToBus getSrcToBus() {
+        return f.srcToBus;
+    }
+
     public ReadRam getReadRam() {
         return f.rr;
     }
 
+    public WriteRam getWriteRam() {
+        return f.wr;
+    }
+
     public ReadIO getReadIO() {
         return f.rio;
+    }
+
+    public WriteIO getWriteIO() {
+        return f.wio;
     }
 
     public StorePC getStorePC() {
