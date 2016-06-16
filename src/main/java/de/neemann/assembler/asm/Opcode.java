@@ -17,36 +17,43 @@ public enum Opcode {
     ADD("Adds the content of register Rs to register Rd without carry",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.ADD)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
     ADC("Adds the content of register Rs to register Rd with carry",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.ADC)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
     SUB("Subtracts the content of register Rs from register Rd without carry",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.SUB)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
     SBC("Subtracts the content of register Rs from register Rd with carry",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.SBC)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
     AND("Stores Rs and Rd in register Rd.",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.AND)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
     OR("Stores Rs or Rd in register Rd.",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.OR)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
     EOR("Stores Rs xor Rd in register Rd.",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.XOR)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
     LDI("Loads Register Rd with the constant value const",
@@ -62,18 +69,21 @@ public enum Opcode {
     ADDI("Adds the constant const to register Rd without carry",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.ADD)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
     ADDIs("Adds the constant const to register Rd without carry",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.ADD)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
     ADCI("Adds the constant const to register Rd with carry",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.ADC)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
@@ -81,17 +91,20 @@ public enum Opcode {
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.ADC)
             .set(ALUToBus.Yes)
+            .set(StoreFlags.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
     SUBI("Subtracts a constant const from register Rd without carry",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SUB)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
     SUBIs("Subtracts a constant const from register Rd without carry",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SUB)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
@@ -99,41 +112,48 @@ public enum Opcode {
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SBC)
             .set(ALUToBus.Yes)
+            .set(StoreFlags.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
     SBCIs("Subtracts a constant const from register Rd with carry",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SBC)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
     ANDI("Stores Rd and const in register Rd",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.AND)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
     ANDIs("Stores Rd and const in register Rd",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.AND)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
     ORI("Stores Rd or const in register Rd",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.OR)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
     ORIs("Stores Rd or const in register Rd",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.OR)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
     EORI("Stores Rd xor const in register Rd",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.XOR)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
@@ -141,61 +161,73 @@ public enum Opcode {
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.XOR)
             .set(ALUToBus.Yes)
+            .set(StoreFlags.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
     MUL("Multiplies the content of register Rs with register Rd and stores result in Rd",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.MUL)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
     MULI("Multiplies the constant const with register Rd and stores result in Rd",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.MUL)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
     MULIs("Multiplies the constant const with register Rd and stores result in Rd",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.MUL)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
 
     CMP("Subtracts the content of register Rs from register Rd without carry, does not store the value",
             MnemonicArguments.DEST_SOURCE, new Flags()
+            .set(StoreFlags.Yes)
             .set(ALUCmd.SUB)),
     CPI("Subtracts a constant const from register Rd without carry, does not store the value",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SUB)
+            .set(StoreFlags.Yes)
             .set(ALUBSel.ImReg)),
     CPIs("Subtracts a constant const from register Rd without carry, does not store the value",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SUB)
+            .set(StoreFlags.Yes)
             .set(ALUBSel.instrSource)),
 
     LSL("Shifts register Rd by one bit to the left. A zero is filled in.",
             MnemonicArguments.DEST, new Flags()
             .set(ALUCmd.LSL)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
     LSR("Shifts register Rd by one bit to the right. A zero is filled in.",
             MnemonicArguments.DEST, new Flags()
             .set(ALUCmd.LSR)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
     ROL("Shifts register Rd by one bit to the left. The carry bit is filled in.",
             MnemonicArguments.DEST, new Flags()
             .set(ALUCmd.ROL)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
     ROR("Shifts register Rd by one bit to the right. The carry bit is filled in.",
             MnemonicArguments.DEST, new Flags()
             .set(ALUCmd.ROR)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
     ASR("Shifts register Rd by one bit to the right. The MSB remains unchanged.",
             MnemonicArguments.DEST, new Flags()
             .set(ALUCmd.ASR)
+            .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
     SWAP("Swaps the high and low byte in register Rd.",
@@ -381,6 +413,8 @@ public enum Opcode {
 
     enum JmpAbs {No, Yes}
 
+    enum StoreFlags {No, Yes}
+
     private static final class Flags {
         private ReadRam rr = ReadRam.No;
         private WriteRam wr = WriteRam.No;
@@ -396,6 +430,7 @@ public enum Opcode {
         private WriteIO wio = WriteIO.No;
         private ReadIO rio = ReadIO.No;
         private Break brk = Break.No;
+        private StoreFlags strFlags = StoreFlags.No;
 
         public Flags set(ReadRam rr) {
             this.rr = rr;
@@ -466,6 +501,11 @@ public enum Opcode {
             this.brk = brk;
             return this;
         }
+
+        public Flags set(StoreFlags strFlags) {
+            this.strFlags = strFlags;
+            return this;
+        }
     }
 
     private final String description;
@@ -505,7 +545,8 @@ public enum Opcode {
                 | (f.wio.ordinal() << 18)
                 | (f.rio.ordinal() << 19)
                 | (f.brk.ordinal() << 20)
-                | (f.srcToBus.ordinal() << 21);
+                | (f.srcToBus.ordinal() << 21)
+                | (f.strFlags.ordinal() << 22);
     }
 
 
