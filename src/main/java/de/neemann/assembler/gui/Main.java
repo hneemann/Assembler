@@ -110,8 +110,10 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     Program program = createProgram();
-                    if (program != null)
+                    if (program != null) {
                         writeHex(program, filename);
+                        writeLst(program, filename);
+                    }
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show();
                 }
