@@ -97,8 +97,8 @@ public class OpcodeTest extends TestCase {
                 "400800\n" +
                 "400804\n" +
                 "400814\n" +
-                "18c0\n" +
-                "1cc0\n" +
+                "4018c0\n" +
+                "401cc0\n" +
                 "4058c0\n" +
                 "405cc0\n" +
                 "4020c0\n" +
