@@ -78,3 +78,4 @@ buildNumber.properties
 .mvn/timing.properties
 
 
+/copybin.sh
