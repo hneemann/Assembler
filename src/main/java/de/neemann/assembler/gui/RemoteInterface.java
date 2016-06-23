@@ -2,6 +2,7 @@ package de.neemann.assembler.gui;
 
 import de.neemann.assembler.gui.utils.ErrorMessage;
 
+import java.awt.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -14,23 +15,34 @@ import java.net.Socket;
  */
 public class RemoteInterface {
 
-    public void load(File file) {
-        sendRequest("load",file.getPath());
+    private final Component frame;
+
+    public RemoteInterface(Component frame) {
+        this.frame = frame;
     }
 
-    public void start() {
-        sendRequest("start",null);
+    public boolean load(File file) {
+        return sendRequest("load",file.getPath());
     }
 
-    public void run() {
-        sendRequest("run",null);
+    public boolean start() {
+        return sendRequest("start",null);
     }
 
-    public void step() {
-        sendRequest("step",null);
+    public boolean run() {
+        return sendRequest("run",null);
     }
 
-    private void sendRequest(String command, String args) {
+    public boolean stop() {
+        return sendRequest("stop",null);
+    }
+
+
+    public boolean step() {
+        return sendRequest("step",null);
+    }
+
+    private boolean sendRequest(String command, String args) {
         try {
             Socket s = new Socket(InetAddress.getLocalHost(),41114);
             DataOutputStream out = new DataOutputStream(s.getOutputStream());
@@ -39,10 +51,13 @@ public class RemoteInterface {
             out.writeUTF(command);
             DataInputStream in = new DataInputStream(s.getInputStream());
             String response = in.readUTF();
-            if (!response.equals("ok"))
-                new ErrorMessage(response).show();
+            if (response.equals("ok"))
+                return true;
+
+            new ErrorMessage("Error received from simulator:\n" +response).show(frame);
         } catch (IOException e) {
-            new ErrorMessage("Error communicating with simulator").addCause(e).show();
+            new ErrorMessage("Error communicating with simulator!").addCause(e).show(frame);
         }
+        return false;
     }
 }

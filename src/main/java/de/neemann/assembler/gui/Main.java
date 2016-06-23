@@ -193,27 +193,33 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             }
         }.setToolTip("Shows a short description of available opcodes.");
 
-        final RemoteInterface remoteInterface = new RemoteInterface();
+        final RemoteInterface remoteInterface = new RemoteInterface(this);
 
-        ToolTipAction remoteStart = new ToolTipAction("Start") {
+        ToolTipAction remoteStart = new ToolTipAction("Start", IconCreator.create("media-playback-start.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                remoteInterface.load(makeFilename(filename, ".asm", ".hex"));
-                remoteInterface.start();
+                if (remoteInterface.load(makeFilename(filename, ".asm", ".hex")))
+                    remoteInterface.start();
             }
-        }.setToolTip("Starts the simulator.");
-        ToolTipAction remoteRun = new ToolTipAction("Run to BRK") {
+        }.setToolTip("Starts the programm.");
+        ToolTipAction remoteRun = new ToolTipAction("Run to BRK", IconCreator.create("media-skip-forward.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 remoteInterface.run();
             }
         }.setToolTip("Run to next BRK command.");
-        ToolTipAction remoteStep = new ToolTipAction("Step") {
+        ToolTipAction remoteStep = new ToolTipAction("Step", IconCreator.create("media-seek-forward.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 remoteInterface.step();
             }
         }.setToolTip("Single clock step");
+        ToolTipAction remoteStop = new ToolTipAction("Stop", IconCreator.create("media-playback-stop.png")) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                remoteInterface.stop();
+            }
+        }.setToolTip("Stops the programm.");
 
         source = new JTextArea(40, 50);
         source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
@@ -271,9 +277,10 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         toolBar.add(show.createJButtonNoText());
         toolBar.add(build.createJButtonNoText());
         toolBar.addSeparator();
-        toolBar.add(remoteStart.createJButton());
-        toolBar.add(remoteRun.createJButton());
-        toolBar.add(remoteStep.createJButton());
+        toolBar.add(remoteStart.createJButtonNoText());
+        toolBar.add(remoteRun.createJButtonNoText());
+        toolBar.add(remoteStep.createJButtonNoText());
+        toolBar.add(remoteStop.createJButtonNoText());
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         pack();
