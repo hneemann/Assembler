@@ -193,6 +193,28 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             }
         }.setToolTip("Shows a short description of available opcodes.");
 
+        final RemoteInterface remoteInterface = new RemoteInterface();
+
+        ToolTipAction remoteStart = new ToolTipAction("Start") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                remoteInterface.load(makeFilename(filename, ".asm", ".hex"));
+                remoteInterface.start();
+            }
+        }.setToolTip("Starts the simulator.");
+        ToolTipAction remoteRun = new ToolTipAction("Run to BRK") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                remoteInterface.run();
+            }
+        }.setToolTip("Run to next BRK command.");
+        ToolTipAction remoteStep = new ToolTipAction("Step") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                remoteInterface.step();
+            }
+        }.setToolTip("Single clock step");
+
         source = new JTextArea(40, 50);
         source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
@@ -248,6 +270,10 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         toolBar.add(save.createJButtonNoText());
         toolBar.add(show.createJButtonNoText());
         toolBar.add(build.createJButtonNoText());
+        toolBar.addSeparator();
+        toolBar.add(remoteStart.createJButton());
+        toolBar.add(remoteRun.createJButton());
+        toolBar.add(remoteStep.createJButton());
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         pack();
