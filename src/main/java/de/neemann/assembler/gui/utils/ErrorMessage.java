@@ -21,9 +21,12 @@ public class ErrorMessage {
     public ErrorMessage addCause(Throwable e) {
         e.printStackTrace();
 
-        if (message.length() > 0)
-            message.append('\n');
-        message.append(e.getClass().getSimpleName() + "; " + e.getMessage());
+        while (e!=null) {
+            if (message.length() > 0)
+                message.append('\n');
+            message.append(e.getClass().getSimpleName() + "; " + e.getMessage());
+            e=e.getCause();
+        }
         return this;
     }
 

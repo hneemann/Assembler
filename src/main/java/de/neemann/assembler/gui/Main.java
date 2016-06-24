@@ -64,7 +64,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                         try {
                             load(fc.getSelectedFile());
                         } catch (IOException e) {
-                            new ErrorMessage("Error loading a file").addCause(e).show();
+                            new ErrorMessage("Error loading a file").addCause(e).show(Main.this);
                         }
                     }
                 }
@@ -89,7 +89,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                 try {
                     save();
                 } catch (IOException e) {
-                    new ErrorMessage("Error storing a file").addCause(e).show();
+                    new ErrorMessage("Error storing a file").addCause(e).show(Main.this);
                 }
             }
         }.setToolTip("Saves the file to disk.");
@@ -100,7 +100,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                 try {
                     saveAs();
                 } catch (IOException e) {
-                    new ErrorMessage("Error storing a file").addCause(e).show();
+                    new ErrorMessage("Error storing a file").addCause(e).show(Main.this);
                 }
             }
         }.setToolTip("Saves the file with a new name to disk.");
@@ -110,12 +110,10 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     Program program = createProgram();
-                    if (program != null) {
+                    if (program != null)
                         writeHex(program, filename);
-                        writeLst(program, filename);
-                    }
                 } catch (Throwable e) {
-                    new ErrorMessage("Error").addCause(e).show();
+                    new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
             }
         }.setToolTip("Converts the source to a hex file.");
@@ -133,7 +131,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                         new ListDialog(Main.this, text.toString()).setVisible(true);
                     }
                 } catch (Throwable e) {
-                    new ErrorMessage("Error").addCause(e).show();
+                    new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
             }
         }.setToolTip("Converts the source to a listing and shows it.");
@@ -149,7 +147,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                         new ListDialog(Main.this, text.toString()).setVisible(true);
                     }
                 } catch (Throwable e) {
-                    new ErrorMessage("Error").addCause(e).show();
+                    new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
             }
         }.setToolTip("Converts the source to a listing without line numbers and shows it.");
@@ -162,7 +160,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                     if (program != null)
                         writeLst(program, filename);
                 } catch (Throwable e) {
-                    new ErrorMessage("Error").addCause(e).show();
+                    new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
             }
         }.setToolTip("Converts the source to a listing and writes it to disk.");
@@ -188,36 +186,57 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                     tf.append(Parser.HELP).append("\n");
                     new ListDialog(Main.this, "Instructions", tf.toString(), null).setVisible(true);
                 } catch (Throwable e) {
-                    new ErrorMessage("Error").addCause(e).show();
+                    new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
             }
         }.setToolTip("Shows a short description of available opcodes.");
 
-        final RemoteInterface remoteInterface = new RemoteInterface(this);
+        final RemoteInterface remoteInterface = new RemoteInterface();
 
         ToolTipAction remoteStart = new ToolTipAction("Start", IconCreator.create("media-playback-start.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (remoteInterface.load(makeFilename(filename, ".asm", ".hex")))
-                    remoteInterface.start();
+                try {
+                    Program program = createProgram();
+                    if (program != null) {
+                        writeHex(program, filename);
+                        writeLst(program, filename);
+                        remoteInterface.load(makeFilename(filename, ".asm", ".hex"));
+                        remoteInterface.start();
+                    }
+                } catch (Throwable e) {
+                    new ErrorMessage("Error").addCause(e).show(Main.this);
+                }
             }
         }.setToolTip("Starts the programm.");
         ToolTipAction remoteRun = new ToolTipAction("Run to BRK", IconCreator.create("media-skip-forward.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                remoteInterface.run();
+                try {
+                    remoteInterface.run();
+                } catch (RemoteException e) {
+                    new ErrorMessage("Error").addCause(e).show(Main.this);
+                }
             }
         }.setToolTip("Run to next BRK command.");
         ToolTipAction remoteStep = new ToolTipAction("Step", IconCreator.create("media-seek-forward.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                remoteInterface.step();
+                try {
+                    remoteInterface.step();
+                } catch (RemoteException e) {
+                    new ErrorMessage("Error").addCause(e).show(Main.this);
+                }
             }
         }.setToolTip("Single clock step");
         ToolTipAction remoteStop = new ToolTipAction("Stop", IconCreator.create("media-playback-stop.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                remoteInterface.stop();
+                try {
+                    remoteInterface.stop();
+                } catch (RemoteException e) {
+                    new ErrorMessage("Error").addCause(e).show(Main.this);
+                }
             }
         }.setToolTip("Stops the programm.");
 
@@ -233,7 +252,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             try {
                 load(fileToOpen);
             } catch (IOException e) {
-                new ErrorMessage("Error loading a file").addCause(e).show();
+                new ErrorMessage("Error loading a file").addCause(e).show(Main.this);
             }
 
         JScrollPane scrollPane = new JScrollPane(source);
@@ -274,12 +293,11 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         toolBar.add(open.createJButtonNoText());
         toolBar.add(openNew.createJButtonNoText());
         toolBar.add(save.createJButtonNoText());
-        toolBar.add(show.createJButtonNoText());
         toolBar.add(build.createJButtonNoText());
         toolBar.addSeparator();
         toolBar.add(remoteStart.createJButtonNoText());
-        toolBar.add(remoteRun.createJButtonNoText());
         toolBar.add(remoteStep.createJButtonNoText());
+        toolBar.add(remoteRun.createJButtonNoText());
         toolBar.add(remoteStop.createJButtonNoText());
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
@@ -432,7 +450,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         try {
             save();
         } catch (IOException e) {
-            new ErrorMessage("Error storing a file").addCause(e).show();
+            new ErrorMessage("Error storing a file").addCause(e).show(Main.this);
         }
     }
 }

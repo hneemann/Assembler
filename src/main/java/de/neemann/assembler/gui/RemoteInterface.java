@@ -15,34 +15,28 @@ import java.net.Socket;
  */
 public class RemoteInterface {
 
-    private final Component frame;
-
-    public RemoteInterface(Component frame) {
-        this.frame = frame;
+    public void load(File file) throws RemoteException {
+        sendRequest("load",file.getPath());
     }
 
-    public boolean load(File file) {
-        return sendRequest("load",file.getPath());
+    public void start() throws RemoteException {
+        sendRequest("start",null);
     }
 
-    public boolean start() {
-        return sendRequest("start",null);
+    public void run() throws RemoteException {
+        sendRequest("run",null);
     }
 
-    public boolean run() {
-        return sendRequest("run",null);
-    }
-
-    public boolean stop() {
-        return sendRequest("stop",null);
+    public void stop() throws RemoteException {
+        sendRequest("stop",null);
     }
 
 
-    public boolean step() {
-        return sendRequest("step",null);
+    public void step() throws RemoteException {
+        sendRequest("step",null);
     }
 
-    private boolean sendRequest(String command, String args) {
+    private void sendRequest(String command, String args) throws RemoteException {
         try {
             Socket s = new Socket(InetAddress.getLocalHost(),41114);
             DataOutputStream out = new DataOutputStream(s.getOutputStream());
@@ -51,13 +45,10 @@ public class RemoteInterface {
             out.writeUTF(command);
             DataInputStream in = new DataInputStream(s.getInputStream());
             String response = in.readUTF();
-            if (response.equals("ok"))
-                return true;
-
-            new ErrorMessage("Error received from simulator:\n" +response).show(frame);
+            if (!response.equals("ok"))
+                throw new RemoteException("Error received from simulator:\n" +response);
         } catch (IOException e) {
-            new ErrorMessage("Error communicating with simulator!").addCause(e).show(frame);
+            throw new RemoteException("Error communicating with simulator!", e);
         }
-        return false;
     }
 }
