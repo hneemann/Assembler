@@ -43,6 +43,7 @@ public class RemoteInterface {
             if (args!=null)
                 command=command+":"+args;
             out.writeUTF(command);
+            out.flush();
             DataInputStream in = new DataInputStream(s.getInputStream());
             String response = in.readUTF();
             if (!response.equals("ok"))
