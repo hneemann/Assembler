@@ -208,7 +208,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
             }
-        }.setToolTip("Starts the programm.");
+        }.setToolTip("Starts the simulated circuit.");
         ToolTipAction remoteRun = new ToolTipAction("Run to BRK", IconCreator.create("media-skip-forward.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
