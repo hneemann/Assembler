@@ -13,6 +13,10 @@ import java.io.IOException;
  * @author hneemann
  */
 public class Pop extends Macro {
+
+    /**
+     * Creates a new instance
+     */
     public Pop() {
         super("POP", MnemonicArguments.DEST, "copy value from the stack to the given register, adds one to the stack pointer");
     }
@@ -24,6 +28,13 @@ public class Pop extends Macro {
         pop(r, p);
     }
 
+    /**
+     * Add a pop instruction to the program
+     *
+     * @param r the register to pop
+     * @param p the program
+     * @throws InstructionException InstructionException
+     */
     public static void pop(Register r, Program p) throws InstructionException {
         p.add(new InstructionBuilder(Opcode.LD).setDest(r).setSource(Register.SP).build());
         p.add(new InstructionBuilder(Opcode.ADDIs).setDest(Register.SP).setConstant(new Constant(1)).build());

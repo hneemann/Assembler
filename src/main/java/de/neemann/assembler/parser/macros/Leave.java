@@ -15,6 +15,9 @@ import static de.neemann.assembler.parser.macros.Pop.pop;
  */
 public class Leave extends Macro {
 
+    /**
+     * Creates a new instance
+     */
     public Leave() {
         super("LEAVE", MnemonicArguments.NOTHING, "moves BP to SP and pops BP from the stack");
     }

@@ -17,7 +17,9 @@ import static de.neemann.assembler.parser.macros.Push.push;
  */
 public class SCall extends Macro {
 
-
+    /**
+     * Creates a new instance
+     */
     public SCall() {
         super("_SCALL", MnemonicArguments.CONST, "jumps to the address given in const and stores the return address in the register RA. Before that RA ist pushed to the stack, and after the return RA is poped of the stack again.");
     }

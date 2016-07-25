@@ -12,6 +12,10 @@ import java.io.IOException;
  * @author hneemann
  */
 public class Push extends Macro {
+
+    /**
+     * Creates a new instance
+     */
     public Push() {
         super("PUSH", MnemonicArguments.SOURCE, "copies the value in the given register to the stack, decreases the stack pointer by one");
     }
@@ -23,6 +27,13 @@ public class Push extends Macro {
         push(r, p);
     }
 
+    /**
+     * Add a push instruction to the program
+     *
+     * @param r the register to push
+     * @param p the program
+     * @throws InstructionException InstructionException
+     */
     public static void push(Register r, Program p) throws InstructionException {
         p.add(new InstructionBuilder(Opcode.SUBIs).setDest(Register.SP).setConstant(1).build());
         p.add(new InstructionBuilder(Opcode.ST).setDest(Register.SP).setSource(r).build());

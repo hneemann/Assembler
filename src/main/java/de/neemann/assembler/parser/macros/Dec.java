@@ -13,6 +13,9 @@ import java.io.IOException;
  */
 public class Dec extends Macro {
 
+    /**
+     * Creates a new instance
+     */
     public Dec() {
         super("DEC", MnemonicArguments.DEST, "decreases the given register by one");
     }

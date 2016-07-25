@@ -17,6 +17,9 @@ import static de.neemann.assembler.parser.macros.Push.push;
  */
 public class Enter extends Macro {
 
+    /**
+     * Creates a new instance
+     */
     public Enter() {
         super("ENTER", MnemonicArguments.CONST, "pushes BP on stack, copies SP to BP and reduces SP by the given constant");
     }

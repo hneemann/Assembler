@@ -16,6 +16,9 @@ import java.io.IOException;
  */
 public class Call extends Macro {
 
+    /**
+     * Creates a new instance
+     */
     public Call() {
         super("CALL", MnemonicArguments.CONST, "Jumps to the given Address, stores the return address on thze stack.");
     }

@@ -12,6 +12,10 @@ import java.io.IOException;
  * @author hneemann
  */
 public class Inc extends Macro {
+
+    /**
+     * Creates a new instance
+     */
     public Inc() {
         super("INC", MnemonicArguments.DEST, "increases the given register by one");
     }

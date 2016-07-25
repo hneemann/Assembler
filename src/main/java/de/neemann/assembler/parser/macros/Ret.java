@@ -17,6 +17,10 @@ import static de.neemann.assembler.parser.macros.Pop.pop;
  * @author hneemann
  */
 public class Ret extends Macro {
+
+    /**
+     * Creates a new instance
+     */
     public Ret() {
         super("RET", MnemonicArguments.CONST, "jumps to the address which is stored on top of the stack. decreases the stack pointer by 1+const. const is optional");
     }
