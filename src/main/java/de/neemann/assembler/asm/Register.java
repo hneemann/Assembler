@@ -1,6 +1,8 @@
 package de.neemann.assembler.asm;
 
 /**
+ * Enumeration which represents a register
+ * <p>
  * Created by neemann on 29.06.2015.
  */
 public enum Register {
@@ -9,6 +11,12 @@ public enum Register {
     R10, R11, R12, BP, SP,
     RA;
 
+    /**
+     * Returns the register matching the given name
+     *
+     * @param name the name
+     * @return the register
+     */
     public static Register parseStr(String name) {
         for (Register r : Register.values())
             if (r.name().equalsIgnoreCase(name))

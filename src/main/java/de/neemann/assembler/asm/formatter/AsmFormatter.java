@@ -10,6 +10,8 @@ import de.neemann.assembler.expression.ExpressionException;
 import java.io.PrintStream;
 
 /**
+ * Visitor to format a {@link de.neemann.assembler.asm.Program}
+ *
  * @author hneemann
  */
 public class AsmFormatter implements InstructionVisitor {
@@ -19,10 +21,21 @@ public class AsmFormatter implements InstructionVisitor {
     private final boolean indentCreated;
     private int actCol;
 
+    /**
+     * Creates a new instance
+     *
+     * @param out thr stream to write to
+     */
     public AsmFormatter(PrintStream out) {
         this(out, true);
     }
 
+    /**
+     * Creates a new instance
+     *
+     * @param out                thr stream to write to
+     * @param includeLineNumbers true to include the lin number to the output
+     */
     public AsmFormatter(PrintStream out, boolean includeLineNumbers) {
         this.o = out;
         this.includeLineNumbers = includeLineNumbers;
@@ -41,7 +54,6 @@ public class AsmFormatter implements InstructionVisitor {
     public void visit(Instruction i, Context context) throws ExpressionException {
         if (i.getComment() != null)
             o.println(i.getComment());
-
 
 
         boolean labelIsPrinted = false;
@@ -108,25 +120,25 @@ public class AsmFormatter implements InstructionVisitor {
         return i.getLineNumber() == 0 || i.getMacroDescription() != null;
     }
 
-    protected void printHex(int instr) {
+    private void printHex(int instr) {
         String s = Integer.toHexString(instr);
         while (s.length() < 4) s = '0' + s;
         print(s);
     }
 
-    protected void tab(int col) {
+    private void tab(int col) {
         col -= columnOfs;
 
         while (actCol < col)
             print(" ");
     }
 
-    protected void print(String s) {
+    private void print(String s) {
         o.print(s);
         actCol += s.length();
     }
 
-    protected void newLine() {
+    private void newLine() {
         o.print('\n');
         actCol = 0;
     }

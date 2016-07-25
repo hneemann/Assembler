@@ -4,6 +4,8 @@ import de.neemann.assembler.expression.Context;
 import de.neemann.assembler.expression.ExpressionException;
 
 /**
+ * Tries to replace a long jmp by a short jmp if target is near enough.
+ *
  * @author hneemann
  */
 public class OptimizerJmp implements InstructionVisitor {
@@ -23,6 +25,9 @@ public class OptimizerJmp implements InstructionVisitor {
         }
     }
 
+    /**
+     * @return true if there was an optimisation possible
+     */
     public boolean wasOptimized() {
         return optimized;
     }

@@ -24,6 +24,9 @@ public final class Instruction {
         this.constant = constant;
     }
 
+    /**
+     * @return the size of the instruction in words
+     */
     public int size() {
         if (opcode.getALUBSel() == Opcode.ALUBSel.ImReg)
             return 2;
@@ -31,35 +34,73 @@ public final class Instruction {
             return 1;
     }
 
+    /**
+     * Sets the line number of this instruction
+     *
+     * @param lineNumber the line number
+     * @return this for chained calls
+     */
     public Instruction setLineNumber(int lineNumber) {
         this.lineNumber = lineNumber;
         return this;
     }
 
+    /**
+     * @return the label of this instruction
+     */
     public String getLabel() {
         return label;
     }
 
+    /**
+     * Sets the lable of this instruction.
+     * E instruction can only have a single label
+     *
+     * @param label
+     */
     public void setLabel(String label) {
         this.label = label;
     }
 
+    /**
+     * @return the description of the macro
+     */
     public String getMacroDescription() {
         return macroDescription;
     }
 
+    /**
+     * Sets the macroDescription
+     *
+     * @param macroDescription the macro description
+     */
     public void setMacroDescription(String macroDescription) {
         this.macroDescription = macroDescription;
     }
 
+    /**
+     * @return the comment of this instruction
+     */
     public String getComment() {
         return comment;
     }
 
+    /**
+     * Sets the comment of this instruction
+     *
+     * @param comment the comment
+     */
     public void setComment(String comment) {
         this.comment = comment;
     }
 
+    /**
+     * Creates the machine code for this instruction
+     *
+     * @param context the context used to resolve labels
+     * @param mc      the listener to sen the machine code words to
+     * @throws ExpressionException ExpressionException
+     */
     public void createMachineCode(Context context, MachineCodeListener mc) throws ExpressionException {
         try {
             int con = 0;
@@ -108,6 +149,7 @@ public final class Instruction {
         }
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (label != null) {
@@ -119,26 +161,45 @@ public final class Instruction {
         return sb.toString();
     }
 
+    /**
+     * @return the line number of this instruction
+     */
     public int getLineNumber() {
         return lineNumber;
     }
 
+    /**
+     * @return the represented opcode
+     */
     public Opcode getOpcode() {
         return opcode;
     }
 
+    /**
+     * Sets the Opcode of this instruction
+     * @param opcode the opcode
+     */
     public void setOpcode(Opcode opcode) {
         this.opcode = opcode;
     }
 
+    /**
+     * @return the source register
+     */
     public Register getSourceReg() {
         return sourceReg;
     }
 
+    /**
+     * @return the designation register
+     */
     public Register getDestReg() {
         return destReg;
     }
 
+    /**
+     * @return the constant value
+     */
     public Expression getConstant() {
         return constant;
     }

@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
+ * Represents an entire program
+ *
  * @author hneemann
  */
 public class Program {
@@ -21,16 +23,28 @@ public class Program {
     private PendingString pendingComment = new PendingString("comment");
     private int lineNumber;
 
+    /**
+     * Creates a new instance
+     */
     public Program() {
         prog = new ArrayList<>();
         context = new Context();
         dataMap = new TreeMap<>();
     }
 
+    /**
+     * @param lineNumber thes the line number for the next added instruction
+     */
     public void setLineNumber(int lineNumber) {
         this.lineNumber = lineNumber;
     }
 
+    /**
+     * Adds an instruction to the program
+     *
+     * @param i the instruction to add
+     * @return then for chained calls
+     */
     public Program add(Instruction i) {
         i.setLabel(pendingLabel.get());
         i.setMacroDescription(pendingMacroDescription.get());
@@ -43,6 +57,13 @@ public class Program {
         return this;
     }
 
+    /**
+     * Traverses the whole programm
+     *
+     * @param instructionVisitor the visitor to use
+     * @return thei for chained calls
+     * @throws ExpressionException ExpressionException
+     */
     public Program traverse(InstructionVisitor instructionVisitor) throws ExpressionException {
         int addr = 0;
         for (int i = 0, progSize = prog.size(); i < progSize; i++) {
@@ -85,6 +106,7 @@ public class Program {
         return this;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (Instruction i : prog) {
@@ -93,14 +115,31 @@ public class Program {
         return sb.toString();
     }
 
+    /**
+     * @return the number of instructions
+     */
     public int getInstructionCount() {
         return prog.size();
     }
 
+    /**
+     * Returns the instruction with the given number
+     *
+     * @param i the number of the instruction to return
+     * @return the instruction
+     */
     public Instruction getInstruction(int i) {
         return prog.get(i);
     }
 
+    /**
+     * Adds a named ram location to the program
+     *
+     * @param ident the identifier to access this piece of ram
+     * @param size  the sive to allocate
+     * @return the position of the piece of ram
+     * @throws ExpressionException ExpressionException
+     */
     public int addRam(String ident, int size) throws ExpressionException {
         int r = ramPos;
         context.addIdentifier(ident, ramPos);
@@ -108,10 +147,16 @@ public class Program {
         return r;
     }
 
+    /**
+     * @return the actual context
+     */
     public Context getContext() {
         return context;
     }
 
+    /**
+     * @param value adds constant data to the program
+     */
     public void addData(int value) {
         ArrayList<Integer> list = dataMap.get(value);
         if (list == null) {
@@ -122,18 +167,45 @@ public class Program {
         ramPos++;
     }
 
+    /**
+     * Sets a pending label.
+     * This label is added to the next instruction which is added to the program
+     *
+     * @param pendingLabel the label
+     * @throws ExpressionException ExpressionException
+     */
     public void setPendingLabel(String pendingLabel) throws ExpressionException {
         this.pendingLabel.set(pendingLabel);
     }
 
+    /**
+     * Sets a pending macro description.
+     * The macro description is in mos cases the pseudo instruction used to create the folowing instructions.
+     *
+     * @param pendingMacroDescription the description
+     * @throws ExpressionException ExpressionException
+     */
     public void setPendingMacroDescription(String pendingMacroDescription) throws ExpressionException {
         this.pendingMacroDescription.set(pendingMacroDescription);
     }
 
+    /**
+     * Adds a pending comment
+     *
+     * @param comment the comment
+     * @throws ExpressionException ExpressionException
+     */
     public void addPendingComment(String comment) throws ExpressionException {
         this.pendingComment.add(comment);
     }
 
+    /**
+     * Performs a number of optimizations.
+     *
+     * @return A linked program
+     * @throws InstructionException InstructionException
+     * @throws ExpressionException  ExpressionException
+     */
     public Program optimizeAndLink() throws InstructionException, ExpressionException {
         appendData();
         traverse(new LinkAddVisitor());
@@ -174,7 +246,7 @@ public class Program {
         private String name;
         private String str;
 
-        public PendingString(String name) {
+        PendingString(String name) {
             this.name = name;
         }
 

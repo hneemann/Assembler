@@ -6,19 +6,54 @@ import de.neemann.assembler.parser.ParserException;
 import java.io.IOException;
 
 /**
+ * Describes possible instructions
+ *
  * @author hneemann
  */
 public abstract class MnemonicArguments {
+    /**
+     * Used for instruction with no aruments at all, nop, brk
+     */
     public static final MnemonicArguments NOTHING = new Nothing();
+    /**
+     * Used for instruction which have only a source register
+     */
     public static final MnemonicArguments SOURCE = new Source();
+    /**
+     * Used for instruction which have only a destination register
+     */
     public static final MnemonicArguments DEST = new Dest();
+    /**
+     * Used for instruction which have only a constant as an argument like jmp
+     */
     public static final Const CONST = new Const();
+    /**
+     * Used for instruction which have a source and a destination register
+     */
     public static final MnemonicArguments DEST_SOURCE = new Comma(DEST, SOURCE);
+    /**
+     * Used for instruction which have a destination register and a constant
+     */
     public static final MnemonicArguments DEST_CONST = new Comma(DEST, CONST);
+    /**
+     * Used for instruction which have a braced destination register and a source register
+     */
     public static final MnemonicArguments BDEST_SOURCE = new Comma(new Brace(DEST), SOURCE);
+    /**
+     * Used for instruction which have a destination register and a braced source register
+     */
     public static final MnemonicArguments DEST_BSOURCE = new Comma(DEST, new Brace(SOURCE));
+    /**
+     * Used for instruction which have a constant and a source register
+     */
     public static final MnemonicArguments CONST_SOURCE = new Comma(CONST, SOURCE);
+    /**
+     * Used for instruction which have a destination register, a const and a source register
+     */
     public static final MnemonicArguments BDEST_BCONST_SOURCE = new Comma(new Brace(new Plus(DEST, CONST)), SOURCE);
+    /**
+     * Used for instruction which have a destination register, a source register and a const and
+     */
     public static final MnemonicArguments DEST_BSOURCE_BCONST = new Comma(DEST, new Brace(new Plus(SOURCE, CONST)));
 
 
@@ -32,20 +67,45 @@ public abstract class MnemonicArguments {
         this.hasConst = hasConst;
     }
 
+    /**
+     * @return true if there is a source register
+     */
     public boolean hasSource() {
         return hasSource;
     }
 
+    /**
+     * @return true if there is a destination register
+     */
     public boolean hasDest() {
         return hasDest;
     }
 
+    /**
+     * @return true if there is a constant
+     */
     public boolean hasConst() {
         return hasConst;
     }
 
+    /**
+     * Formats an instruction
+     *
+     * @param i the instruction
+     * @return the representing string
+     */
     public abstract String format(Instruction i);
 
+    /**
+     * Parses the arguments descriped by this {@link MnemonicArguments} instance.
+     *
+     * @param i the instruction builder to use
+     * @param p the pareser to read the tokens from
+     * @return the instruction builder for chanied calls
+     * @throws IOException          IOException
+     * @throws ParserException      ParserException
+     * @throws InstructionException InstructionException
+     */
     public abstract InstructionBuilder parse(InstructionBuilder i, Parser p) throws IOException, ParserException, InstructionException;
 
     private static final class Nothing extends MnemonicArguments {
@@ -164,9 +224,9 @@ public abstract class MnemonicArguments {
     }
 
     private static class Concat extends MnemonicArguments {
-        protected final MnemonicArguments before;
+        final MnemonicArguments before;
         private final char c;
-        protected final MnemonicArguments after;
+        final MnemonicArguments after;
 
         private Concat(MnemonicArguments before, char c, MnemonicArguments after) {
             super(before.hasSource || after.hasSource,
@@ -196,13 +256,13 @@ public abstract class MnemonicArguments {
         }
     }
 
-    private static class Comma extends Concat {
+    private static final class Comma extends Concat {
         private Comma(MnemonicArguments before, MnemonicArguments after) {
             super(before, ',', after);
         }
     }
 
-    private static class Plus extends Concat {
+    private static final class Plus extends Concat {
         private Plus(MnemonicArguments before, Const after) {
             super(before, '+', after);
         }

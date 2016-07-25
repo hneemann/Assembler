@@ -15,6 +15,11 @@ public class HexFormatter implements InstructionVisitor {
 
     private final PrintStream out;
 
+    /**
+     * Creates a new instance
+     *
+     * @param out the stream to write to
+     */
     public HexFormatter(PrintStream out) {
         this.out = out;
         out.println("v2.0 raw");

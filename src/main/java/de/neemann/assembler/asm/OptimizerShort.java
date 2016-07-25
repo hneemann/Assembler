@@ -6,11 +6,16 @@ import de.neemann.assembler.expression.ExpressionException;
 import java.util.HashMap;
 
 /**
+ * Tries to replace a long const instruction by a short constant instruction
+ *
  * @author hneemann
  */
 public class OptimizerShort implements InstructionVisitor {
     private final HashMap<Opcode, Opcode> shortConstantMap;
 
+    /**
+     * Creates a new instance
+     */
     public OptimizerShort() {
         shortConstantMap = new HashMap<>();
         shortConstantMap.put(Opcode.LDI, Opcode.LDIs);

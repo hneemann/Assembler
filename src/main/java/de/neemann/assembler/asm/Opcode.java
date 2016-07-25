@@ -613,6 +613,7 @@ public enum Opcode {
         return name() + " " + arguments.toString() + "\n\t" + description;
     }
 
+    /* used to create the Control Unit Rom content!
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println(Opcode.values().length + " opcodes");
         try (PrintStream p = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_II/Systemnahes_Programmieren/java/assembler3/control.dat")) {
@@ -626,5 +627,5 @@ public enum Opcode {
         for (Register r : Register.values()) {
             System.out.print(r.name() + ", ");
         }
-    }
+    }*/
 }
