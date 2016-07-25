@@ -7,10 +7,20 @@ public class Constant implements Expression {
 
     private final Object value;
 
+    /**
+     * Creates a new instance
+     *
+     * @param value the constant value
+     */
     public Constant(int value) {
         this((Integer) value);
     }
 
+    /**
+     * Creates a new instance
+     *
+     * @param value the constant value
+     */
     public Constant(char value) {
         this((Character) value);
     }
