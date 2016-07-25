@@ -55,7 +55,7 @@ public class Constant implements Expression {
                     sb.append("\\'");
                     break;
                 case '\"':
-                    sb.append("\\\"");
+                    sb.append("\"");
                     break;
                 case '\\':
                     sb.append("\\");
