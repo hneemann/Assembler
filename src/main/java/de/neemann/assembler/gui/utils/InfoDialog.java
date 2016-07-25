@@ -91,14 +91,14 @@ public final class InfoDialog {
         return help;
     }
 
-    private static class Manifest {
+    private final static class Manifest {
         private static final String REVISION = "Build-SCM-Revision";
         private static final String TIME = "Build-Time";
 
         private final HashMap<String, String> manifest;
         private final URL url;
 
-        public Manifest(URL url) throws IOException {
+        private Manifest(URL url) throws IOException {
             this.url = url;
             manifest = new HashMap<String, String>();
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "utf-8"));
@@ -135,10 +135,10 @@ public final class InfoDialog {
 
         @Override
         public String toString() {
-            return "Manifest{" +
-                    "manifest=" + manifest +
-                    ", url=" + url +
-                    '}';
+            return "Manifest{"
+                    + "manifest=" + manifest
+                    + ", url=" + url
+                    + '}';
         }
     }
 }

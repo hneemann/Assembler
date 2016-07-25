@@ -20,23 +20,28 @@ import java.util.prefs.Preferences;
 
 /**
  * Main frame of the assembler GUI
- *
+ * <p>
  * Created by hneemann on 17.06.14.
  */
 public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
 
-    private static final String MESSAGE = "ASM 3\n\n" +
-            "Simple assembler to create a hex file for a\n" +
-            "simple simulated 16 bit processor.\n\n" +
-            "Written by H. Neemann in 2015.";
+    private static final String MESSAGE = "ASM 3\n\n"
+            + "Simple assembler to create a hex file for a\n"
+            + "simple simulated 16 bit processor.\n\n"
+            + "Written by H. Neemann in 2015.";
 
-    private static final Preferences prefs = Preferences.userRoot().node("dt_asm3");
+    private static final Preferences PREFS = Preferences.userRoot().node("dt_asm3");
     private static final int MAX_HELP_COLS = 70;
     private final JTextArea source;
     private File filename;
     private File lastFilename;
     private String sourceOnDisk = "";
 
+    /**
+     * Creates a new main frame
+     *
+     * @param fileToOpen the file to open
+     */
     public Main(File fileToOpen) {
         super("ASM 3");
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -244,7 +249,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
         if (fileToOpen == null) {
-            String n = prefs.get("name", null);
+            String n = PREFS.get("name", null);
             if (n != null)
                 fileToOpen = new File(n);
         }
@@ -411,10 +416,15 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             setTitle("ASM 3");
         else {
             setTitle("[" + file.getName() + "] ASM 3");
-            prefs.put("name", file.toString());
+            PREFS.put("name", file.toString());
         }
     }
 
+    /**
+     * The main method
+     *
+     * @param args the arguments
+     */
     public static void main(String[] args) {
         if (args.length == 0) {
             SwingUtilities.invokeLater(new Runnable() {
