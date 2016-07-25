@@ -23,7 +23,7 @@ public class Parser implements Closeable {
                     ".include \"filename\"\n\tincludes the given file";
     private final StreamTokenizer tokenizer;
     private final Reader in;
-    public static final HashMap<String, Macro> macros = new HashMap<>();
+    private static final HashMap<String, Macro> macros = new HashMap<>();
     private final HashMap<String, Register> regsMap;
     private File baseFile;
 
@@ -39,6 +39,10 @@ public class Parser implements Closeable {
         addMacro(new Leave());
     }
 
+    public static Iterable<Macro> getMacros() {
+        return macros.values();
+    }
+
     private static void addMacro(Macro m) {
         macros.put(m.getName().toLowerCase(), m);
     }
@@ -48,8 +52,8 @@ public class Parser implements Closeable {
         this(new StringReader(source));
     }
 
-    public Parser(File file) throws FileNotFoundException {
-        this(new FileReader(file));
+    public Parser(File file) throws IOException {
+        this(new InputStreamReader(new FileInputStream(file), "utf-8"));
         baseFile = file;
     }
 

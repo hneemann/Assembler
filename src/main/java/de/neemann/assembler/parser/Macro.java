@@ -25,8 +25,6 @@ public abstract class Macro {
         return name;
     }
 
-    ;
-
     public String toString() {
         return name + " " + args.toString() + "\n\t" + description;
     }

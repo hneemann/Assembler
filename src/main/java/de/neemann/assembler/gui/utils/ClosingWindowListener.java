@@ -12,9 +12,9 @@ import java.awt.event.WindowEvent;
  * @author hneemann
  */
 public class ClosingWindowListener extends WindowAdapter {
-    public static String SAVE_CHANGES_MESSAGE = "Save changes?";
-    public static String CONFIRM_EXIT_MESSAGE = "Confirm Exit!";
-    public static String STATE_CHANGED_MESSAGE = "State changed!";
+    private static String SAVE_CHANGES_MESSAGE = "Save changes?";
+    private static String CONFIRM_EXIT_MESSAGE = "Confirm Exit!";
+    private static String STATE_CHANGED_MESSAGE = "State changed!";
     private final Component parent;
     private final GUICloser guiCloser;
 

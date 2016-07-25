@@ -127,8 +127,8 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                         writeHex(program, filename);
 
                         ByteArrayOutputStream text = new ByteArrayOutputStream();
-                        program.traverse(new AsmFormatter(new PrintStream(text)));
-                        new ListDialog(Main.this, text.toString()).setVisible(true);
+                        program.traverse(new AsmFormatter(new PrintStream(text, false, "utf-8")));
+                        new ListDialog(Main.this, text.toString("utf-8")).setVisible(true);
                     }
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
@@ -143,8 +143,8 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                     ByteArrayOutputStream text = new ByteArrayOutputStream();
                     Program program = createProgram();
                     if (program != null) {
-                        program.traverse(new AsmFormatter(new PrintStream(text), false));
-                        new ListDialog(Main.this, text.toString()).setVisible(true);
+                        program.traverse(new AsmFormatter(new PrintStream(text, false, "utf-8"), false));
+                        new ListDialog(Main.this, text.toString("utf-8")).setVisible(true);
                     }
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
@@ -181,7 +181,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                     for (Opcode op : Opcode.values())
                         tf.append(op.toString()).append("\n\n");
                     tf.append("Macros\n\n");
-                    for (Macro m : Parser.macros.values())
+                    for (Macro m : Parser.getMacros())
                         tf.append(m.toString()).append("\n\n");
                     tf.append(Parser.HELP).append("\n");
                     new ListDialog(Main.this, "Instructions", tf.toString(), null).setVisible(true);
@@ -353,7 +353,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     }
 
     private void writeSource(File file) throws IOException {
-        try (Writer w = new FileWriter(file)) {
+        try (Writer w = new OutputStreamWriter(new FileOutputStream(file), "utf-8")) {
             String text = this.source.getText();
             w.write(text);
             sourceOnDisk = text;
@@ -364,7 +364,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     static private void writeHex(Program p, File name) throws IOException, ExpressionException {
         if (name != null) {
             File f = makeFilename(name, ".asm", ".hex");
-            try (PrintStream ps = new PrintStream(f)) {
+            try (PrintStream ps = new PrintStream(f, "utf-8")) {
                 p.traverse(new HexFormatter(ps));
             }
         }
@@ -373,7 +373,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     static private void writeLst(Program p, File name) throws IOException, ExpressionException {
         if (name != null) {
             File f = makeFilename(name, ".asm", ".lst");
-            try (PrintStream ps = new PrintStream(f)) {
+            try (PrintStream ps = new PrintStream(f, "utf-8")) {
                 p.traverse(new AsmFormatter(ps));
             }
         }
@@ -390,7 +390,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     }
 
     private void load(File file) throws IOException {
-        try (Reader in = new FileReader(file)) {
+        try (Reader in = new InputStreamReader(new FileInputStream(file), "utf-8")) {
             StringBuilder sb = new StringBuilder();
 
             int c;
