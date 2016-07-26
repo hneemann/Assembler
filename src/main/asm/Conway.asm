@@ -1,10 +1,12 @@
-
+; Conways Game of Life
 
 	.const GRAPHIC 0x8000
 	.const BANKSWITCH 0x7fff
 	.const SIZE    20
 	.const COLOR   3
 	
+	.reg r_pos R0 
+	.reg w_pos R1 
 	.reg x R2 
 	.reg y R3 
 	.reg TEMP R4 
@@ -15,39 +17,34 @@
 	.reg BANK R9
 	.reg NEWVAL R10
 	.reg COUNT_RET R11
-
-	ldi R0,0
-	ldi R1,1
+	.reg COUNT_R R12
 
 	ldi W_OFFS,GRAPHIC
 	ldi R_OFFS,GRAPHIC+SIZE*SIZE
+	ldi BANK,0
 
 	;init screen
 	ldi VALUE, COLOR
-	ldi x, 16
-	ldi y, 11
-	call set
-	inc x
-	call set
-	dec x
-	inc y
-	call set
-	dec x
-	call set
-	inc x
-	inc y
-	call set
 
+;	Pulsator
+	ldi x, 5
+	ldi y, 10
+pul1:	call set
+	inc x
+	cpi x, 15
+	brne pul1
+
+	; start programm
 	jmp SWAP_PAGE
 
-	; iterate
-START:	ldi y,0
+	; calculate new generation
+START:	mov r_pos,R_OFFS
+	mov w_pos,W_OFFS
+        ldi y,0
 L_Y:	ldi x,0
 L_X:	ldi NEWVAL,0
-	call count
-	call get
-	;brk
-
+	rcall COUNT_R,count
+	inr VALUE,[r_pos]
 	cpi VALUE,0
 	BREQ isDead
 isAlive:
@@ -62,8 +59,9 @@ isDead:
 wake:	ldi NEWVAL,COLOR
 	
 loopEnd: 
-	mov VALUE, NEWVAL
-	call set
+	outr [w_pos], NEWVAL
+	inc r_pos
+	inc w_pos
 	inc x
 	cpi x, SIZE
 	brne L_X
@@ -71,10 +69,12 @@ loopEnd:
 	cpi y, SIZE
 	brne L_Y
 
+	; make the new generation visible
 	EORI BANK,1
 	out BANKSWITCH,BANK
 	
 SWAP_PAGE:
+	; swap page to read and page to write
 	mov TEMP, W_OFFS
 	mov W_OFFS, R_OFFS
 	mov R_OFFS, TEMP
@@ -85,46 +85,44 @@ SWAP_PAGE:
 
 count:  ldi COUNT,0
 	dec y
+	subi r_pos,SIZE
 	rcall COUNT_RET, count_check
 	inc x
+	addi r_pos,1
 	rcall COUNT_RET, count_check
 	inc y
+	addi r_pos,SIZE
 	rcall COUNT_RET, count_check
 	inc y
+	addi r_pos,SIZE
 	rcall COUNT_RET, count_check
 	dec x
+	subi r_pos,1
 	rcall COUNT_RET, count_check
 	dec x
+	subi r_pos,1
 	rcall COUNT_RET, count_check
 	dec y
+	subi r_pos,SIZE
 	rcall COUNT_RET, count_check
 	dec y
+	subi r_pos,SIZE
 	rcall COUNT_RET, count_check
 	inc x
 	inc y
-	ret
+	addi r_pos,SIZE+1
+	rret COUNT_R
 count_check:
-	cpi x,SIZE
+	cpi x,SIZE ; if running pulsator, border check is not necessary
 	brcc c1
 	cpi y,SIZE
 	brcc c1
-	mov TEMP,y
-	muli TEMP,SIZE
-	add TEMP,x
-	add TEMP,R_OFFS
-	inr VALUE,[TEMP]
+	inr VALUE,[r_pos]
 	cpi VALUE,0
 	breq c1
 	inc COUNT
 c1:	rret COUNT_RET
 
-
-get:	mov TEMP,y
-	muli TEMP,SIZE
-	add TEMP,x
-	add TEMP,R_OFFS
-	inr VALUE,[TEMP]
-	ret
 
 set:	mov TEMP,y
 	muli TEMP,SIZE
