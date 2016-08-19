@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/hneemann/Assembler.svg?branch=master)](https://travis-ci.org/hneemann/Assembler)
+
+[Download latest Release](https://github.com/hneemann/Assembler/releases/latest)
+
 # ASM 3 #
 
 In this repo you can find a assembler for a simulated 16 bit microprocessor as a [Digital](https://github.com/hneemann/Digital/) 
