@@ -1,6 +1,13 @@
 language: java
 jdk:
-  - oraclejdk8
+- oraclejdk8
 sudo: false
 script: mvn clean install
-
+deploy:
+  provider: releases
+  api_key:
+    secure: S1JjW8lQF4Jht93ftqR/0fHD+nCVH1fiqV2kk8ZNC0HyN977FewV4M4doCqme7KnifL6trCj5EiSekgu4WOmwObi1jvBiPWNiZwaxaGlZhhzPZrVYUvC9LH+mjGsn3nFIi/SECRtVqm3aPPwhHSr53kfdkaXBQ5UoEuMefesOdHnL3j19FF7QH47oVQriXlIwhJTARgec8a9e3fCZRGOhYJEy7IEE6ZgRouLnwew4dkpZKGe3nMC2Ozrs/m+NAG2QBWDZdjoX4Uyg2SAd7B/KhDRMZULP4jJxGz/5cII3V5KGMsd0AGq2w2R+EJQq4wY/5L/Kgjj9/iMp01kX2nDvo18lGfKl+Nxf8k4+TPYC66jFYhHlBaZiZ4p3IAzrA5Pli15+MOMlAtckBXAbrvdF2xaRHAEvoaIGOobm0aa4Ph7DPItqWhlfwuebnam3KveH0giCg5RWn/xeqXa74UfTGY1Rn4u2ckF3tz8XlS9pA82XQYGjQj48pqVUP3HY/HZ+6wQSIYwaxpgwrdZOMooI3ZZyaXqEUJEQpUBjgXS1/AmIi00v/zj7QB38MPt/wLBrxK60+jKmhvF2MQ5DxXZddy4F4bz/GYX0kH8L5ZxGbWe3dNtQtCL3cPH5Bm8mOLbV+2eaHTeVyx8CiaABnLwP2oQE46EQMt9/cQT6BlRs1E=
+  file: target/asm3.zip
+  skip_cleanup: true
+  on:
+    tags: true
