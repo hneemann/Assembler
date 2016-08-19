@@ -6,7 +6,7 @@ The assembler is implemented in Java. I used this assembler to teach my students
 The processor is a harvard single cycle cpu and its architecture is inspired by the MIPS architecture, but the assembler 
 supports pseudo instructions like *push*, *pop*, *enter*, *leave* or *call* and *ret [n]*. 
 So it is also possible to program more like a x86 cisc processor. 
-The assembler has a simple GUI and is able to control the simulator usinf its TCP/IP interface. 
+The assembler has a simple GUI and is able to control the simulator using its TCP/IP interface. 
 So it is easy to debug an assembly program within the simulator. 
 
 ### Usage ###
