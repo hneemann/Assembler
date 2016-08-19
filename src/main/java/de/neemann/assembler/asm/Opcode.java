@@ -1,6 +1,5 @@
 package de.neemann.assembler.asm;
 
-import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
 /**
@@ -550,50 +549,89 @@ public enum Opcode {
     }
 
 
+    /**
+     * @return the decription of this opcode
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * @return the controll value for the ALUB multiplexer
+     */
     public ALUBSel getALUBSel() {
         return f.aluBSel;
     }
 
+    /**
+     * @return true if the ALU result is connected to the data bus
+     */
     public ALUToBus getAluToBus() {
         return f.aluToBus;
     }
 
+    /**
+     * @return true if the SRC-Register is connected to the data bus
+     */
     public SrcToBus getSrcToBus() {
         return f.srcToBus;
     }
 
+    /**
+     * @return the ReadRam flag, if set to yes, the RAM output is connected to the data bus
+     */
     public ReadRam getReadRam() {
         return f.rr;
     }
 
+    /**
+     * @return the WriteRam flag, if set to yes, the RAM stores the value on the data bus
+     */
     public WriteRam getWriteRam() {
         return f.wr;
     }
 
+    /**
+     * @return the ReadIO flag, if set to yes, the ReadIO pin is set to true
+     */
     public ReadIO getReadIO() {
         return f.rio;
     }
 
+    /**
+     * @return the WriteIO flag, if set to yes, the WriteIO pin is set to true
+     */
     public WriteIO getWriteIO() {
         return f.wio;
     }
 
+    /**
+     * @return if set to yes the PC is connected to the data bus
+     */
     public StorePC getStorePC() {
         return f.storePC;
     }
 
+    /**
+     * @return if set to yes value on the data bus is stored in the destination register
+     */
     public EnRegWrite getEnRegWrite() {
         return f.enRegWrite;
     }
 
+    /**
+     * @return returns the flags of this opcode
+     */
     public MnemonicArguments getArguments() {
         return arguments;
     }
 
+    /**
+     * returns an opcode given by the string
+     *
+     * @param name the string representation of the opcode
+     * @return the opcode or null if not found
+     */
     public static Opcode parseStr(String name) {
         for (Opcode op : Opcode.values())
             if (op.name().equalsIgnoreCase(name))
@@ -601,6 +639,12 @@ public enum Opcode {
         return null;
     }
 
+    /**
+     * Writes all the control words to a hex file.
+     * This hex file can be loaded to a ROM module to configure the control unit of the cpu.
+     *
+     * @param out the stream fo write the hex file to
+     */
     public static void writeControlWords(PrintStream out) {
         out.print("v2.0 raw\n");
         for (Opcode oc : Opcode.values()) {
@@ -609,6 +653,7 @@ public enum Opcode {
         }
     }
 
+    @Override
     public String toString() {
         return name() + " " + arguments.toString() + "\n\t" + description;
     }

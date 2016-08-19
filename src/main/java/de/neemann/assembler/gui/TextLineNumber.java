@@ -20,17 +20,26 @@ import java.util.HashMap;
  * component must use the same line height for each line. TextLineNumber
  * supports wrapped lines and will highlight the line number of the current
  * line in the text component.
- *
+ * <p>
  * This class was designed to be used as a component added to the row header
  * of a JScrollPane.
- *
+ * <p>
  * Written by Rob Camick, May 23, 2009
  * See: https://tips4java.wordpress.com/2009/05/23/text-component-line-number/
  */
 public class TextLineNumber extends JPanel
         implements CaretListener, DocumentListener, PropertyChangeListener {
+    /**
+     * Constant to left align the digits
+     */
     public final static float LEFT = 0.0f;
+    /**
+     * Constant to center the digits
+     */
     public final static float CENTER = 0.5f;
+    /**
+     * Constant to right align the digits
+     */
     public final static float RIGHT = 1.0f;
 
     private final static Border OUTER = new MatteBorder(0, 0, 0, 2, Color.GRAY);
@@ -272,15 +281,13 @@ public class TextLineNumber extends JPanel
         int caretPosition = component.getCaretPosition();
         Element root = component.getDocument().getDefaultRootElement();
 
-        if (root.getElementIndex(rowStartOffset) == root.getElementIndex(caretPosition))
-            return true;
-        else
-            return false;
+        return root.getElementIndex(rowStartOffset) == root.getElementIndex(caretPosition);
     }
 
-    /*
+    /**
      *	Get the line number to be drawn. The empty string will be returned
      *  when a line of text has wrapped.
+     *  @return line number
      */
     protected String getTextLineNumber(int rowStartOffset) {
         Element root = component.getDocument().getDefaultRootElement();
@@ -315,11 +322,9 @@ public class TextLineNumber extends JPanel
         //  The text needs to be positioned above the bottom of the bounding
         //  rectangle based on the descent of the font(s) contained on the row.
 
-        if (r.height == lineHeight)  // default font is being used
-        {
+        if (r.height == lineHeight) { // default font is being used
             descent = fontMetrics.getDescent();
-        } else  // We need to check all the attributes for font changes
-        {
+        } else { // We need to check all the attributes for font changes
             if (fonts == null)
                 fonts = new HashMap<String, FontMetrics>();
 
