@@ -34,6 +34,15 @@ public class RemoteInterface {
     }
 
     /**
+     * Debugs the simulation
+     *
+     * @throws RemoteException RemoteException
+     */
+    public void debug() throws RemoteException {
+        sendRequest("debug", null);
+    }
+
+    /**
      * Run to next break point
      *
      * @throws RemoteException RemoteException

@@ -198,7 +198,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
 
         final RemoteInterface remoteInterface = new RemoteInterface();
 
-        ToolTipAction remoteStart = new ToolTipAction("Start", IconCreator.create("media-playback-start.png")) {
+        ToolTipAction remoteStart = new ToolTipAction("Run", IconCreator.create("media-playback-start.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
@@ -213,7 +213,25 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
             }
-        }.setToolTip("Starts the simulated circuit.");
+        }.setToolTip("Run the progam.");
+
+        ToolTipAction remoteDebug = new ToolTipAction("Debug", IconCreator.create("debug.png")) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    Program program = createProgram();
+                    if (program != null) {
+                        writeHex(program, filename);
+                        writeLst(program, filename);
+                        remoteInterface.load(makeFilename(filename, ".asm", ".hex"));
+                        remoteInterface.debug();
+                    }
+                } catch (Throwable e) {
+                    new ErrorMessage("Error").addCause(e).show(Main.this);
+                }
+            }
+        }.setToolTip("Debugs the program.");
+
         ToolTipAction remoteRun = new ToolTipAction("Run to BRK", IconCreator.create("media-skip-forward.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -301,9 +319,11 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         toolBar.add(build.createJButtonNoText());
         toolBar.addSeparator();
         toolBar.add(remoteStart.createJButtonNoText());
+        toolBar.add(remoteStop.createJButtonNoText());
+        toolBar.addSeparator();
+        toolBar.add(remoteDebug.createJButtonNoText());
         toolBar.add(remoteStep.createJButtonNoText());
         toolBar.add(remoteRun.createJButtonNoText());
-        toolBar.add(remoteStop.createJButtonNoText());
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         pack();
