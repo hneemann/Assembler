@@ -10,9 +10,8 @@ The assembler is implemented in Java.
 The processor is a 16 bit harvard single cycle cpu and its architecture is inspired by the MIPS architecture.
 Only the handling of long constants is a bit of a hack to avoid a 32 bit instruction memory.   
 The assembler supports pseudo instructions like *push*, *pop*, *enter*, *leave* or *call* and *ret [n]*. 
-So it is also possible to program more like for a x86 cisc processor. So on can explain the different techniques to 
-create and remove the stack frame of a function call on a x86 processor. 
-The assembler has a simple GUI and is able to control the [simulator](https://github.com/hneemann/Digital/) using its TCP/IP 
+So it is also possible to program more like for a x86 cisc processor.  
+The assembler has a simple GUI and is able to control the [simulator](https://github.com/hneemann/Digital/) by using its TCP/IP 
 interface. So it is easy to debug an assembly program within the simulator. 
 
 ### Usage ###
