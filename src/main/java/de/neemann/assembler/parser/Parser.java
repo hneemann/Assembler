@@ -183,6 +183,11 @@ public class Parser implements Closeable {
                 p.addPendingComment(" " + word);
                 p.addRam(word, 2);
                 break;
+            case ".org":
+                int addr = parseExpression().getValue(p.getContext());
+                p.addPendingOrigin(addr);
+                p.addPendingComment(" 0x" + Integer.toHexString(addr));
+                break;
             case ".const":
                 word = parseWord();
                 int value = parseExpression().getValue(p.getContext());

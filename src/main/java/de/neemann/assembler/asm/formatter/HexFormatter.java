@@ -14,6 +14,7 @@ import java.io.PrintStream;
 public class HexFormatter implements InstructionVisitor {
 
     private final PrintStream out;
+    private int addr = 0;
 
     /**
      * Creates a new instance
@@ -27,10 +28,19 @@ public class HexFormatter implements InstructionVisitor {
 
     @Override
     public void visit(Instruction in, Context context) throws ExpressionException {
+        final int instrAddr = context.getInstrAddr();
+        if (instrAddr < addr)
+            throw new ExpressionException("invalid hex addr!");
+        while (instrAddr > addr) {
+            out.println("0");
+            addr++;
+        }
+
         in.createMachineCode(context, new MachineCodeListener() {
             @Override
             public void add(int code) {
                 out.println(Integer.toHexString(code));
+                addr++;
             }
         });
     }

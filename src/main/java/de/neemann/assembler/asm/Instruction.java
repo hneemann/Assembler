@@ -16,6 +16,7 @@ public final class Instruction {
     private String macroDescription;
     private String comment;
     private int lineNumber;
+    private int absAddr = -1;
 
     Instruction(Opcode opcode, Register destReg, Register sourceReg, Expression constant) {
         this.destReg = destReg;
@@ -177,6 +178,7 @@ public final class Instruction {
 
     /**
      * Sets the Opcode of this instruction
+     *
      * @param opcode the opcode
      */
     public void setOpcode(Opcode opcode) {
@@ -202,5 +204,24 @@ public final class Instruction {
      */
     public Expression getConstant() {
         return constant;
+    }
+
+    /**
+     * Sets a abs addr for this instruction
+     *
+     * @param absAddr the address to set
+     */
+    public void setAbsAddr(int absAddr) {
+        this.absAddr = absAddr;
+    }
+
+    /**
+     * The absolute address is set by the .org directive
+     * If this directive is not used, the value is -1;
+     *
+     * @return the absolute address of this instruction
+     */
+    public int getAbsAddr() {
+        return absAddr;
     }
 }

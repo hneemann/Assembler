@@ -1,10 +1,14 @@
 package de.neemann.assembler.parser;
 
 import de.neemann.assembler.asm.*;
+import de.neemann.assembler.asm.formatter.AsmFormatter;
+import de.neemann.assembler.asm.formatter.HexFormatter;
 import de.neemann.assembler.expression.ExpressionException;
 import junit.framework.TestCase;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 /**
  * @author hneemann
@@ -221,4 +225,33 @@ public class ParserTest extends TestCase {
         assertEquals(-5, new Parser("LDD R0,[R1-5]").parseProgram().optimizeAndLink().getInstruction(0).getConstant().getValue(null));
     }
 
+    public void testOrg() throws ParserException, IOException, ExpressionException, InstructionException {
+        Program p = new Parser("LDI R0,0\n JMP A1\n.org 8\nA1: JMP A1").parseProgram().optimizeAndLink();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final PrintStream ps = new PrintStream(baos);
+        p.traverse(new HexFormatter(ps));
+        ps.close();
+
+        String ls = System.lineSeparator();
+
+        assertEquals("v2.0 raw"+ ls +
+                "1400"+ ls +
+                "6e06"+ ls +
+                "0"+ ls +
+                "0"+ ls +
+                "0"+ ls +
+                "0"+ ls +
+                "0"+ ls +
+                "0"+ ls +
+                "6fff"+ ls,baos.toString());
+    }
+
+    public void testOrgExc() throws ParserException, IOException, ExpressionException, InstructionException {
+        try {
+            new Parser("LDI R0,0\n JMP A1\n.org 0x0\nA1: JMP A1").parseProgram().optimizeAndLink();
+            fail();
+        } catch (ExpressionException e) {
+            assertTrue(true);
+        }
+    }
 }

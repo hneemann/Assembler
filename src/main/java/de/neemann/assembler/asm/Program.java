@@ -22,6 +22,7 @@ public class Program {
     private PendingString pendingMacroDescription = new PendingString("description");
     private PendingString pendingComment = new PendingString("comment");
     private int lineNumber;
+    private int pendingAddr = -1;
 
     /**
      * Creates a new instance
@@ -50,6 +51,11 @@ public class Program {
         i.setMacroDescription(pendingMacroDescription.get());
         i.setComment(pendingComment.get());
 
+        if (pendingAddr >= 0) {
+            i.setAbsAddr(pendingAddr);
+            pendingAddr = -1;
+        }
+
         i.setLineNumber(lineNumber);
         lineNumber = 0;
 
@@ -69,6 +75,12 @@ public class Program {
         for (int i = 0, progSize = prog.size(); i < progSize; i++) {
             Instruction in = prog.get(i);
             try {
+                final int absAddr = in.getAbsAddr();
+                if (absAddr >= 0) {
+                    if (absAddr < addr)
+                        throw new ExpressionException(".org cannot jmp backward!");
+                    addr = absAddr;
+                }
                 context.setInstrAddr(addr);
                 context.setIdentifier(Context.NEXT_ADDR, addr + calcRelAddr(i, 1));
                 context.setIdentifier(Context.SKIP_ADDR, addr + calcRelAddr(i, 2));
@@ -198,6 +210,16 @@ public class Program {
     public void addPendingComment(String comment) throws ExpressionException {
         this.pendingComment.add(comment);
     }
+
+    /**
+     * Sets the address for the next command
+     *
+     * @param addr the address to set
+     */
+    public void addPendingOrigin(int addr) {
+        this.pendingAddr = addr;
+    }
+
 
     /**
      * Performs a number of optimizations.
