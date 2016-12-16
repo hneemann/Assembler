@@ -153,6 +153,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             }
         }.setToolTip("Converts the source to a listing and shows it.");
 
+        /**
         ToolTipAction showLight = new ToolTipAction("Show simpler Listing") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -168,7 +169,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                     new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
             }
-        }.setToolTip("Converts the source to a listing without line numbers and shows it.");
+        }.setToolTip("Converts the source to a listing without line numbers and shows it.");*/
 
         ToolTipAction saveLst = new ToolTipAction("Save Listing") {
             @Override
@@ -218,9 +219,10 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                     Program program = createProgram();
                     if (program != null) {
                         writeHex(program, filename);
-                        writeLst(program, filename);
+                        //writeLst(program, filename);
                         remoteInterface.load(makeFilename(filename, ".asm", ".hex"));
                         remoteInterface.start();
+                        source.getHighlighter().removeAllHighlights();
                     }
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
@@ -235,7 +237,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                     runningProgram = createProgram();
                     if (runningProgram != null) {
                         writeHex(runningProgram, filename);
-                        writeLst(runningProgram, filename);
+                        //writeLst(runningProgram, filename);
                         remoteInterface.load(makeFilename(filename, ".asm", ".hex"));
                         remoteInterface.debug();
                         notifyCodeAddressChange(0);
@@ -309,7 +311,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
         JMenu assemble = new JMenu("ASM");
         assemble.add(build.createJMenuItem());
         assemble.add(show.createJMenuItem());
-        assemble.add(showLight.createJMenuItem());
+        //assemble.add(showLight.createJMenuItem());
         assemble.add(saveLst.createJMenuItem());
         assemble.add(tabToSpace.createJMenuItem());
 
