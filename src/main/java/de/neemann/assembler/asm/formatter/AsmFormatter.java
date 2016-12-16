@@ -8,6 +8,7 @@ import de.neemann.assembler.expression.Context;
 import de.neemann.assembler.expression.ExpressionException;
 
 import java.io.PrintStream;
+import java.util.HashMap;
 
 /**
  * Visitor to format a {@link de.neemann.assembler.asm.Program}
@@ -20,6 +21,9 @@ public class AsmFormatter implements InstructionVisitor {
     private final boolean includeLineNumbers;
     private final boolean indentCreated;
     private int actCol;
+    private int lineNumber;
+    private HashMap<Integer, Integer> addrToLineMap;
+
 
     /**
      * Creates a new instance
@@ -46,14 +50,26 @@ public class AsmFormatter implements InstructionVisitor {
             columnOfs = 6;
 
         actCol = 0;
+        lineNumber = 1;
+        addrToLineMap = new HashMap<>();
 
         indentCreated = true;
     }
 
+    /**
+     * @return map to assign addresses to lines
+     */
+    public HashMap<Integer, Integer> getAddrToLineMap() {
+        return addrToLineMap;
+    }
+
     @Override
     public void visit(Instruction i, Context context) throws ExpressionException {
-        if (i.getComment() != null)
-            o.println(i.getComment());
+        final String comment = i.getComment();
+        if (comment != null) {
+            o.println(comment);
+            lineNumber += countLines(comment) + 1;
+        }
 
 
         boolean labelIsPrinted = false;
@@ -78,7 +94,9 @@ public class AsmFormatter implements InstructionVisitor {
             print(" | ");
         }
 
-        printHex(context.getInstrAddr());
+        final int addr = context.getInstrAddr();
+        printHex(addr);
+        addrToLineMap.put(addr, lineNumber);
 
         print(": ");
 
@@ -116,6 +134,14 @@ public class AsmFormatter implements InstructionVisitor {
         newLine();
     }
 
+    private int countLines(String comment) {
+        int n = 0;
+        for (int i = 0; i < comment.length(); i++)
+            if (comment.charAt(i) == '\n')
+                n++;
+        return n;
+    }
+
     private boolean isCreated(Instruction i) {
         return i.getLineNumber() == 0 || i.getMacroDescription() != null;
     }
@@ -141,5 +167,6 @@ public class AsmFormatter implements InstructionVisitor {
     private void newLine() {
         o.print('\n');
         actCol = 0;
+        lineNumber++;
     }
 }

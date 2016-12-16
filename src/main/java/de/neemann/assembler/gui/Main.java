@@ -13,9 +13,14 @@ import de.neemann.assembler.parser.ParserException;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.prefs.Preferences;
 
 /**
@@ -23,7 +28,11 @@ import java.util.prefs.Preferences;
  * <p>
  * Created by hneemann on 17.06.14.
  */
-public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
+public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, AdressListener {
+    /**
+     * Used to highlight the actual line
+     */
+    public static final Highlighter.HighlightPainter HIGHLIGHT_PAINTER = new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN);
 
     private static final String MESSAGE = "ASM 3\n\n"
             + "Simple assembler to create a hex file for a\n"
@@ -33,9 +42,11 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
     private static final Preferences PREFS = Preferences.userRoot().node("dt_asm3");
     private static final int MAX_HELP_COLS = 70;
     private final JTextArea source;
+    private final ArrayList<AdressListener> addressListeners = new ArrayList<>();
     private File filename;
     private File lastFilename;
     private String sourceOnDisk = "";
+    private Program runningProgram;
 
     /**
      * Creates a new main frame
@@ -132,8 +143,9 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                         writeHex(program, filename);
 
                         ByteArrayOutputStream text = new ByteArrayOutputStream();
-                        program.traverse(new AsmFormatter(new PrintStream(text, false, "utf-8")));
-                        new ListDialog(Main.this, text.toString("utf-8")).setVisible(true);
+                        final AsmFormatter asmFormatter = new AsmFormatter(new PrintStream(text, false, "utf-8"));
+                        program.traverse(asmFormatter);
+                        new ListDialog(Main.this, "Listing", text.toString("utf-8"), asmFormatter.getAddrToLineMap()).setVisible(true);
                     }
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
@@ -148,8 +160,9 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                     ByteArrayOutputStream text = new ByteArrayOutputStream();
                     Program program = createProgram();
                     if (program != null) {
-                        program.traverse(new AsmFormatter(new PrintStream(text, false, "utf-8"), false));
-                        new ListDialog(Main.this, text.toString("utf-8")).setVisible(true);
+                        final AsmFormatter asmFormatter = new AsmFormatter(new PrintStream(text, false, "utf-8"), false);
+                        program.traverse(asmFormatter);
+                        new ListDialog(Main.this, "Listing", text.toString("utf-8"), asmFormatter.getAddrToLineMap()).setVisible(true);
                     }
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
@@ -189,7 +202,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
                     for (Macro m : Parser.getMacros())
                         tf.append(m.toString()).append("\n\n");
                     tf.append(Parser.HELP).append("\n");
-                    new ListDialog(Main.this, "Instructions", tf.toString(), null).setVisible(true);
+                    new ListDialog(Main.this, "Instructions", tf.toString(), (HashMap<Integer, Integer>) null).setVisible(true);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
@@ -219,12 +232,13 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    Program program = createProgram();
-                    if (program != null) {
-                        writeHex(program, filename);
-                        writeLst(program, filename);
+                    runningProgram = createProgram();
+                    if (runningProgram != null) {
+                        writeHex(runningProgram, filename);
+                        writeLst(runningProgram, filename);
                         remoteInterface.load(makeFilename(filename, ".asm", ".hex"));
                         remoteInterface.debug();
+                        notifyCodeAddressChange(0);
                     }
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
@@ -236,7 +250,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    remoteInterface.run();
+                    notifyCodeAddressChange(remoteInterface.run());
                 } catch (RemoteException e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
@@ -246,7 +260,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    remoteInterface.step();
+                    notifyCodeAddressChange(remoteInterface.step());
                 } catch (RemoteException e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
@@ -257,6 +271,8 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     remoteInterface.stop();
+                    runningProgram = null;
+                    source.getHighlighter().removeAllHighlights();
                 } catch (RemoteException e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
@@ -329,6 +345,32 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         pack();
 
         setLocationRelativeTo(null);
+
+        addAddrListener(this);
+    }
+
+    private void notifyCodeAddressChange(int addr) {
+        for (AdressListener l : addressListeners)
+            l.setCodeAddress(addr);
+    }
+
+    @Override
+    public void setCodeAddress(int codeAddress) {
+        if (runningProgram != null && codeAddress >= 0) {
+            int line = runningProgram.getLineByAddr(codeAddress);
+            if (line > 0) {
+                try {
+                    int l = line - 1;
+                    int lineStart = source.getLineStartOffset(l);
+                    int lineEnd = source.getLineEndOffset(l) - 1;
+                    source.getHighlighter().removeAllHighlights();
+                    source.getHighlighter().addHighlight(lineStart, lineEnd, HIGHLIGHT_PAINTER);
+                    source.setCaretPosition(lineStart);
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private JFileChooser getjFileChooser() {
@@ -482,5 +524,23 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave {
         } catch (IOException e) {
             new ErrorMessage("Error storing a file").addCause(e).show(Main.this);
         }
+    }
+
+    /**
+     * Adds a address listener
+     *
+     * @param listener the listener to add
+     */
+    public void addAddrListener(AdressListener listener) {
+        addressListeners.add(listener);
+    }
+
+    /**
+     * Removes a address listener
+     *
+     * @param listener the listener to add
+     */
+    public void removeAddrListener(AdressListener listener) {
+        addressListeners.remove(listener);
     }
 }

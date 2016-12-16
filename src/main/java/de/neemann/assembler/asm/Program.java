@@ -4,6 +4,7 @@ import de.neemann.assembler.expression.Context;
 import de.neemann.assembler.expression.ExpressionException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -23,6 +24,7 @@ public class Program {
     private PendingString pendingComment = new PendingString("comment");
     private int lineNumber;
     private int pendingAddr = -1;
+    private HashMap<Integer, Integer> addrToLineMap;
 
     /**
      * Creates a new instance
@@ -31,6 +33,7 @@ public class Program {
         prog = new ArrayList<>();
         context = new Context();
         dataMap = new TreeMap<>();
+        addrToLineMap = new HashMap<>();
     }
 
     /**
@@ -72,6 +75,7 @@ public class Program {
      */
     public Program traverse(InstructionVisitor instructionVisitor) throws ExpressionException {
         int addr = 0;
+        addrToLineMap.clear();
         for (int i = 0, progSize = prog.size(); i < progSize; i++) {
             Instruction in = prog.get(i);
             try {
@@ -86,6 +90,7 @@ public class Program {
                 context.setIdentifier(Context.SKIP_ADDR, addr + calcRelAddr(i, 2));
                 context.setIdentifier(Context.SKIP2_ADDR, addr + calcRelAddr(i, 3));
                 instructionVisitor.visit(in, context);
+                addrToLineMap.put(addr, in.getLineNumber());
                 addr += in.size();
             } catch (ExpressionException e) {
                 e.setLineNumber(in.getLineNumber());
@@ -93,6 +98,20 @@ public class Program {
             }
         }
         return this;
+    }
+
+    /**
+     * Returns the line of the given addr
+     *
+     * @param addr the address
+     * @return the line number or -1 if not found
+     */
+    public int getLineByAddr(int addr) {
+        final Integer l = addrToLineMap.get(addr);
+        if (l == null)
+            return -1;
+        else
+            return l;
     }
 
     private int calcRelAddr(int i, int len) {

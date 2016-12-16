@@ -45,10 +45,11 @@ public class RemoteInterface {
     /**
      * Run to next break point
      *
+     * @return the actual code address
      * @throws RemoteException RemoteException
      */
-    public void run() throws RemoteException {
-        sendRequest("run", null);
+    public int run() throws RemoteException {
+        return getAddr(sendRequest("run", null));
     }
 
     /**
@@ -63,13 +64,22 @@ public class RemoteInterface {
     /**
      * A single clock step
      *
+     * @return the actual code address
      * @throws RemoteException RemoteException
      */
-    public void step() throws RemoteException {
-        sendRequest("step", null);
+    public int step() throws RemoteException {
+        return getAddr(sendRequest("step", null));
     }
 
-    private void sendRequest(String command, String args) throws RemoteException {
+    private int getAddr(String resp) {
+        try {
+            return Integer.parseInt(resp.substring(3), 16);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    private String sendRequest(String command, String args) throws RemoteException {
         try {
             Socket s = new Socket(InetAddress.getLocalHost(), 41114);
             DataOutputStream out = new DataOutputStream(s.getOutputStream());
@@ -79,8 +89,9 @@ public class RemoteInterface {
             out.flush();
             DataInputStream in = new DataInputStream(s.getInputStream());
             String response = in.readUTF();
-            if (!response.equals("ok"))
+            if (!(response.equals("ok") || response.startsWith("ok:")))
                 throw new RemoteException("Error received from simulator:\n" + response);
+            return response;
         } catch (IOException e) {
             throw new RemoteException("Error communicating with simulator!", e);
         }
