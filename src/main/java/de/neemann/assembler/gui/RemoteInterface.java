@@ -15,31 +15,23 @@ import java.net.Socket;
 public class RemoteInterface {
 
     /**
-     * Request to loads a file to the simulated rom
+     * Starts the simulation
      *
      * @param file the file to load
      * @throws RemoteException RemoteException
      */
-    public void load(File file) throws RemoteException {
-        sendRequest("load", file.getPath());
-    }
-
-    /**
-     * Starts the simulation
-     *
-     * @throws RemoteException RemoteException
-     */
-    public void start() throws RemoteException {
-        sendRequest("start", null);
+    public void start(File file) throws RemoteException {
+        sendRequest("start", file.getPath());
     }
 
     /**
      * Debugs the simulation
      *
+     * @param file the file to load
      * @throws RemoteException RemoteException
      */
-    public void debug() throws RemoteException {
-        sendRequest("debug", null);
+    public void debug(File file) throws RemoteException {
+        sendRequest("debug", file.getPath());
     }
 
     /**
@@ -72,6 +64,9 @@ public class RemoteInterface {
     }
 
     private int getAddr(String resp) {
+        if (resp.length()<=3)
+            return -1;
+
         try {
             return Integer.parseInt(resp.substring(3), 16);
         } catch (NumberFormatException e) {

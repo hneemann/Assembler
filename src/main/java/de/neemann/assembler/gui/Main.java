@@ -153,24 +153,6 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             }
         }.setToolTip("Converts the source to a listing and shows it.");
 
-        /**
-        ToolTipAction showLight = new ToolTipAction("Show simpler Listing") {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    ByteArrayOutputStream text = new ByteArrayOutputStream();
-                    Program program = createProgram();
-                    if (program != null) {
-                        final AsmFormatter asmFormatter = new AsmFormatter(new PrintStream(text, false, "utf-8"), false);
-                        program.traverse(asmFormatter);
-                        new ListDialog(Main.this, "Listing", text.toString("utf-8"), asmFormatter.getAddrToLineMap()).setVisible(true);
-                    }
-                } catch (Throwable e) {
-                    new ErrorMessage("Error").addCause(e).show(Main.this);
-                }
-            }
-        }.setToolTip("Converts the source to a listing without line numbers and shows it.");*/
-
         ToolTipAction saveLst = new ToolTipAction("Save Listing") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -218,11 +200,11 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                 try {
                     Program program = createProgram();
                     if (program != null) {
-                        writeHex(program, filename);
-                        //writeLst(program, filename);
-                        remoteInterface.load(makeFilename(filename, ".asm", ".hex"));
-                        remoteInterface.start();
-                        source.getHighlighter().removeAllHighlights();
+                        File hex = writeHex(program, filename);
+                        if (hex != null) {
+                            remoteInterface.start(hex);
+                            source.getHighlighter().removeAllHighlights();
+                        }
                     }
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
@@ -236,11 +218,11 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                 try {
                     runningProgram = createProgram();
                     if (runningProgram != null) {
-                        writeHex(runningProgram, filename);
-                        //writeLst(runningProgram, filename);
-                        remoteInterface.load(makeFilename(filename, ".asm", ".hex"));
-                        remoteInterface.debug();
-                        notifyCodeAddressChange(0);
+                        File hex = writeHex(runningProgram, filename);
+                        if (hex != null) {
+                            remoteInterface.debug(hex);
+                            notifyCodeAddressChange(0);
+                        }
                     }
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
@@ -430,13 +412,15 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
         }
     }
 
-    static private void writeHex(Program p, File name) throws IOException, ExpressionException {
+    static private File writeHex(Program p, File name) throws IOException, ExpressionException {
         if (name != null) {
             File f = makeFilename(name, ".asm", ".hex");
             try (PrintStream ps = new PrintStream(f, "utf-8")) {
                 p.traverse(new HexFormatter(ps));
             }
+            return f;
         }
+        return name;
     }
 
     static private void writeLst(Program p, File name) throws IOException, ExpressionException {
