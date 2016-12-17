@@ -346,7 +346,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                 try {
                     int l = line - 1;
                     int lineStart = source.getLineStartOffset(l);
-                    int lineEnd = source.getLineEndOffset(l) - 1;
+                    int lineEnd = source.getLineEndOffset(l);
                     source.getHighlighter().removeAllHighlights();
                     source.getHighlighter().addHighlight(lineStart, lineEnd, HIGHLIGHT_PAINTER);
                     source.setCaretPosition(lineStart);
