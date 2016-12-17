@@ -12,7 +12,7 @@ import java.util.HashMap;
  *
  * @author hneemann
  */
-public class ListDialog extends JDialog implements AdressListener {
+public class ListDialog extends JDialog implements AddressListener {
 
     private final HashMap<Integer, Integer> addrToLine;
     private final JTextArea source;
@@ -107,5 +107,10 @@ public class ListDialog extends JDialog implements AdressListener {
 
             }
         }
+    }
+
+    @Override
+    public void invalidateCode() {
+        dispose();
     }
 }

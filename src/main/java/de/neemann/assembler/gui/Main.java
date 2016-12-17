@@ -28,7 +28,7 @@ import java.util.prefs.Preferences;
  * <p>
  * Created by hneemann on 17.06.14.
  */
-public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, AdressListener {
+public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, AddressListener {
     /**
      * Used to highlight the actual line
      */
@@ -42,7 +42,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
     private static final Preferences PREFS = Preferences.userRoot().node("dt_asm3");
     private static final int MAX_HELP_COLS = 70;
     private final JTextArea source;
-    private final ArrayList<AdressListener> addressListeners = new ArrayList<>();
+    private final ArrayList<AddressListener> addressListeners = new ArrayList<>();
     private File filename;
     private File lastFilename;
     private String sourceOnDisk = "";
@@ -66,7 +66,9 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                 if (ClosingWindowListener.checkForSave(Main.this, Main.this)) {
                     sourceOnDisk = "";
                     source.setText(sourceOnDisk);
+                    runningProgram = null;
                     setFilename(null);
+                    notifyInvalidateCode();
                 }
             }
         }.setToolTip("creates a new file");
@@ -138,7 +140,11 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    Program program = createProgram();
+                    Program program;
+                    if (runningProgram != null)
+                        program = runningProgram;
+                    else
+                        program = createProgram();
                     if (program != null) {
                         writeHex(program, filename);
 
@@ -198,12 +204,13 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
+                    runningProgram = null;
                     Program program = createProgram();
                     if (program != null) {
                         File hex = writeHex(program, filename);
                         if (hex != null) {
                             remoteInterface.start(hex);
-                            source.getHighlighter().removeAllHighlights();
+                            notifyInvalidateCode();
                         }
                     }
                 } catch (Throwable e) {
@@ -221,6 +228,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                         File hex = writeHex(runningProgram, filename);
                         if (hex != null) {
                             remoteInterface.debug(hex);
+                            notifyInvalidateCode();
                             notifyCodeAddressChange(0);
                         }
                     }
@@ -256,7 +264,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                 try {
                     remoteInterface.stop();
                     runningProgram = null;
-                    source.getHighlighter().removeAllHighlights();
+                    notifyInvalidateCode();
                 } catch (RemoteException e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
@@ -334,8 +342,13 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
     }
 
     private void notifyCodeAddressChange(int addr) {
-        for (AdressListener l : addressListeners)
+        for (AddressListener l : addressListeners)
             l.setCodeAddress(addr);
+    }
+
+    private void notifyInvalidateCode() {
+        for (AddressListener l : addressListeners)
+            l.invalidateCode();
     }
 
     @Override
@@ -355,6 +368,11 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                 }
             }
         }
+    }
+
+    @Override
+    public void invalidateCode() {
+        source.getHighlighter().removeAllHighlights();
     }
 
     private JFileChooser getjFileChooser() {
@@ -420,7 +438,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             }
             return f;
         }
-        return name;
+        return null;
     }
 
     static private void writeLst(Program p, File name) throws IOException, ExpressionException {
@@ -453,6 +471,8 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             sourceOnDisk = sb.toString();
             source.setText(sourceOnDisk);
             setFilename(file);
+            notifyInvalidateCode();
+            runningProgram = null;
         }
 
     }
@@ -517,7 +537,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
      *
      * @param listener the listener to add
      */
-    public void addAddrListener(AdressListener listener) {
+    public void addAddrListener(AddressListener listener) {
         addressListeners.add(listener);
     }
 
@@ -526,7 +546,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
      *
      * @param listener the listener to add
      */
-    public void removeAddrListener(AdressListener listener) {
+    public void removeAddrListener(AddressListener listener) {
         addressListeners.remove(listener);
     }
 }
