@@ -128,6 +128,7 @@ public class OpcodeTest extends TestCase {
                 "80284\n" +
                 "80294\n" +
                 "80688\n" +
-                "100000\n", baos.toString());
+                "100000\n"+
+                "800020\n", baos.toString());
     }
 }
