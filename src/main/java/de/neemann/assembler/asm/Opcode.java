@@ -372,7 +372,12 @@ public enum Opcode {
 
     BRK("Stops execution by disabling the programm counter",
             MnemonicArguments.NOTHING, new Flags()
-            .set(Break.Yes));
+            .set(Break.Yes)),
+
+    RETI("Return from Interrupt",
+        MnemonicArguments.NOTHING, new Flags()
+            .set(JmpAbs.Yes)
+            .set(RetI.Yes));
 
 
     public enum RegsNeeded {none, source, dest, both}
@@ -412,6 +417,8 @@ public enum Opcode {
 
     enum JmpAbs {No, Yes}
 
+    enum RetI {No, Yes}
+
     enum StoreFlags {No, Yes}
 
     private static final class Flags {
@@ -426,6 +433,7 @@ public enum Opcode {
         private StorePC storePC = StorePC.No;
         private SourceToAluA sourceToAluA = SourceToAluA.No;
         private JmpAbs jmpAbs = JmpAbs.No;
+        private RetI retI = RetI.No;
         private WriteIO wio = WriteIO.No;
         private ReadIO rio = ReadIO.No;
         private Break brk = Break.No;
@@ -505,6 +513,11 @@ public enum Opcode {
             this.strFlags = strFlags;
             return this;
         }
+
+        public Flags set(RetI retI) {
+            this.retI = retI;
+            return this;
+        }
     }
 
     private final String description;
@@ -545,7 +558,8 @@ public enum Opcode {
                 | (f.rio.ordinal() << 19)
                 | (f.brk.ordinal() << 20)
                 | (f.srcToBus.ordinal() << 21)
-                | (f.strFlags.ordinal() << 22);
+                | (f.strFlags.ordinal() << 22)
+                | (f.retI.ordinal() << 23);
     }
 
 
@@ -661,7 +675,7 @@ public enum Opcode {
     /* used to create the Control Unit Rom content!
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println(Opcode.values().length + " opcodes");
-        try (PrintStream p = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_II/Systemnahes_Programmieren/java/assembler3/control.dat")) {
+        try (PrintStream p = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_II/Systemnahes_Programmieren/control.dat")) {
             writeControlWords(p);
         }
 
