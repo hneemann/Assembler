@@ -370,7 +370,7 @@ public enum Opcode {
             .set(SourceToAluA.Yes)
             .set(ReadIO.Yes)),
 
-    BRK("Stops execution by disabling the programm counter",
+    BRK("Stops execution by stopping the simulator",
             MnemonicArguments.NOTHING, new Flags()
             .set(Break.Yes)),
 
