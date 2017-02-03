@@ -181,7 +181,7 @@ public abstract class MnemonicArguments {
 
         @Override
         public String toString() {
-            return "const";
+            return "[const]";
         }
 
         @Override

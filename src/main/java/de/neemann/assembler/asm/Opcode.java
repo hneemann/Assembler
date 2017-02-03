@@ -8,30 +8,30 @@ import java.io.PrintStream;
  * @author hneemann
  */
 public enum Opcode {
-    NOP("does nothing", MnemonicArguments.NOTHING, new Flags()),
-    MOV("Move the content of Rs to register Rd",
+    NOP("Does nothing.", MnemonicArguments.NOTHING, new Flags()),
+    MOV("Move the content of Rs to register Rd.",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(SrcToBus.Yes)
             .set(EnRegWrite.Yes)),
-    ADD("Adds the content of register Rs to register Rd without carry",
+    ADD("Adds the content of register Rs to register Rd without carry.",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.ADD)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
-    ADC("Adds the content of register Rs to register Rd with carry",
+    ADC("Adds the content of register Rs to register Rd with carry.",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.ADC)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
-    SUB("Subtracts the content of register Rs from register Rd without carry",
+    SUB("Subtracts the content of register Rs from register Rd without carry.",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.SUB)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
-    SBC("Subtracts the content of register Rs from register Rd with carry",
+    SBC("Subtracts the content of register Rs from register Rd with carry.",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.SBC)
             .set(StoreFlags.Yes)
@@ -55,128 +55,128 @@ public enum Opcode {
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
-    LDI("Loads Register Rd with the constant value const",
+    LDI("Loads Register Rd with the constant value [const].",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
-    LDIs("Loads Register Rd with the constant value const",
+    LDIs("Loads Register Rd with the constant value [const].",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
-    ADDI("Adds the constant const to register Rd without carry",
+    ADDI("Adds the constant [const] to register Rd without carry.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.ADD)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
-    ADDIs("Adds the constant const to register Rd without carry",
+    ADDIs("Adds the constant [const] to register Rd without carry.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.ADD)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
-    ADCI("Adds the constant const to register Rd with carry",
+    ADCI("Adds the constant [const] to register Rd with carry.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.ADC)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
-    ADCIs("Adds the constant const to register Rd with carry",
+    ADCIs("Adds the constant [const] to register Rd with carry.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.ADC)
             .set(ALUToBus.Yes)
             .set(StoreFlags.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
-    SUBI("Subtracts a constant const from register Rd without carry",
+    SUBI("Subtracts a constant [const] from register Rd without carry.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SUB)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
-    SUBIs("Subtracts a constant const from register Rd without carry",
+    SUBIs("Subtracts a constant [const] from register Rd without carry.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SUB)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
-    SBCI("Subtracts a constant const from register Rd with carry",
+    SBCI("Subtracts a constant [const] from register Rd with carry.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SBC)
             .set(ALUToBus.Yes)
             .set(StoreFlags.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
-    SBCIs("Subtracts a constant const from register Rd with carry",
+    SBCIs("Subtracts a constant [const] from register Rd with carry.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SBC)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
-    ANDI("Stores Rd and const in register Rd",
+    ANDI("Stores Rd and [const] in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.AND)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
-    ANDIs("Stores Rd and const in register Rd",
+    ANDIs("Stores Rd and [const] in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.AND)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
-    ORI("Stores Rd or const in register Rd",
+    ORI("Stores Rd or [const] in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.OR)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
-    ORIs("Stores Rd or const in register Rd",
+    ORIs("Stores Rd or [const] in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.OR)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
-    EORI("Stores Rd xor const in register Rd",
+    EORI("Stores Rd xor [const] in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.XOR)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
-    EORIs("Stores Rd xor const in register Rd",
+    EORIs("Stores Rd xor [const] in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.XOR)
             .set(ALUToBus.Yes)
             .set(StoreFlags.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
-    MUL("Multiplies the content of register Rs with register Rd and stores result in Rd",
+    MUL("Multiplies the content of register Rs with register Rd and stores result in Rd.",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.MUL)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
-    MULI("Multiplies the constant const with register Rd and stores result in Rd",
+    MULI("Multiplies the constant [const] with register Rd and stores result in Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.MUL)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.ImReg)),
-    MULIs("Multiplies the constant const with register Rd and stores result in Rd",
+    MULIs("Multiplies the constant [const] with register Rd and stores result in Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.MUL)
             .set(StoreFlags.Yes)
@@ -184,28 +184,28 @@ public enum Opcode {
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
 
-    CMP("Subtracts the content of register Rs from register Rd without carry, does not store the value",
+    CMP("Subtracts the content of register Rs from register Rd without carry, does not store the value.",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(StoreFlags.Yes)
             .set(ALUCmd.SUB)),
-    CPI("Subtracts a constant const from register Rd without carry, does not store the value",
+    CPI("Subtracts a constant [const] from register Rd without carry, does not store the value.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SUB)
             .set(StoreFlags.Yes)
             .set(ALUBSel.ImReg)),
-    CPIs("Subtracts a constant const from register Rd without carry, does not store the value",
+    CPIs("Subtracts a constant [const] from register Rd without carry, does not store the value.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SUB)
             .set(StoreFlags.Yes)
             .set(ALUBSel.instrSource)),
 
-    LSL("Shifts register Rd by one bit to the left. A zero is filled in.",
+    LSL("Shifts register Rd by one bit to the left. A zero bit is filled in.",
             MnemonicArguments.DEST, new Flags()
             .set(ALUCmd.LSL)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
-    LSR("Shifts register Rd by one bit to the right. A zero is filled in.",
+    LSR("Shifts register Rd by one bit to the right. A zero bit is filled in.",
             MnemonicArguments.DEST, new Flags()
             .set(ALUCmd.LSR)
             .set(StoreFlags.Yes)
@@ -240,46 +240,46 @@ public enum Opcode {
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
 
-    ST("Stores the content of register Rs to the memory at the address (Rd)",
+    ST("Stores the content of register Rs to the memory at the address [Rd].",
             MnemonicArguments.BDEST_SOURCE, new Flags()
             .set(WriteRam.Yes)
             .set(SrcToBus.Yes)
             .set(ALUBSel.Zero)
             .set(ALUCmd.ADD)),
-    LD("Loads the value at memory address (Rs) to register Rd",
+    LD("Loads the value at memory address [Rs] to register Rd.",
             MnemonicArguments.DEST_BSOURCE, new Flags()
             .set(ReadRam.Yes)
             .set(ALUBSel.Zero)
             .set(ALUCmd.ADD)
             .set(SourceToAluA.Yes)
             .set(EnRegWrite.Yes)),
-    STS("Stores the content of register Rs to memory at the location given by const",
+    STS("Stores the content of register Rs to memory at the location given by [const].",
             MnemonicArguments.CONST_SOURCE, new Flags()
             .set(WriteRam.Yes)
             .set(SrcToBus.Yes)
             .set(ALUBSel.ImReg)),
-    STSs("Stores the content of register Rs to memory at the location given by const",
+    STSs("Stores the content of register Rs to memory at the location given by [const].",
             MnemonicArguments.CONST_SOURCE, new Flags()
             .set(WriteRam.Yes)
             .set(SrcToBus.Yes)
             .set(ALUBSel.instrDest)),
-    LDS("Loads the memory value at the location given by const to register Rd",
+    LDS("Loads the memory value at the location given by [const] to register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ReadRam.Yes)
             .set(ALUBSel.ImReg)
             .set(EnRegWrite.Yes)),
-    LDSs("Loads the memory value at the location given by const to register Rd",
+    LDSs("Loads the memory value at the location given by [const] to register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ReadRam.Yes)
             .set(ALUBSel.instrSource)
             .set(EnRegWrite.Yes)),
-    STD("Stores the content of register Rs to the memory at the address (Rd+const)",
+    STD("Stores the content of register Rs to the memory at the address (Rd+[const]).",
             MnemonicArguments.BDEST_BCONST_SOURCE, new Flags()
             .set(WriteRam.Yes)
             .set(SrcToBus.Yes)
             .set(ALUBSel.ImReg)
             .set(ALUCmd.ADD)),
-    LDD("Loads the value at memory address (Rs+const) to register Rd",
+    LDD("Loads the value at memory address (Rs+[const]) to register Rd.",
             MnemonicArguments.DEST_BSOURCE_BCONST, new Flags()
             .set(ReadRam.Yes)
             .set(ALUBSel.ImReg)
@@ -287,62 +287,62 @@ public enum Opcode {
             .set(EnRegWrite.Yes)
             .set(SourceToAluA.Yes)),
 
-    BRCS("Jumps to the address given by const if carry flag is set.",
+    BRCS("Jumps to the address given by [const] if carry flag is set.",
             MnemonicArguments.CONST, new Flags()
             .set(ALUBSel.instrSourceAndDest)
             .set(Branch.BRC)),
-    BREQ("Jumps to the address given by const if zero flag is set.",
+    BREQ("Jumps to the address given by [const] if zero flag is set.",
             MnemonicArguments.CONST, new Flags()
             .set(ALUBSel.instrSourceAndDest)
             .set(Branch.BRZ)),
-    BRMI("Jumps to the address given by const if negative flag is set.",
+    BRMI("Jumps to the address given by [const] if negative flag is set.",
             MnemonicArguments.CONST, new Flags()
             .set(ALUBSel.instrSourceAndDest)
             .set(Branch.BRN)),
-    BRCC("Jumps to the address given by const if carry flag is clear.",
+    BRCC("Jumps to the address given by [const] if carry flag is clear.",
             MnemonicArguments.CONST, new Flags()
             .set(ALUBSel.instrSourceAndDest)
             .set(Branch.BRNC)),
-    BRNE("Jumps to the address given by const if zero flag is clear.",
+    BRNE("Jumps to the address given by [const] if zero flag is clear.",
             MnemonicArguments.CONST, new Flags()
             .set(ALUBSel.instrSourceAndDest)
             .set(Branch.BRNZ)),
-    BRPL("Jumps to the address given by const if negative flag is clear.",
+    BRPL("Jumps to the address given by [const] if negative flag is clear.",
             MnemonicArguments.CONST, new Flags()
             .set(ALUBSel.instrSourceAndDest)
             .set(Branch.BRNN)),
 
-    RCALL("Jumps to the address given by const, the return address is stored in register Rd",
+    RCALL("Jumps to the address given by const, the return address is stored in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUBSel.ImReg)
             .set(StorePC.Yes)
             .set(EnRegWrite.Yes)
             .set(JmpAbs.Yes)),
-    RRET("Jumps to the address given by register Rs",
+    RRET("Jumps to the address given by register Rs.",
             MnemonicArguments.SOURCE, new Flags()
             .set(JmpAbs.Yes)),
 
-    JMP("Jumps to the address given by const",
+    JMP("Jumps to the address given by [const].",
             MnemonicArguments.CONST, new Flags()
             .set(ALUBSel.ImReg)
             .set(JmpAbs.Yes)),
-    JMPs("Jumps to the address given by const",
+    JMPs("Jumps to the address given by [const].",
             MnemonicArguments.CONST, new Flags()
             .set(ALUBSel.instrSourceAndDest)
             .set(Branch.uncond)),
 
 
-    OUT("Writes the content of register Rs to io location given by const",
+    OUT("Writes the content of register Rs to io location given by [const].",
             MnemonicArguments.CONST_SOURCE, new Flags()
             .set(ALUBSel.ImReg)
             .set(SrcToBus.Yes)
             .set(WriteIO.Yes)),
-    OUTs("Writes the content of register Rs to io location given by const",
+    OUTs("Writes the content of register Rs to io location given by [const].",
             MnemonicArguments.CONST_SOURCE, new Flags()
             .set(ALUBSel.instrDest)
             .set(SrcToBus.Yes)
             .set(WriteIO.Yes)),
-    OUTR("Writes the content of register Rs to the io location (Rd)",
+    OUTR("Writes the content of register Rs to the io location [Rd].",
             MnemonicArguments.BDEST_SOURCE, new Flags()
             .set(ALUCmd.ADD)
             .set(ALUBSel.Zero)
@@ -350,19 +350,19 @@ public enum Opcode {
             .set(WriteIO.Yes)),
 
 
-    IN("Reads the io location given by const and stores it in register Rd",
+    IN("Reads the io location given by [const] and stores it in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUBSel.ImReg)
             .set(EnRegWrite.Yes)
             .set(SourceToAluA.Yes)
             .set(ReadIO.Yes)),
-    INs("Reads the io location given by const and stores it in register Rd",
+    INs("Reads the io location given by [const] and stores it in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUBSel.instrSource)
             .set(EnRegWrite.Yes)
             .set(SourceToAluA.Yes)
             .set(ReadIO.Yes)),
-    INR("Reads the io location given by (Rs) and stores it in register Rd",
+    INR("Reads the io location given by (Rs) and stores it in register Rd.",
             MnemonicArguments.DEST_BSOURCE, new Flags()
             .set(ALUBSel.Zero)
             .set(ALUCmd.ADD)
@@ -370,11 +370,11 @@ public enum Opcode {
             .set(SourceToAluA.Yes)
             .set(ReadIO.Yes)),
 
-    BRK("Stops execution by stopping the simulator",
+    BRK("Stops execution by stopping the simulator.",
             MnemonicArguments.NOTHING, new Flags()
             .set(Break.Yes)),
 
-    RETI("Return from Interrupt",
+    RETI("Return from Interrupt.",
         MnemonicArguments.NOTHING, new Flags()
             .set(JmpAbs.Yes)
             .set(RetI.Yes));
@@ -525,20 +525,19 @@ public enum Opcode {
     private final Flags f;
 
     Opcode(String description, MnemonicArguments arguments, Flags flags) {
-        this.description = description;
+        this.description = addConstLimit(description, flags.aluBSel);
         this.arguments = arguments;
         this.f = flags;
     }
 
     private String addConstLimit(String description, ALUBSel imed) {
         if (imed.equals(ALUBSel.instrDest) || imed.equals(ALUBSel.instrSource)) {
-            description += " (0<=const<=31)";
+            description += " (0<=[const]<=31)";
         } else {
             if (imed.equals(ALUBSel.instrSourceAndDest)) {
-                description += " (-256<=const<=255)";
+                description += " (-256<=[const]<=255)";
             }
         }
-        description += " (Opcode 0x" + Integer.toHexString(this.ordinal()) + ")";
         return description;
     }
 
