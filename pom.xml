@@ -14,6 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <build.timestamp>${maven.build.timestamp}</build.timestamp>
         <version.org.slf4j>1.7.12</version.org.slf4j>
+        <skipAssembly>${skipTests}</skipAssembly>
     </properties>
 
     <distributionManagement>
