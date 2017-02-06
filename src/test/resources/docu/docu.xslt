@@ -40,9 +40,9 @@
                     </fo:block>
 
                     <fo:table table-layout="fixed" margin-top="1cm" width="100%">
-                        <fo:table-column column-number="2" column-width="4.2cm"/>
+                        <fo:table-column column-number="2" column-width="4.4cm"/>
                         <fo:table-column column-number="1" column-width="1.1cm"/>
-                        <fo:table-column column-number="3" column-width="10.6cm"/>
+                        <fo:table-column column-number="3" column-width="10.4cm"/>
                         <fo:table-header>
                             <fo:table-row>
                                 <fo:table-cell column-number="2" border-style="solid" border-width="0pt" border-after-width="1pt">
