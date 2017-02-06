@@ -123,7 +123,7 @@
                 <configuration>
                     <systemProperties>
                         <property>
-                            <name>mavenhome</name>
+                            <name>asmMvnHome</name>
                             <value>${basedir}</value>
                         </property>
                         <property>

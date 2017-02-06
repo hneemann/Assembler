@@ -20,7 +20,7 @@ import java.io.*;
 public class TestDocu extends TestCase {
 
     private File getTargetFolder() {
-        String mavenhome = System.getProperty("mavenhome");
+        String mavenhome = System.getProperty("asmMvnHome");
         if (mavenhome == null) {
             System.out.println("------------ use hardcoded input folder!");
             mavenhome = "/home/hneemann/Dokumente/Java/assembler/assembler3";
