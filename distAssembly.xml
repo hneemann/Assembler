@@ -15,10 +15,10 @@
             <outputDirectory>/</outputDirectory>
             <filtered>true</filtered>
         </file>
-        <file>
+        <!--file>
             <source>${basedir}/target/xml/instructions.pdf</source>
             <outputDirectory>/</outputDirectory>
-        </file>
+        </file-->
     </files>
     <fileSets>
         <fileSet>
