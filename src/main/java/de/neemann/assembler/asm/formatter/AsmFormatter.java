@@ -116,7 +116,7 @@ public class AsmFormatter implements InstructionVisitor {
 
         int ofs = 0;
         if (indentCreated && isCreated(i))
-            ofs = 1;
+            ofs = 2;
 
         tab(32 + ofs);
 

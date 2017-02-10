@@ -22,6 +22,7 @@ public class Parser implements Closeable {
                     + ".word addr\n\tReserves a single word in the RAM. Its address is stored in addr\n\n"
                     + ".long addr\n\tReserves two words in the RAM. Its address is stored in addr\n\n"
                     + ".const ident const\n\tcreates the given constant\n\n"
+                    + ".org addr\n\tSets the actual code address. Is used to place code segments to fixed addresses.\n\n"
                     + ".data addr value(,value)*\n\tcopies the given values to the RAM. The address of the values is stored in addr.\n\n"
                     + ".include \"filename\"\n\tincludes the given file";
     private final StreamTokenizer tokenizer;
