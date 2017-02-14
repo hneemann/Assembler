@@ -11,7 +11,12 @@
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
-            <source>${basedir}/Version.txt</source>
+            <source>${basedir}/distribution/Version.txt</source>
+            <outputDirectory>/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>${basedir}/distribution/asm3.exe</source>
             <outputDirectory>/</outputDirectory>
             <filtered>true</filtered>
         </file>
