@@ -172,7 +172,7 @@
                         <id>make-dstribution</id>
                         <phase>install</phase>
                         <configuration>
-                            <descriptor>distAssembly.xml</descriptor>
+                            <descriptor>distribution/distAssembly.xml</descriptor>
                         </configuration>
                         <goals>
                             <goal>single</goal>
