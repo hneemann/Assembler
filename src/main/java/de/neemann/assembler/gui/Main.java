@@ -517,11 +517,10 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    Font font = new JLabel().getFont();
                     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                     float size = screenSize.height / 100f;
                     if (size > 12) {
-                        System.out.println(size);
+                        Font font = new JLabel().getFont();
                         font = font.deriveFont(size);
                         for (Object key : javax.swing.UIManager.getLookAndFeel().getDefaults().keySet()) {
                             if (key.toString().endsWith(".font"))
