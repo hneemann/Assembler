@@ -18,6 +18,8 @@ import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -287,9 +289,25 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             }
 
         JScrollPane scrollPane = new JScrollPane(source);
-        scrollPane.setRowHeaderView(new TextLineNumber(source, 3));
+        final TextLineNumber textLineNumber = new TextLineNumber(source, 3);
+        scrollPane.setRowHeaderView(textLineNumber);
         getContentPane().add(scrollPane);
 
+        source.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                if (e.isControlDown()) {
+                    int r = e.getWheelRotation();
+                    int s = source.getFont().getSize() - r;
+                    if (s > 12) {
+                        Font f = source.getFont().deriveFont((float) s);
+                        source.setFont(f);
+                        textLineNumber.setFont(f);
+                        textLineNumber.setBorderGap(5);
+                    }
+                }
+            }
+        });
 
         JMenu file = new JMenu("File");
         file.add(newFile.createJMenuItem());
