@@ -274,7 +274,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
         }.setToolTip("Stops the programm.");
 
         source = new JTextArea(40, 50);
-        source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        source.setFont(new Font(Font.MONOSPACED, Font.PLAIN,  source.getFont().getSize()));
 
         if (fileToOpen == null) {
             String n = PREFS.get("name", null);
