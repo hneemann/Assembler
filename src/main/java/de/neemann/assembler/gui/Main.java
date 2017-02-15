@@ -288,7 +288,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                 new ErrorMessage("Error loading a file").addCause(e).show(Main.this);
             }
 
-        JScrollPane scrollPane = new JScrollPane(source);
+        final JScrollPane scrollPane = new JScrollPane(source);
         final TextLineNumber textLineNumber = new TextLineNumber(source, 3);
         scrollPane.setRowHeaderView(textLineNumber);
         getContentPane().add(scrollPane);
@@ -305,6 +305,9 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                         textLineNumber.setFont(f);
                         textLineNumber.setBorderGap(5);
                     }
+                } else {
+                    JScrollBar bar = scrollPane.getVerticalScrollBar();
+                    bar.setValue(bar.getValue() + e.getWheelRotation() * e.getScrollAmount() * bar.getBlockIncrement());
                 }
             }
         });
