@@ -18,7 +18,6 @@
         <file>
             <source>${basedir}/distribution/asm3.exe</source>
             <outputDirectory>/</outputDirectory>
-            <filtered>true</filtered>
         </file>
         <file>
             <source>${basedir}/target/xml/instructions.pdf</source>
