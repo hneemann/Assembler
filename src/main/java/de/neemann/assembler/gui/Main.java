@@ -1,6 +1,5 @@
 package de.neemann.assembler.gui;
 
-import com.sun.glass.ui.Screen;
 import de.neemann.assembler.asm.InstructionException;
 import de.neemann.assembler.asm.Opcode;
 import de.neemann.assembler.asm.Program;
