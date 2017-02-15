@@ -1,5 +1,6 @@
 package de.neemann.assembler.gui;
 
+import com.sun.glass.ui.Screen;
 import de.neemann.assembler.asm.InstructionException;
 import de.neemann.assembler.asm.Opcode;
 import de.neemann.assembler.asm.Program;
@@ -274,7 +275,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
         }.setToolTip("Stops the programm.");
 
         source = new JTextArea(40, 50);
-        source.setFont(new Font(Font.MONOSPACED, Font.PLAIN,  source.getFont().getSize()));
+        source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, source.getFont().getSize()));
 
         if (fileToOpen == null) {
             String n = PREFS.get("name", null);
@@ -516,6 +517,18 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                    Font font = new JLabel().getFont();
+                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                    float size = screenSize.height / 100f;
+                    if (size > 12) {
+                        System.out.println(size);
+                        font = font.deriveFont(size);
+                        for (Object key : javax.swing.UIManager.getLookAndFeel().getDefaults().keySet()) {
+                            if (key.toString().endsWith(".font"))
+                                javax.swing.UIManager.put(key, font);
+                        }
+                    }
+
                     Main m = new Main(null);
                     m.setVisible(true);
                 }
