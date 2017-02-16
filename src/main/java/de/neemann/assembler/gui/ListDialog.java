@@ -21,27 +21,6 @@ public class ListDialog extends JDialog implements AddressListener {
      * Creates a new instance
      *
      * @param main    the parent frame
-     * @param listing the listing to show
-     */
-    public ListDialog(Main main, String listing) {
-        this(main, "Listing", listing, (HashMap<Integer, Integer>) null);
-    }
-
-    /**
-     * Creates a new instance
-     *
-     * @param main    the parent frame
-     * @param title   the dialogs title
-     * @param listing the listing to show
-     */
-    public ListDialog(Main main, String title, String listing, HashMap<Integer, Integer> addrToLine) {
-        this(main, title, listing, new Font(Font.MONOSPACED, Font.PLAIN, 12), addrToLine);
-    }
-
-    /**
-     * Creates a new instance
-     *
-     * @param main    the parent frame
      * @param title   the dialogs title
      * @param listing the listing to show
      * @param font    the font to use

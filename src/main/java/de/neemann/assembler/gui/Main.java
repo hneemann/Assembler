@@ -153,7 +153,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                         ByteArrayOutputStream text = new ByteArrayOutputStream();
                         final AsmFormatter asmFormatter = new AsmFormatter(new PrintStream(text, false, "utf-8"));
                         program.traverse(asmFormatter);
-                        new ListDialog(Main.this, "Listing", text.toString("utf-8"), asmFormatter.getAddrToLineMap()).setVisible(true);
+                        new ListDialog(Main.this, "Listing", text.toString("utf-8"), source.getFont(), asmFormatter.getAddrToLineMap()).setVisible(true);
                     }
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
@@ -193,7 +193,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                     for (Macro m : Parser.getMacros())
                         tf.append(m.toString()).append("\n\n");
                     tf.append(Parser.HELP).append("\n");
-                    new ListDialog(Main.this, "Instructions", tf.toString(), (HashMap<Integer, Integer>) null).setVisible(true);
+                    new ListDialog(Main.this, "Instructions", tf.toString(), source.getFont(), (HashMap<Integer, Integer>) null).setVisible(true);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
