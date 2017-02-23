@@ -6,7 +6,7 @@
 
 ![screnshot](screenshot.png)
 
-In this repo you can find a assembler for a simulated 16 bit microprocessor as a [Digital](https://github.com/hneemann/Digital/) 
+In this repo you can find an assembler for a simulated 16 bit microprocessor as a [Digital](https://github.com/hneemann/Digital/) 
 simulation. You can find the processor itself as one of the examples in the [Digital](https://github.com/hneemann/Digital/) repo.
 The assembler is implemented in Java. 
 The processor is a 16 bit harvard single cycle cpu and its architecture is inspired by the MIPS architecture.
