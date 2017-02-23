@@ -40,7 +40,9 @@ public class ErrorMessage {
         while (e != null) {
             if (message.length() > 0)
                 message.append('\n');
-            message.append(e.getClass().getSimpleName() + "; " + e.getMessage());
+            message.append(e.getClass().getSimpleName());
+            if (e.getMessage() != null)
+                message.append("; ").append(e.getMessage());
             e = e.getCause();
         }
         return this;

@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.*;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.prefs.Preferences;
@@ -49,6 +50,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
     private File lastFilename;
     private String sourceOnDisk = "";
     private Program runningProgram;
+    private RemoteInterface remoteInterface;
 
     /**
      * Creates a new main frame
@@ -193,14 +195,12 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                     for (Macro m : Parser.getMacros())
                         tf.append(m.toString()).append("\n\n");
                     tf.append(Parser.HELP).append("\n");
-                    new ListDialog(Main.this, "Instructions", tf.toString(), source.getFont(), (HashMap<Integer, Integer>) null).setVisible(true);
+                    new ListDialog(Main.this, "Instructions", tf.toString(), source.getFont(), null).setVisible(true);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
             }
         }.setToolTip("Shows a short description of available opcodes.");
-
-        final RemoteInterface remoteInterface = new RemoteInterface();
 
         ToolTipAction remoteStart = new ToolTipAction("Run", IconCreator.create("media-playback-start.png")) {
             @Override
@@ -211,7 +211,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                     if (program != null) {
                         File hex = writeHex(program, filename);
                         if (hex != null) {
-                            remoteInterface.start(hex);
+                            getRemoteInterface().start(hex);
                             notifyInvalidateCode();
                         }
                     }
@@ -229,7 +229,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                     if (runningProgram != null) {
                         File hex = writeHex(runningProgram, filename);
                         if (hex != null) {
-                            remoteInterface.debug(hex);
+                            getRemoteInterface().debug(hex);
                             notifyInvalidateCode();
                             notifyCodeAddressChange(0);
                         }
@@ -244,7 +244,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    notifyCodeAddressChange(remoteInterface.run());
+                    notifyCodeAddressChange(getRemoteInterface().run());
                 } catch (RemoteException e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
@@ -254,7 +254,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    notifyCodeAddressChange(remoteInterface.step());
+                    notifyCodeAddressChange(getRemoteInterface().step());
                 } catch (RemoteException e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);
                 }
@@ -264,7 +264,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    remoteInterface.stop();
+                    getRemoteInterface().stop();
                     runningProgram = null;
                     notifyInvalidateCode();
                 } catch (RemoteException e) {
@@ -360,6 +360,17 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
         setLocationRelativeTo(null);
 
         addAddrListener(this);
+    }
+
+    private RemoteInterface getRemoteInterface() throws RemoteException {
+        if (remoteInterface == null) {
+            try {
+                remoteInterface = new RemoteInterface();
+            } catch (UnknownHostException e) {
+                throw new RemoteException("could not find the simulator", e);
+            }
+        }
+        return remoteInterface;
     }
 
     private void notifyCodeAddressChange(int addr) {

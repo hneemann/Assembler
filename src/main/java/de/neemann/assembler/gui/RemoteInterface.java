@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * Used to connect the simulator.
@@ -13,6 +14,17 @@ import java.net.Socket;
  * Created by helmut.neemann on 23.06.2016.
  */
 public class RemoteInterface {
+
+    private final InetAddress localHost;
+
+    /**
+     * Creates a new instance
+     *
+     * @throws UnknownHostException UnknownHostException
+     */
+    public RemoteInterface() throws UnknownHostException {
+        localHost = InetAddress.getLocalHost();
+    }
 
     /**
      * Starts the simulation
@@ -64,7 +76,7 @@ public class RemoteInterface {
     }
 
     private int getAddr(String resp) {
-        if (resp.length()<=3)
+        if (resp.length() <= 3)
             return -1;
 
         try {
@@ -76,7 +88,7 @@ public class RemoteInterface {
 
     private String sendRequest(String command, String args) throws RemoteException {
         try {
-            Socket s = new Socket(InetAddress.getLocalHost(), 41114);
+            Socket s = new Socket(localHost, 41114);
             DataOutputStream out = new DataOutputStream(s.getOutputStream());
             if (args != null)
                 command = command + ":" + args;
