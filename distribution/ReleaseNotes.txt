@@ -5,7 +5,7 @@ v0.3, released on 28 Feb 2017
 - improvements on the tcp client witch controls digital
 
 v0.2.2, released on 06 Feb 2017
-- added instructions summary to deitributed file
+- added instructions summary to distributed file
 
 v0.2, released on 03 Feb 2017
 - added .org directive
