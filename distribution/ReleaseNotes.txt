@@ -1,18 +1,18 @@
 Release Notes
 
-v0.3, released on 28 Feb 2017
+v0.3, released on 28. Feb 2017
 - better support for high resolution displays
 - improvements on the tcp client witch controls digital
 
-v0.2.2, released on 06 Feb 2017
+v0.2.2, released on 06. Feb 2017
 - added instructions summary to distributed file
 
-v0.2, released on 03 Feb 2017
+v0.2, released on 03. Feb 2017
 - added .org directive
 - added RETI instruction
 
-v0.1.1, released on  22 Aug 2016
+v0.1.1, released on 22. Aug 2016
 - better debugging support
 
-v0.1, released on 19 Aug 2016
+v0.1, released on 19. Aug 2016
 - initial release
