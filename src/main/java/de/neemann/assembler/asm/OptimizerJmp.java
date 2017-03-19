@@ -13,14 +13,17 @@ public class OptimizerJmp implements InstructionVisitor {
     private boolean optimized = false;
 
     @Override
-    public void visit(Instruction instruction, Context context) throws ExpressionException {
-        Opcode op = instruction.getOpcode();
-        if (op.equals(Opcode.JMP)) {
-            int con = instruction.getConstant().getValue(context);
-            int ofs = con - context.getInstrAddr() - 1;
-            if (ofs <= 255 && ofs >= -256) {
-                instruction.setOpcode(Opcode.JMPs);
-                optimized = true;
+    public void visit(InstructionInterface instructionInterface, Context context) throws ExpressionException {
+        if (instructionInterface instanceof Instruction) {
+            Instruction instruction = (Instruction) instructionInterface;
+            Opcode op = instruction.getOpcode();
+            if (op.equals(Opcode.JMP)) {
+                int con = instruction.getConstant().getValue(context);
+                int ofs = con - context.getInstrAddr() - 1;
+                if (ofs <= 255 && ofs >= -256) {
+                    instruction.setOpcode(Opcode.JMPs);
+                    optimized = true;
+                }
             }
         }
     }

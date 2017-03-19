@@ -1,6 +1,6 @@
 package de.neemann.assembler.asm.formatter;
 
-import de.neemann.assembler.asm.Instruction;
+import de.neemann.assembler.asm.InstructionInterface;
 import de.neemann.assembler.asm.InstructionVisitor;
 import de.neemann.assembler.asm.MachineCodeListener;
 import de.neemann.assembler.expression.Context;
@@ -27,7 +27,7 @@ public class HexFormatter implements InstructionVisitor {
     }
 
     @Override
-    public void visit(Instruction in, Context context) throws ExpressionException {
+    public void visit(InstructionInterface in, Context context) throws ExpressionException {
         final int instrAddr = context.getInstrAddr();
         if (instrAddr < addr)
             throw new ExpressionException("invalid hex addr!");

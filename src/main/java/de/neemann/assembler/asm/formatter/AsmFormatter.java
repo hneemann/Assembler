@@ -1,9 +1,6 @@
 package de.neemann.assembler.asm.formatter;
 
-import de.neemann.assembler.asm.Instruction;
-import de.neemann.assembler.asm.InstructionVisitor;
-import de.neemann.assembler.asm.MachineCodeListener;
-import de.neemann.assembler.asm.Opcode;
+import de.neemann.assembler.asm.*;
 import de.neemann.assembler.expression.Context;
 import de.neemann.assembler.expression.ExpressionException;
 
@@ -64,7 +61,7 @@ public class AsmFormatter implements InstructionVisitor {
     }
 
     @Override
-    public void visit(Instruction i, Context context) throws ExpressionException {
+    public void visit(InstructionInterface i, Context context) throws ExpressionException {
         final String comment = i.getComment();
         if (comment != null) {
             o.println(comment);
@@ -120,16 +117,21 @@ public class AsmFormatter implements InstructionVisitor {
 
         tab(32 + ofs);
 
-        Opcode opcode = i.getOpcode();
-        print(opcode.name());
+        if (i instanceof Instruction) {
+            Instruction ins = (Instruction) i;
+            Opcode opcode = ins.getOpcode();
+            print(opcode.name());
 
-        tab(38 + ofs);
+            tab(38 + ofs);
 
-        print(opcode.getArguments().format(i));
-        if (i.getConstant() != null) {
-            tab(55);
-            print("; 0x");
-            print(Integer.toHexString(i.getConstant().getValue(context) & 0xffff));
+            print(opcode.getArguments().format(ins));
+            if (ins.getConstant() != null) {
+                tab(55);
+                print("; 0x");
+                print(Integer.toHexString(ins.getConstant().getValue(context) & 0xffff));
+            }
+        } else {
+            print(i.toString());
         }
         newLine();
     }
@@ -142,7 +144,7 @@ public class AsmFormatter implements InstructionVisitor {
         return n;
     }
 
-    private boolean isCreated(Instruction i) {
+    private boolean isCreated(InstructionInterface i) {
         return i.getLineNumber() == 0 || i.getMacroDescription() != null;
     }
 

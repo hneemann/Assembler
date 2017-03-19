@@ -7,7 +7,7 @@ import de.neemann.assembler.expression.ExpressionException;
 /**
  * @author hneemann
  */
-public final class Instruction {
+public final class Instruction implements InstructionInterface {
     private final Register destReg;
     private final Register sourceReg;
     private final Expression constant;
@@ -54,10 +54,10 @@ public final class Instruction {
     }
 
     /**
-     * Sets the lable of this instruction.
-     * E instruction can only have a single label
+     * Sets the label of this instruction.
+     * A instruction can only have a single label
      *
-     * @param label
+     * @param label the label
      */
     public void setLabel(String label) {
         this.label = label;

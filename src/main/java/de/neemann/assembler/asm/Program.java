@@ -15,7 +15,7 @@ import java.util.TreeMap;
  */
 public class Program {
 
-    private final ArrayList<Instruction> prog;
+    private final ArrayList<InstructionInterface> prog;
     private final Context context;
     private final TreeMap<Integer, ArrayList<Integer>> dataMap;
     private int ramPos = 0;
@@ -25,6 +25,7 @@ public class Program {
     private int lineNumber;
     private int pendingAddr = -1;
     private HashMap<Integer, Integer> addrToLineMap;
+    private boolean vonNeumann;
 
     /**
      * Creates a new instance
@@ -77,7 +78,7 @@ public class Program {
         int addr = 0;
         addrToLineMap.clear();
         for (int i = 0, progSize = prog.size(); i < progSize; i++) {
-            Instruction in = prog.get(i);
+            InstructionInterface in = prog.get(i);
             try {
                 final int absAddr = in.getAbsAddr();
                 if (absAddr >= 0) {
@@ -140,7 +141,7 @@ public class Program {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (Instruction i : prog) {
+        for (InstructionInterface i : prog) {
             sb.append(i.toString()).append("\n");
         }
         return sb.toString();
@@ -160,7 +161,11 @@ public class Program {
      * @return the instruction
      */
     public Instruction getInstruction(int i) {
-        return prog.get(i);
+        InstructionInterface ins = prog.get(i);
+        if (ins instanceof Instruction)
+            return (Instruction) ins;
+        else
+            return null;
     }
 
     /**
@@ -189,13 +194,30 @@ public class Program {
      * @param value adds constant data to the program
      */
     public void addData(int value) {
-        ArrayList<Integer> list = dataMap.get(value);
-        if (list == null) {
-            list = new ArrayList<>();
-            dataMap.put(value, list);
+        if (vonNeumann) {
+            prog.add(new DataInstruction(value, lineNumber, pendingLabel.get()));
+        } else {
+            ArrayList<Integer> list = dataMap.get(value);
+            if (list == null) {
+                list = new ArrayList<>();
+                dataMap.put(value, list);
+            }
+            list.add(ramPos);
+            ramPos++;
         }
-        list.add(ramPos);
-        ramPos++;
+    }
+
+    /**
+     * Sets a lable for the data
+     *
+     * @param ident the identifier
+     * @throws ExpressionException ExpressionException
+     */
+    public void addDataLabel(String ident) throws ExpressionException {
+        if (vonNeumann)
+            setPendingLabel(ident);
+        else
+            addRam(ident, 0);
     }
 
     /**
@@ -264,9 +286,23 @@ public class Program {
         return this;
     }
 
+    /**
+     * Sets the RAM start.
+     * Also switches the assembler to von Neumann mode.
+     *
+     * @param ramStart the ram start address
+     * @throws ExpressionException ExpressionException
+     */
+    public void setRamStart(int ramStart) throws ExpressionException {
+        this.ramPos = ramStart;
+        if (!dataMap.isEmpty())
+            throw new ExpressionException(".dorg must used before constants are defined!");
+        vonNeumann = true;
+    }
+
     private static class LinkAddVisitor implements InstructionVisitor {
         @Override
-        public void visit(Instruction instruction, Context context) throws ExpressionException {
+        public void visit(InstructionInterface instruction, Context context) throws ExpressionException {
             if (instruction.getLabel() != null) {
                 context.addIdentifier(instruction.getLabel(), context.getInstrAddr());
             }
@@ -275,7 +311,7 @@ public class Program {
 
     private static class LinkSetVisitor implements InstructionVisitor {
         @Override
-        public void visit(Instruction instruction, Context context) throws ExpressionException {
+        public void visit(InstructionInterface instruction, Context context) throws ExpressionException {
             if (instruction.getLabel() != null) {
                 context.setIdentifier(instruction.getLabel(), context.getInstrAddr());
             }

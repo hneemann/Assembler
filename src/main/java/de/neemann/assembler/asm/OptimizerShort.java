@@ -35,13 +35,16 @@ public class OptimizerShort implements InstructionVisitor {
     }
 
     @Override
-    public void visit(Instruction instruction, Context context) throws ExpressionException {
-        Opcode op = instruction.getOpcode();
-        Opcode opShort = shortConstantMap.get(op);
-        if (opShort != null) {
-            int con = instruction.getConstant().getValue(context);
-            if (con >= 0 && con <= 31)
-                instruction.setOpcode(opShort);
+    public void visit(InstructionInterface instructionInterface, Context context) throws ExpressionException {
+        if (instructionInterface instanceof Instruction) {
+            Instruction instruction = (Instruction) instructionInterface;
+            Opcode op = instruction.getOpcode();
+            Opcode opShort = shortConstantMap.get(op);
+            if (opShort != null) {
+                int con = instruction.getConstant().getValue(context);
+                if (con >= 0 && con <= 31)
+                    instruction.setOpcode(opShort);
+            }
         }
     }
 }

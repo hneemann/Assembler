@@ -18,6 +18,6 @@ public interface InstructionVisitor {
      * @param context     the context of the instruction in the program
      * @throws ExpressionException ExpressionException
      */
-    void visit(Instruction instruction, Context context) throws ExpressionException;
+    void visit(InstructionInterface instruction, Context context) throws ExpressionException;
 
 }

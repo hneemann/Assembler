@@ -22,6 +22,7 @@ public class Parser implements Closeable {
                     + ".word addr\n\tReserves a single word in the RAM. Its address is stored in addr\n\n"
                     + ".long addr\n\tReserves two words in the RAM. Its address is stored in addr\n\n"
                     + ".const ident const\n\tcreates the given constant\n\n"
+                    + ".dorg addr\n\tSets the actual data address. If used, assembler is switched to von Neumann mode.\n\n"
                     + ".org addr\n\tSets the actual code address. Is used to place code segments to fixed addresses.\n\n"
                     + ".data addr value(,value)*\n\tcopies the given values to the RAM. The address of the values is stored in addr.\n\n"
                     + ".include \"filename\"\n\tincludes the given file";
@@ -189,6 +190,10 @@ public class Parser implements Closeable {
                 p.addPendingOrigin(addr);
                 p.addPendingComment(" 0x" + Integer.toHexString(addr));
                 break;
+            case ".dorg":
+                addr = parseExpression().getValue(p.getContext());
+                p.setRamStart(addr);
+                break;
             case ".const":
                 word = parseWord();
                 int value = parseExpression().getValue(p.getContext());
@@ -198,7 +203,7 @@ public class Parser implements Closeable {
             case ".data":
                 String ident = parseWord();
                 p.addPendingComment(" " + ident);
-                p.addRam(ident, 0);
+                p.addDataLabel(ident);
                 readData(p);
                 while (isNext(',')) {
                     isNext(TT_EOL);
