@@ -19,6 +19,15 @@ So it is also possible to program more like for a x86 cisc processor.
 The assembler has a simple GUI and is able to control the [simulator](https://github.com/hneemann/Digital/) by using its TCP/IP 
 interface. So it is easy to debug an assembly program within the simulator. 
 
+### How it works ###
+
+A list of the supported ASM instructions is included in the distributed zip file (`instructions.pdf`). 
+If you are interested in modifying how the instructions are encoded, look at the file
+[Opcode.java](https://github.com/hneemann/Assembler/blob/master/src/main/java/de/neemann/assembler/asm/Opcode.java).
+The instructions and the associated flags used for the control unit are listed there.
+Some instructions are available in two variants: The mnemonics with a lower case 's' attached, describes the instruction 
+with a special encoding for a short constant, which can be included in the instruction itself.
+
 ### Usage ###
 
 * In the folder *src/main/asm* are some sample programs in assembler. 
