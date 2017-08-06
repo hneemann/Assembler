@@ -23,7 +23,6 @@ import java.awt.event.MouseWheelListener;
 import java.io.*;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.prefs.Preferences;
 
 /**
@@ -63,125 +62,11 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
         setIconImages(IconCreator.createImages("asm32.png", "asm64.png", "asm128.png"));
 
         addWindowListener(new ClosingWindowListener(this, this));
+        JToolBar toolBar = new JToolBar();
 
-        ToolTipAction newFile = new ToolTipAction("New", IconCreator.create("document-new.png")) {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                if (ClosingWindowListener.checkForSave(Main.this, Main.this)) {
-                    sourceOnDisk = "";
-                    source.setText(sourceOnDisk);
-                    runningProgram = null;
-                    setFilename(null);
-                    notifyInvalidateCode();
-                }
-            }
-        }.setToolTip("creates a new file");
+        JMenu file = createFileMenu(toolBar);
 
-        ToolTipAction open = new ToolTipAction("Open", IconCreator.create("document-open.png")) {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                if (ClosingWindowListener.checkForSave(Main.this, Main.this)) {
-                    JFileChooser fc = getjFileChooser();
-                    if (fc.showOpenDialog(Main.this) == JFileChooser.APPROVE_OPTION) {
-                        try {
-                            load(fc.getSelectedFile());
-                        } catch (IOException e) {
-                            new ErrorMessage("Error loading a file").addCause(e).show(Main.this);
-                        }
-                    }
-                }
-            }
-        }.setToolTip("Opens a file.");
-
-        ToolTipAction openNew = new ToolTipAction("Open in New Window", IconCreator.create("document-open-new.png")) {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                if (ClosingWindowListener.checkForSave(Main.this, Main.this)) {
-                    JFileChooser fc = getjFileChooser();
-                    if (fc.showOpenDialog(Main.this) == JFileChooser.APPROVE_OPTION) {
-                        new Main(fc.getSelectedFile()).setVisible(true);
-                    }
-                }
-            }
-        }.setToolTip("Opens a file in a new Window");
-
-        ToolTipAction save = new ToolTipAction("Save", IconCreator.create("document-save.png")) {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    save();
-                } catch (IOException e) {
-                    new ErrorMessage("Error storing a file").addCause(e).show(Main.this);
-                }
-            }
-        }.setToolTip("Saves the file to disk.");
-
-        ToolTipAction saveAs = new ToolTipAction("Save As", IconCreator.create("document-save-as.png")) {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    saveAs();
-                } catch (IOException e) {
-                    new ErrorMessage("Error storing a file").addCause(e).show(Main.this);
-                }
-            }
-        }.setToolTip("Saves the file with a new name to disk.");
-
-        ToolTipAction build = new ToolTipAction("Build", IconCreator.create("preferences.png")) {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    Program program = createProgram();
-                    if (program != null)
-                        writeHex(program, filename);
-                } catch (Throwable e) {
-                    new ErrorMessage("Error").addCause(e).show(Main.this);
-                }
-            }
-        }.setToolTip("Converts the source to a hex file.");
-
-        ToolTipAction show = new ToolTipAction("Show Listing", IconCreator.create("listing.png")) {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    Program program;
-                    if (runningProgram != null)
-                        program = runningProgram;
-                    else
-                        program = createProgram();
-                    if (program != null) {
-                        writeHex(program, filename);
-
-                        ByteArrayOutputStream text = new ByteArrayOutputStream();
-                        final AsmFormatter asmFormatter = new AsmFormatter(new PrintStream(text, false, "utf-8"));
-                        program.traverse(asmFormatter);
-                        new ListDialog(Main.this, "Listing", text.toString("utf-8"), source.getFont(), asmFormatter.getAddrToLineMap()).setVisible(true);
-                    }
-                } catch (Throwable e) {
-                    new ErrorMessage("Error").addCause(e).show(Main.this);
-                }
-            }
-        }.setToolTip("Converts the source to a listing and shows it.");
-
-        ToolTipAction saveLst = new ToolTipAction("Save Listing") {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    Program program = createProgram();
-                    if (program != null)
-                        writeLst(program, filename);
-                } catch (Throwable e) {
-                    new ErrorMessage("Error").addCause(e).show(Main.this);
-                }
-            }
-        }.setToolTip("Converts the source to a listing and writes it to disk.");
-
-        ToolTipAction tabToSpace = new ToolTipAction("Tabs to Spaces") {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                source.setText(new TabToSpaces(source.getText(), source.getTabSize()).convert());
-            }
-        }.setToolTip("Converts tabs to spaces");
+        JMenu assemble = createASMMenu(toolBar);
 
         ToolTipAction helpOpcodes = new ToolTipAction("Show help") {
             @Override
@@ -202,6 +87,73 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             }
         }.setToolTip("Shows a short description of available opcodes.");
 
+        createRemoteToolBar(toolBar);
+
+        source = new JTextArea(40, 50);
+        source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, source.getFont().getSize()));
+
+        if (fileToOpen == null) {
+            String n = PREFS.get("name", null);
+            if (n != null)
+                fileToOpen = new File(n);
+        }
+        if (fileToOpen != null)
+            try {
+                load(fileToOpen);
+            } catch (IOException e) {
+                new ErrorMessage("Error loading a file").addCause(e).show(Main.this);
+            }
+
+        final JScrollPane scrollPane = new JScrollPane(source);
+        final TextLineNumber textLineNumber = new TextLineNumber(source, 3);
+        scrollPane.setRowHeaderView(textLineNumber);
+        getContentPane().add(scrollPane);
+
+        source.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                if (e.isControlDown()) {
+                    int r = e.getWheelRotation();
+                    int s = source.getFont().getSize() - r;
+                    if (s > 12) {
+                        Font f = source.getFont().deriveFont((float) s);
+                        source.setFont(f);
+                        textLineNumber.setFont(f);
+                        textLineNumber.setBorderGap(5);
+                    }
+                } else {
+                    JScrollBar bar = scrollPane.getVerticalScrollBar();
+                    bar.setValue(bar.getValue() + e.getWheelRotation() * e.getScrollAmount() * bar.getBlockIncrement());
+                }
+            }
+        });
+
+
+        JMenu help = new JMenu("Help");
+        help.add(helpOpcodes.createJMenuItem());
+        help.add(new JMenuItem(new AbstractAction("About") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                InfoDialog.getInstance().showInfo(Main.this, MESSAGE);
+            }
+        }));
+
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add(file);
+        menuBar.add(assemble);
+        menuBar.add(help);
+        setJMenuBar(menuBar);
+
+        getContentPane().add(toolBar, BorderLayout.NORTH);
+
+        pack();
+
+        setLocationRelativeTo(null);
+
+        addAddrListener(this);
+    }
+
+    private void createRemoteToolBar(JToolBar toolBar) {
         ToolTipAction remoteStart = new ToolTipAction("Run", IconCreator.create("media-playback-start.png")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -273,44 +225,78 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
             }
         }.setToolTip("Stops the programm.");
 
-        source = new JTextArea(40, 50);
-        source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, source.getFont().getSize()));
+        toolBar.addSeparator();
+        toolBar.add(remoteStart.createJButtonNoText());
+        toolBar.add(remoteStop.createJButtonNoText());
+        toolBar.addSeparator();
+        toolBar.add(remoteDebug.createJButtonNoText());
+        toolBar.add(remoteStep.createJButtonNoText());
+        toolBar.add(remoteRun.createJButtonNoText());
+    }
 
-        if (fileToOpen == null) {
-            String n = PREFS.get("name", null);
-            if (n != null)
-                fileToOpen = new File(n);
-        }
-        if (fileToOpen != null)
-            try {
-                load(fileToOpen);
-            } catch (IOException e) {
-                new ErrorMessage("Error loading a file").addCause(e).show(Main.this);
-            }
-
-        final JScrollPane scrollPane = new JScrollPane(source);
-        final TextLineNumber textLineNumber = new TextLineNumber(source, 3);
-        scrollPane.setRowHeaderView(textLineNumber);
-        getContentPane().add(scrollPane);
-
-        source.addMouseWheelListener(new MouseWheelListener() {
+    private JMenu createFileMenu(JToolBar toolBar) {
+        ToolTipAction newFile = new ToolTipAction("New", IconCreator.create("document-new.png")) {
             @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                if (e.isControlDown()) {
-                    int r = e.getWheelRotation();
-                    int s = source.getFont().getSize() - r;
-                    if (s > 12) {
-                        Font f = source.getFont().deriveFont((float) s);
-                        source.setFont(f);
-                        textLineNumber.setFont(f);
-                        textLineNumber.setBorderGap(5);
-                    }
-                } else {
-                    JScrollBar bar = scrollPane.getVerticalScrollBar();
-                    bar.setValue(bar.getValue() + e.getWheelRotation() * e.getScrollAmount() * bar.getBlockIncrement());
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (ClosingWindowListener.checkForSave(Main.this, Main.this)) {
+                    sourceOnDisk = "";
+                    source.setText(sourceOnDisk);
+                    runningProgram = null;
+                    setFilename(null);
+                    notifyInvalidateCode();
                 }
             }
-        });
+        }.setToolTip("creates a new file");
+
+        ToolTipAction open = new ToolTipAction("Open", IconCreator.create("document-open.png")) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (ClosingWindowListener.checkForSave(Main.this, Main.this)) {
+                    JFileChooser fc = getjFileChooser();
+                    if (fc.showOpenDialog(Main.this) == JFileChooser.APPROVE_OPTION) {
+                        try {
+                            load(fc.getSelectedFile());
+                        } catch (IOException e) {
+                            new ErrorMessage("Error loading a file").addCause(e).show(Main.this);
+                        }
+                    }
+                }
+            }
+        }.setToolTip("Opens a file.");
+
+        ToolTipAction openNew = new ToolTipAction("Open in New Window", IconCreator.create("document-open-new.png")) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (ClosingWindowListener.checkForSave(Main.this, Main.this)) {
+                    JFileChooser fc = getjFileChooser();
+                    if (fc.showOpenDialog(Main.this) == JFileChooser.APPROVE_OPTION) {
+                        new Main(fc.getSelectedFile()).setVisible(true);
+                    }
+                }
+            }
+        }.setToolTip("Opens a file in a new Window");
+
+        ToolTipAction save = new ToolTipAction("Save", IconCreator.create("document-save.png")) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    save();
+                } catch (IOException e) {
+                    new ErrorMessage("Error storing a file").addCause(e).show(Main.this);
+                }
+            }
+        }.setToolTip("Saves the file to disk.");
+
+        ToolTipAction saveAs = new ToolTipAction("Save As", IconCreator.create("document-save-as.png")) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    saveAs();
+                } catch (IOException e) {
+                    new ErrorMessage("Error storing a file").addCause(e).show(Main.this);
+                }
+            }
+        }.setToolTip("Saves the file with a new name to disk.");
 
         JMenu file = new JMenu("File");
         file.add(newFile.createJMenuItem());
@@ -319,6 +305,69 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
         file.add(save.createJMenuItem());
         file.add(saveAs.createJMenuItem());
 
+        toolBar.add(open.createJButtonNoText());
+        toolBar.add(openNew.createJButtonNoText());
+        toolBar.add(save.createJButtonNoText());
+        return file;
+    }
+
+    private JMenu createASMMenu(JToolBar toolBar) {
+        ToolTipAction build = new ToolTipAction("Build", IconCreator.create("preferences.png")) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    Program program = createProgram();
+                    if (program != null)
+                        writeHex(program, filename);
+                } catch (Throwable e) {
+                    new ErrorMessage("Error").addCause(e).show(Main.this);
+                }
+            }
+        }.setToolTip("Converts the source to a hex file.");
+
+        ToolTipAction show = new ToolTipAction("Show Listing", IconCreator.create("listing.png")) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    Program program;
+                    if (runningProgram != null)
+                        program = runningProgram;
+                    else
+                        program = createProgram();
+                    if (program != null) {
+                        writeHex(program, filename);
+
+                        ByteArrayOutputStream text = new ByteArrayOutputStream();
+                        final AsmFormatter asmFormatter = new AsmFormatter(new PrintStream(text, false, "utf-8"));
+                        program.traverse(asmFormatter);
+                        new ListDialog(Main.this, "Listing", text.toString("utf-8"), source.getFont(), asmFormatter.getAddrToLineMap()).setVisible(true);
+                    }
+                } catch (Throwable e) {
+                    new ErrorMessage("Error").addCause(e).show(Main.this);
+                }
+            }
+        }.setToolTip("Converts the source to a listing and shows it.");
+
+        ToolTipAction saveLst = new ToolTipAction("Save Listing") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    Program program = createProgram();
+                    if (program != null)
+                        writeLst(program, filename);
+                } catch (Throwable e) {
+                    new ErrorMessage("Error").addCause(e).show(Main.this);
+                }
+            }
+        }.setToolTip("Converts the source to a listing and writes it to disk.");
+
+        ToolTipAction tabToSpace = new ToolTipAction("Tabs to Spaces") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                source.setText(new TabToSpaces(source.getText(), source.getTabSize()).convert());
+            }
+        }.setToolTip("Converts tabs to spaces");
+
         JMenu assemble = new JMenu("ASM");
         assemble.add(build.createJMenuItem());
         assemble.add(show.createJMenuItem());
@@ -326,40 +375,8 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
         assemble.add(saveLst.createJMenuItem());
         assemble.add(tabToSpace.createJMenuItem());
 
-        JMenu help = new JMenu("Help");
-        help.add(helpOpcodes.createJMenuItem());
-        help.add(new JMenuItem(new AbstractAction("About") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                InfoDialog.getInstance().showInfo(Main.this, MESSAGE);
-            }
-        }));
-
-        JMenuBar menuBar = new JMenuBar();
-        menuBar.add(file);
-        menuBar.add(assemble);
-        menuBar.add(help);
-        setJMenuBar(menuBar);
-
-        JToolBar toolBar = new JToolBar();
-        toolBar.add(open.createJButtonNoText());
-        toolBar.add(openNew.createJButtonNoText());
-        toolBar.add(save.createJButtonNoText());
         toolBar.add(build.createJButtonNoText());
-        toolBar.addSeparator();
-        toolBar.add(remoteStart.createJButtonNoText());
-        toolBar.add(remoteStop.createJButtonNoText());
-        toolBar.addSeparator();
-        toolBar.add(remoteDebug.createJButtonNoText());
-        toolBar.add(remoteStep.createJButtonNoText());
-        toolBar.add(remoteRun.createJButtonNoText());
-        getContentPane().add(toolBar, BorderLayout.NORTH);
-
-        pack();
-
-        setLocationRelativeTo(null);
-
-        addAddrListener(this);
+        return assemble;
     }
 
     private RemoteInterface getRemoteInterface() throws RemoteException {

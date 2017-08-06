@@ -223,6 +223,8 @@ public abstract class MnemonicArguments {
         }
     }
 
+    //class can not be final, bug in checkstyle. See https://github.com/checkstyle/checkstyle/issues/4037
+    //CHECKSTYLE.OFF: FinalClass
     private static class Concat extends MnemonicArguments {
         final MnemonicArguments before;
         private final char c;
@@ -281,5 +283,6 @@ public abstract class MnemonicArguments {
         }
 
     }
+    //CHECKSTYLE.ON: FinalClass
 
 }

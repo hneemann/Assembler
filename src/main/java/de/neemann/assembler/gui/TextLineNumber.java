@@ -178,6 +178,8 @@ public class TextLineNumber extends JPanel
      * <li>TextLineNumber.CENTER
      * <li>TextLineNumber.RIGHT (default)
      * </ul>
+     *
+     * @param digitAlignment the alignment of the numbers
      */
     public void setDigitAlignment(float digitAlignment) {
         this.digitAlignment =
@@ -236,7 +238,7 @@ public class TextLineNumber extends JPanel
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        //	Determine the width of the space available to draw the line number
+        // Determine the width of the space available to draw the line number
 
         FontMetrics fontMetrics = component.getFontMetrics(component.getFont());
         Insets insets = getInsets();
@@ -285,9 +287,11 @@ public class TextLineNumber extends JPanel
     }
 
     /**
-     *	Get the line number to be drawn. The empty string will be returned
-     *  when a line of text has wrapped.
-     *  @return line number
+     * Get the line number to be drawn. The empty string will be returned
+     * when a line of text has wrapped.
+     *
+     * @param rowStartOffset the address of the line in the string
+     * @return line number
      */
     protected String getTextLineNumber(int rowStartOffset) {
         Element root = component.getDocument().getDefaultRootElement();

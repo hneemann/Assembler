@@ -33,6 +33,7 @@ public class ClosingWindowListener extends WindowAdapter {
      *
      * @param parent      the parent component of the confirm dialog
      * @param confirmSave the ConfirmSave interface
+     * @param doExit      true if the closing listener should call dispose on the parent
      */
     public ClosingWindowListener(final JFrame parent, final ConfirmSave confirmSave, final boolean doExit) {
         this((Component) parent, new GUICloser() {

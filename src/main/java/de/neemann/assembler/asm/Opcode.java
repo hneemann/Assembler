@@ -8,6 +8,7 @@ import java.io.PrintStream;
  * @author hneemann
  */
 public enum Opcode {
+    //CHECKSTYLE.OFF: JavadocVariable
     NOP("Does nothing.", MnemonicArguments.NOTHING, new Flags()),
     MOV("Move the content of Rs to register Rd.",
             MnemonicArguments.DEST_SOURCE, new Flags()
@@ -379,12 +380,7 @@ public enum Opcode {
             .set(JmpAbs.Yes)
             .set(RetI.Yes));
 
-
-    public enum RegsNeeded {none, source, dest, both}
-
-    public enum RegIsAddress {none, source, dest}
-
-    public enum ImmedNeeded {No, Yes}
+    //CHECKSTYLE.ON: JavadocVariable
 
     enum ReadRam {No, Yes}
 

@@ -15,7 +15,9 @@ public class Operate implements Expression {
      * the enumeration of possible operations
      */
     public enum Operation {
+        //CHECKSTYLE.OFF: JavadocVariable
         OR("|"), AND("&"), MUL("*"), ADD("+"), XOR("^"), DIV("/"), SUB("-");
+        //CHECKSTYLE.ON: JavadocVariable
         private final String str;
 
         Operation(String str) {

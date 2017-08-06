@@ -1,5 +1,8 @@
 Release Notes
 
+HEAD, planned as v0.4
+- added support for von Neumann architecture
+
 v0.3, released on 28. Feb 2017
 - better support for high resolution displays
 - improvements on the tcp client which controls digital
