@@ -179,7 +179,7 @@
                             <mainClass>de.neemann.assembler.gui.Main</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Build-SCM-Revision>${buildNumber}</Build-SCM-Revision>
+                            <Build-SCM-Revision>${git.commit.id.describe}</Build-SCM-Revision>
                             <Build-Time>${maven.build.timestamp}</Build-Time>
                         </manifestEntries>
                     </archive>

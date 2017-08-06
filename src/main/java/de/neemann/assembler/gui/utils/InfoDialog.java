@@ -127,7 +127,7 @@ public final class InfoDialog {
             path = path.substring(0, p);
             p = path.lastIndexOf('/');
             sb.append(path.substring(p + 1)).append('\n');
-            sb.append("Build Revision").append(":\n");
+            sb.append("Build Revision").append(": ");
             sb.append(get(REVISION)).append("\n");
             sb.append("Build Time").append(": ");
             sb.append(get(TIME)).append("\n\n");
