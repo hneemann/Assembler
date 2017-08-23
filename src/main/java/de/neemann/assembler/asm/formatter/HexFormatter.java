@@ -23,7 +23,8 @@ public class HexFormatter implements InstructionVisitor {
      */
     public HexFormatter(PrintStream out) {
         this.out = out;
-        out.println("v2.0 raw");
+        out.print("v2.0 raw");
+        out.print('\n');
     }
 
     @Override
@@ -32,14 +33,16 @@ public class HexFormatter implements InstructionVisitor {
         if (instrAddr < addr)
             throw new ExpressionException("invalid hex addr!");
         while (instrAddr > addr) {
-            out.println("0");
+            out.print("0");
+            out.print('\n');
             addr++;
         }
 
         in.createMachineCode(context, new MachineCodeListener() {
             @Override
             public void add(int code) {
-                out.println(Integer.toHexString(code));
+                out.print(Integer.toHexString(code));
+                out.print('\n');
                 addr++;
             }
         });
