@@ -232,18 +232,16 @@ public class ParserTest extends TestCase {
         p.traverse(new HexFormatter(ps));
         ps.close();
 
-        String ls = System.lineSeparator();
-
-        assertEquals("v2.0 raw"+ ls +
-                "1400"+ ls +
-                "6e06"+ ls +
-                "0"+ ls +
-                "0"+ ls +
-                "0"+ ls +
-                "0"+ ls +
-                "0"+ ls +
-                "0"+ ls +
-                "6fff"+ ls,baos.toString());
+        assertEquals("v2.0 raw\n"+
+                "1400\n"+
+                "6e06\n"+
+                "0\n"+
+                "0\n"+
+                "0\n"+
+                "0\n"+
+                "0\n"+
+                "0\n"+
+                "6fff\n",baos.toString());
     }
 
     public void testOrgExc() throws ParserException, IOException, ExpressionException, InstructionException {
