@@ -19,6 +19,12 @@ So it is also possible to program more like for a x86 cisc processor.
 The assembler has a simple GUI and is able to control the [simulator](https://github.com/hneemann/Digital/) by using its TCP/IP 
 interface. So it is easy to debug an assembly program within the simulator. 
 
+### Interfacing the Simulator ###
+
+If you are interested in how to interface the simulator you can take a look at this 
+[class](src/main/java/de/neemann/assembler/gui/RemoteInterface.java).
+These are just a few lines of simple code, and it should be easy to translate it into any other language you want to use. 
+
 ### How it works ###
 
 A list of the supported ASM instructions is included in the distributed zip file (`instructions.pdf`). 

@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 
 /**
  * Used to connect the simulator.
- * TCP port 41114 is used to access the simulator
+ * TCP port 41114 is used to access the simulator.
  * Created by helmut.neemann on 23.06.2016.
  */
 public class RemoteInterface {
@@ -27,9 +27,11 @@ public class RemoteInterface {
     }
 
     /**
-     * Starts the simulation
+     * Starts the simulation.
+     * The clock element in the simulation is configured to start
+     * the real time clocking.
      *
-     * @param file the file to load
+     * @param file the hex file to load to program memory
      * @throws RemoteException RemoteException
      */
     public void start(File file) throws RemoteException {
@@ -37,9 +39,11 @@ public class RemoteInterface {
     }
 
     /**
-     * Debugs the simulation
+     * Debugs the simulation.
+     * The clock element in the simulation is configured not to
+     * start the real time clock.
      *
-     * @param file the file to load
+     * @param file the hex file to load to program memory
      * @throws RemoteException RemoteException
      */
     public void debug(File file) throws RemoteException {
@@ -47,7 +51,8 @@ public class RemoteInterface {
     }
 
     /**
-     * Run to next break point
+     * Run to next break point.
+     * Runs the simulation until a brk signal is detected.
      *
      * @return the actual code address
      * @throws RemoteException RemoteException
@@ -66,7 +71,7 @@ public class RemoteInterface {
     }
 
     /**
-     * A single clock step
+     * A single clock step.
      *
      * @return the actual code address
      * @throws RemoteException RemoteException
@@ -75,12 +80,12 @@ public class RemoteInterface {
         return getAddr(sendRequest("step", null));
     }
 
-    private int getAddr(String resp) {
-        if (resp.length() <= 3)
+    private int getAddr(String addrString) {
+        if (addrString.length() <= 3)
             return -1;
 
         try {
-            return Integer.parseInt(resp.substring(3), 16);
+            return Integer.parseInt(addrString.substring(3), 16);
         } catch (NumberFormatException e) {
             return -1;
         }
