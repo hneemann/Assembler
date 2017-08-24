@@ -19,30 +19,7 @@
 	
 	.word lastButtons
 
-reset:	call up         ; fixed start sequnce
-	call up
-        call down
-	
-	LDI STATEADR, state1
-	jmp checkButton ; start state machine
-
-up:	LDI R0, 1
-	LDI R1, 16
-	
-u1:	OUT GPO_PORT, R0
-	LSL R0
-	DEC R1
-	BRNE u1
-	RET
-
-down:	LDI R0, 0x8000
-	LDI R1, 16
-	
-d1:	OUT GPO_PORT, R0
-	LSR R0
-	DEC R1
-	BRNE d1
-	RET
+	ldi STATEADR, state3
 
 checkButton:
 	in R0, GPI_PORT		; load button
