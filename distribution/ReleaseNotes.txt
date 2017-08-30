@@ -1,7 +1,8 @@
 Release Notes
 
-HEAD, planned as v0.4
-- added support for von Neumann architecture
+v0.4, released on 30. Aug 2017
+- added support for von Neumann architecture: You can place
+  the ram data origin with the new .dorg [addr] directive.
 
 v0.3, released on 28. Feb 2017
 - better support for high resolution displays
