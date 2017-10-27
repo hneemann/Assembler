@@ -119,20 +119,20 @@ public final class Instruction implements InstructionInterface {
                 case instrSourceAndDest:
                     int ofs = con - context.getInstrAddr() - 1;
                     if (ofs > 0xff || ofs < -0x100)
-                        throw new ExpressionException("branch out of range");
+                        throw new ExpressionException("branch out of range in line "+lineNumber);
                     mc.add(ofs & 0x1ff
                             | (opcode.ordinal() << 9));
                     break;
                 case instrDest:
                     if (con < 0 || con > 31)
-                        throw new ExpressionException("constant to large");
+                        throw new ExpressionException("constant to large in line "+lineNumber);
                     mc.add(sourceReg.ordinal()
                             | (con << 4)
                             | (opcode.ordinal() << 9));
                     break;
                 case instrSource:
                     if (con < 0 || con > 31)
-                        throw new ExpressionException("constant to large");
+                        throw new ExpressionException("constant to large in line "+lineNumber);
                     mc.add(con & 0xf
                             | (destReg.ordinal() << 4)
                             | ((con >> 4) << 8)
