@@ -98,6 +98,9 @@ public class RemoteInterface {
             if (args != null)
                 command = command + ":" + args;
             out.writeUTF(command);
+            // writeUTF writes at first the length of the string as a two byte value (high byte first) to
+            // the stream, followed by the utf-8 encoded string. Length means the number of bytes needed to
+            // store the UTF-8 encoded string, not the number of characters.
             out.flush();
             DataInputStream in = new DataInputStream(s.getInputStream());
             String response = in.readUTF();
