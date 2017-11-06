@@ -90,7 +90,8 @@ public class Program {
                 context.setIdentifier(Context.NEXT_ADDR, addr + calcRelAddr(i, 1));
                 context.setIdentifier(Context.SKIP_ADDR, addr + calcRelAddr(i, 2));
                 context.setIdentifier(Context.SKIP2_ADDR, addr + calcRelAddr(i, 3));
-                instructionVisitor.visit(in, context);
+                if (!instructionVisitor.visit(in, context))
+                    break;
                 addrToLineMap.put(addr, in.getLineNumber());
                 addr += in.size();
             } catch (ExpressionException e) {
@@ -302,19 +303,21 @@ public class Program {
 
     private static class LinkAddVisitor implements InstructionVisitor {
         @Override
-        public void visit(InstructionInterface instruction, Context context) throws ExpressionException {
+        public boolean visit(InstructionInterface instruction, Context context) throws ExpressionException {
             if (instruction.getLabel() != null) {
                 context.addIdentifier(instruction.getLabel(), context.getInstrAddr());
             }
+            return true;
         }
     }
 
     private static class LinkSetVisitor implements InstructionVisitor {
         @Override
-        public void visit(InstructionInterface instruction, Context context) throws ExpressionException {
+        public boolean visit(InstructionInterface instruction, Context context) throws ExpressionException {
             if (instruction.getLabel() != null) {
                 context.setIdentifier(instruction.getLabel(), context.getInstrAddr());
             }
+            return true;
         }
     }
 

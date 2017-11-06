@@ -35,7 +35,7 @@ public class OptimizerShort implements InstructionVisitor {
     }
 
     @Override
-    public void visit(InstructionInterface instructionInterface, Context context) throws ExpressionException {
+    public boolean visit(InstructionInterface instructionInterface, Context context) throws ExpressionException {
         if (instructionInterface instanceof Instruction) {
             Instruction instruction = (Instruction) instructionInterface;
             Opcode op = instruction.getOpcode();
@@ -46,5 +46,6 @@ public class OptimizerShort implements InstructionVisitor {
                     instruction.setOpcode(opShort);
             }
         }
+        return true;
     }
 }

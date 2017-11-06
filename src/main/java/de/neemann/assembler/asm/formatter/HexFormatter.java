@@ -28,7 +28,7 @@ public class HexFormatter implements InstructionVisitor {
     }
 
     @Override
-    public void visit(InstructionInterface in, Context context) throws ExpressionException {
+    public boolean visit(InstructionInterface in, Context context) throws ExpressionException {
         final int instrAddr = context.getInstrAddr();
         if (instrAddr < addr)
             throw new ExpressionException("invalid hex addr!");
@@ -46,5 +46,7 @@ public class HexFormatter implements InstructionVisitor {
                 addr++;
             }
         });
+
+        return true;
     }
 }

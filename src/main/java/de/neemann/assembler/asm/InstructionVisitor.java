@@ -16,8 +16,9 @@ public interface InstructionVisitor {
      *
      * @param instruction the instruction
      * @param context     the context of the instruction in the program
+     * @return false if iteration is to terminate
      * @throws ExpressionException ExpressionException
      */
-    void visit(InstructionInterface instruction, Context context) throws ExpressionException;
+    boolean visit(InstructionInterface instruction, Context context) throws ExpressionException;
 
 }

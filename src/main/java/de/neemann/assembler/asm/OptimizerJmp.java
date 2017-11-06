@@ -13,7 +13,7 @@ public class OptimizerJmp implements InstructionVisitor {
     private boolean optimized = false;
 
     @Override
-    public void visit(InstructionInterface instructionInterface, Context context) throws ExpressionException {
+    public boolean visit(InstructionInterface instructionInterface, Context context) throws ExpressionException {
         if (instructionInterface instanceof Instruction) {
             Instruction instruction = (Instruction) instructionInterface;
             Opcode op = instruction.getOpcode();
@@ -23,9 +23,12 @@ public class OptimizerJmp implements InstructionVisitor {
                 if (ofs <= 255 && ofs >= -256) {
                     instruction.setOpcode(Opcode.JMPs);
                     optimized = true;
+                    return false;
                 }
             }
         }
+
+        return true;
     }
 
     /**

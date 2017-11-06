@@ -61,7 +61,7 @@ public class AsmFormatter implements InstructionVisitor {
     }
 
     @Override
-    public void visit(InstructionInterface i, Context context) throws ExpressionException {
+    public boolean visit(InstructionInterface i, Context context) throws ExpressionException {
         final String comment = i.getComment();
         if (comment != null) {
             o.println(comment);
@@ -134,6 +134,8 @@ public class AsmFormatter implements InstructionVisitor {
             print(i.toString());
         }
         newLine();
+
+        return true;
     }
 
     private int countLines(String comment) {
