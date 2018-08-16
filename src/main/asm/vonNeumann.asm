@@ -1,7 +1,7 @@
 	.dorg 0x8000
 	; sets the ram start address to 0x8000 and enables von Neumann mode.
 	; in this mode the .data directive does not create a data moving stub, but
-	; inserts the data directly into the program code. Therfore you have to jump
+	; inserts the data directly into the program code. Therefore you have to jump
 	; over the data.
 
 	jmp start
