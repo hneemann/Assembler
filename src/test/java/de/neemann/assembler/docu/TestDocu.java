@@ -1,6 +1,8 @@
 package de.neemann.assembler.docu;
 
 import de.neemann.assembler.asm.Opcode;
+import de.neemann.assembler.parser.Macro;
+import de.neemann.assembler.parser.Parser;
 import junit.framework.TestCase;
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.Fop;
@@ -19,12 +21,17 @@ import java.io.*;
  */
 public class TestDocu extends TestCase {
 
-    private File getTargetFolder() {
-        String mavenhome = System.getProperty("asmMvnHome");
-        if (mavenhome == null) {
+    public static File getMavenRoot() {
+        String mavenHome = System.getProperty("asmMvnHome");
+        if (mavenHome == null) {
             System.out.println("------------ use hardcoded input folder!");
-            mavenhome = "/home/hneemann/Dokumente/Java/assembler/assembler3";
+            mavenHome = "/home/hneemann/Dokumente/Java/assembler/assembler3";
         }
+        return new File(mavenHome);
+    }
+
+    private static File getTargetFolder() {
+        File mavenhome = getMavenRoot();
         return new File(mavenhome, "target/xml");
     }
 
@@ -62,6 +69,28 @@ public class TestDocu extends TestCase {
                 w.write("\">");
                 w.write(escapeHTML(op.getDescription()));
                 w.write("</opcode>");
+                w.newLine();
+            }
+            for (Macro m : Parser.getMacros()) {
+                w.write("  <macro ");
+                w.write("name=\"");
+                w.write(m.getName());
+                w.write(" ");
+                w.write(m.getArguments().toString());
+                w.write("\">");
+                w.write(escapeHTML(m.getDescription()));
+                w.write("</macro>");
+                w.newLine();
+            }
+            for (Parser.Directive d : Parser.getDirectives()) {
+                w.write("  <dir ");
+                w.write("name=\"");
+                w.write(d.getName());
+                w.write(" ");
+                w.write(escapeHTML(d.getArgs()));
+                w.write("\">");
+                w.write(escapeHTML(d.getDescription()));
+                w.write("</dir>");
                 w.newLine();
             }
             w.write("</root>");

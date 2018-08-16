@@ -13,22 +13,11 @@ import static java.io.StreamTokenizer.*;
  * @author hneemann
  */
 public class Parser implements Closeable {
-    /**
-     * the help message for the directives
-     */
-    public static final String HELP =
-            "Assembler commands\n\n"
-                    + ".reg alias Rs\n\tSets an alias name for a register\n\n"
-                    + ".word addr\n\tReserves a single word in the RAM. Its address is stored in addr\n\n"
-                    + ".long addr\n\tReserves two words in the RAM. Its address is stored in addr\n\n"
-                    + ".const ident const\n\tcreates the given constant\n\n"
-                    + ".dorg addr\n\tSets the actual data address. If used, assembler is switched to von Neumann mode.\n\n"
-                    + ".org addr\n\tSets the actual code address. Is used to place code segments to fixed addresses.\n\n"
-                    + ".data addr value(,value)*\n\tcopies the given values to the RAM. The address of the values is stored in addr.\n\n"
-                    + ".include \"filename\"\n\tincludes the given file";
+
     private final StreamTokenizer tokenizer;
     private final Reader in;
     private static final HashMap<String, Macro> MACROS = new HashMap<>();
+    private static final HashMap<String, Directive> DIRECTIVES = new HashMap<>();
     private final HashMap<String, Register> regsMap;
     private File baseFile;
 
@@ -44,6 +33,15 @@ public class Parser implements Closeable {
         addMacro(new Leave());
         addMacro(new EnterISR());
         addMacro(new LeaveISR());
+
+        addDirective(new DReg());
+        addDirective(new DWord());
+        addDirective(new DLong());
+        addDirective(new DOrg());
+        addDirective(new DDOrg());
+        addDirective(new DData());
+        addDirective(new DConst());
+        addDirective(new DInclude());
     }
 
     /**
@@ -53,8 +51,19 @@ public class Parser implements Closeable {
         return MACROS.values();
     }
 
+    /**
+     * @return the available directives
+     */
+    public static Iterable<Directive> getDirectives() {
+        return DIRECTIVES.values();
+    }
+
     private static void addMacro(Macro m) {
         MACROS.put(m.getName().toLowerCase(), m);
+    }
+
+    private static void addDirective(Directive d) {
+        DIRECTIVES.put(d.getName().toLowerCase(), d);
     }
 
 
@@ -169,64 +178,11 @@ public class Parser implements Closeable {
 
     private void parseMetaCommand(Program p, String t) throws IOException, ParserException, ExpressionException {
         p.addPendingComment("\n " + t);
-        switch (t) {
-            case ".reg":
-                String regName = parseWord();
-                p.addPendingComment(" " + regName);
-                Register reg = parseReg();
-                p.addPendingComment(" " + reg);
-                regsMap.put(regName, reg);
-                break;
-            case ".word":
-                String word = parseWord();
-                p.addPendingComment(" " + word);
-                p.addRam(word, 1);
-                break;
-            case ".long":
-                word = parseWord();
-                p.addPendingComment(" " + word);
-                p.addRam(word, 2);
-                break;
-            case ".org":
-                int addr = parseExpression().getValue(p.getContext());
-                p.addPendingOrigin(addr);
-                p.addPendingComment(" 0x" + Integer.toHexString(addr));
-                break;
-            case ".dorg":
-                addr = parseExpression().getValue(p.getContext());
-                p.setRamStart(addr);
-                break;
-            case ".const":
-                word = parseWord();
-                int value = parseExpression().getValue(p.getContext());
-                p.addPendingComment(" " + word + " " + value);
-                p.getContext().addIdentifier(word, value);
-                break;
-            case ".data":
-                String ident = parseWord();
-                p.addPendingComment(" " + ident);
-                p.addDataLabel(ident);
-                readData(p);
-                while (isNext(',')) {
-                    isNext(TT_EOL);
-                    p.addPendingComment(", ");
-                    readData(p);
-                }
-                break;
-            case ".include":
-                if (isNext('"')) {
-                    String filename = tokenizer.sval;
-                    if (baseFile == null)
-                        throw makeParserException("no base file name available");
-                    p.addPendingComment("\n; included " + filename + "\n");
-                    Parser inc = new Parser(new File(baseFile.getParentFile(), filename));
-                    inc.parseProgram(p);
-                } else
-                    throw makeParserException("no filename found");
-                break;
-            default:
-                throw makeParserException("unknown meta command " + t);
-        }
+        Directive dir = DIRECTIVES.get(t);
+        if (dir == null)
+            throw makeParserException("unknown assembler directive " + t);
+
+        dir.doWork(this, p);
     }
 
     private void readData(Program p) throws ExpressionException, IOException, ParserException {
@@ -509,4 +465,164 @@ public class Parser implements Closeable {
         return tokenizer.lineno();
     }
 
+    /**
+     * Represents a assembler directive
+     */
+    public static abstract class Directive {
+        private final String name;
+        private final String args;
+        private final String description;
+
+        private Directive(String name, String args, String description) {
+            this.name = name;
+            this.args = args;
+            this.description = description;
+        }
+
+        /**
+         * @return the name of the directive
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * @return the arguments of the directive
+         */
+        public String getArgs() {
+            return args;
+        }
+
+        /**
+         * @return the description
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        @Override
+        public String toString() {
+            return name + " " + args + "\n\t" + description;
+        }
+
+        abstract void doWork(Parser parser, Program program) throws IOException, ParserException, ExpressionException;
+    }
+
+    private static final class DReg extends Directive {
+        private DReg() {
+            super(".reg", "alias Rs", "Sets an alias name for a register.");
+        }
+
+        @Override
+        protected void doWork(Parser parser, Program program) throws IOException, ParserException, ExpressionException {
+            String regName = parser.parseWord();
+            program.addPendingComment(" " + regName);
+            Register reg = parser.parseReg();
+            program.addPendingComment(" " + reg);
+            parser.regsMap.put(regName, reg);
+        }
+    }
+
+    private static final class DWord extends Directive {
+        private DWord() {
+            super(".word", "addr", "Reserves a single word in the RAM. Its address is stored in addr.");
+        }
+
+        @Override
+        protected void doWork(Parser parser, Program program) throws IOException, ParserException, ExpressionException {
+            String word = parser.parseWord();
+            program.addPendingComment(" " + word);
+            program.addRam(word, 1);
+        }
+    }
+
+    private static final class DLong extends Directive {
+        private DLong() {
+            super(".long", "addr", "Reserves two words in the RAM. Its address is stored in addr.");
+        }
+
+        @Override
+        protected void doWork(Parser parser, Program program) throws IOException, ParserException, ExpressionException {
+            String word = parser.parseWord();
+            program.addPendingComment(" " + word);
+            program.addRam(word, 2);
+        }
+    }
+
+    private static final class DOrg extends Directive {
+        private DOrg() {
+            super(".org", "addr", "Sets the actual code address. Is used to place code segments to fixed addresses.");
+        }
+
+        @Override
+        protected void doWork(Parser parser, Program program) throws IOException, ParserException, ExpressionException {
+            int addr = parser.parseExpression().getValue(program.getContext());
+            program.addPendingOrigin(addr);
+            program.addPendingComment(" 0x" + Integer.toHexString(addr));
+        }
+    }
+
+    private static final class DDOrg extends Directive {
+        private DDOrg() {
+            super(".dorg", "addr", "Sets the actual data address. If used, assembler is switched to von Neumann mode.");
+        }
+
+        @Override
+        protected void doWork(Parser parser, Program program) throws IOException, ParserException, ExpressionException {
+            int addr = parser.parseExpression().getValue(program.getContext());
+            program.setRamStart(addr);
+        }
+    }
+
+    private static final class DData extends Directive {
+        private DData() {
+            super(".data", "addr value(,value)*", "Copies the given values to the RAM. The address of the values is stored in addr.");
+        }
+
+        @Override
+        protected void doWork(Parser parser, Program program) throws IOException, ParserException, ExpressionException {
+            String ident = parser.parseWord();
+            program.addPendingComment(" " + ident);
+            program.addDataLabel(ident);
+            parser.readData(program);
+            while (parser.isNext(',')) {
+                parser.isNext(TT_EOL);
+                program.addPendingComment(", ");
+                parser.readData(program);
+            }
+        }
+    }
+
+    private static final class DConst extends Directive {
+        private DConst() {
+            super(".const", "ident const", "Creates the given constant.");
+        }
+
+        @Override
+        protected void doWork(Parser parser, Program program) throws IOException, ParserException, ExpressionException {
+            String word = parser.parseWord();
+            int value = parser.parseExpression().getValue(program.getContext());
+            program.addPendingComment(" " + word + " " + value);
+            program.getContext().addIdentifier(word, value);
+        }
+    }
+
+    private static final class DInclude extends Directive {
+        private DInclude() {
+            super(".include", "\"filename\"", "Includes the given file.");
+        }
+
+        @Override
+        protected void doWork(Parser parser, Program program) throws IOException, ParserException, ExpressionException {
+            if (parser.isNext('"')) {
+                String filename = parser.tokenizer.sval;
+                if (parser.baseFile == null)
+                    throw parser.makeParserException("no base file name available");
+                program.addPendingComment("\n; included " + filename + "\n");
+                Parser inc = new Parser(new File(parser.baseFile.getParentFile(), filename));
+                inc.parseProgram(program);
+            } else
+                throw parser.makeParserException("no filename found");
+        }
+    }
 }

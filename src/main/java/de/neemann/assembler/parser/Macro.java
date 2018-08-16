@@ -52,4 +52,18 @@ public abstract class Macro {
      * @throws ExpressionException  ExpressionException
      */
     abstract public void parseMacro(Program p, String name, Parser parser) throws IOException, ParserException, InstructionException, ExpressionException;
+
+    /**
+     * @return the macro arguments
+     */
+    public MnemonicArguments getArguments() {
+        return args;
+    }
+
+    /**
+     * @return the macro description
+     */
+    public String getDescription() {
+        return description;
+    }
 }

@@ -79,7 +79,9 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                     tf.append("Macros\n\n");
                     for (Macro m : Parser.getMacros())
                         tf.append(m.toString()).append("\n\n");
-                    tf.append(Parser.HELP).append("\n");
+                    tf.append("Directives\n\n");
+                    for (Parser.Directive d : Parser.getDirectives())
+                        tf.append(d.toString()).append("\n\n");
                     new ListDialog(Main.this, "Instructions", tf.toString(), source.getFont(), null).setVisible(true);
                 } catch (Throwable e) {
                     new ErrorMessage("Error").addCause(e).show(Main.this);

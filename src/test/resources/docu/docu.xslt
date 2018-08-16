@@ -39,7 +39,10 @@
                         Instruction Set Summary
                     </fo:block>
 
-                    <fo:table table-layout="fixed" margin-top="1cm" width="100%">
+                    <fo:block font-weight="bold" margin-top="1cm">
+                        Instructions
+                    </fo:block>
+                    <fo:table table-layout="fixed" margin-top="5mm" width="100%">
                         <fo:table-column column-number="2" column-width="4.4cm"/>
                         <fo:table-column column-number="1" column-width="1.1cm"/>
                         <fo:table-column column-number="3" column-width="10.4cm"/>
@@ -60,6 +63,46 @@
                             <xsl:apply-templates select="opcode"/>
                         </fo:table-body>
                     </fo:table>
+                    <fo:block font-weight="bold" margin-top="1cm">
+                        Macros
+                    </fo:block>
+                    <fo:table table-layout="fixed" margin-top="5mm" width="100%">
+                        <fo:table-column column-number="1" column-width="5.4cm"/>
+                        <fo:table-column column-number="2" column-width="10.4cm"/>
+                        <fo:table-header>
+                            <fo:table-row>
+                                <fo:table-cell column-number="1" border-style="solid" border-width="0pt" border-after-width="1pt">
+                                    <fo:block text-align="left">Macro</fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell column-number="2" border-style="solid" border-width="0pt" border-after-width="1pt">
+                                    <fo:block text-align="left">Description</fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+                        </fo:table-header>
+                        <fo:table-body>
+                            <xsl:apply-templates select="macro"/>
+                        </fo:table-body>
+                    </fo:table>
+                    <fo:block font-weight="bold" margin-top="1cm">
+                        Directives
+                    </fo:block>
+                    <fo:table table-layout="fixed" margin-top="5mm" width="100%">
+                        <fo:table-column column-number="1" column-width="5.4cm"/>
+                        <fo:table-column column-number="2" column-width="10.4cm"/>
+                        <fo:table-header>
+                            <fo:table-row>
+                                <fo:table-cell column-number="1" border-style="solid" border-width="0pt" border-after-width="1pt">
+                                    <fo:block text-align="left">Directive</fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell column-number="2" border-style="solid" border-width="0pt" border-after-width="1pt">
+                                    <fo:block text-align="left">Description</fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+                        </fo:table-header>
+                        <fo:table-body>
+                            <xsl:apply-templates select="dir"/>
+                        </fo:table-body>
+                    </fo:table>
                     <fo:block id="LastPage"/>
                 </fo:flow>
             </fo:page-sequence>
@@ -76,6 +119,28 @@
                 <fo:block text-align="left"><xsl:value-of select="@opcode"/></fo:block>
             </fo:table-cell>
             <fo:table-cell column-number="3" padding-before="1.5mm">
+                <fo:block text-align="left"><xsl:value-of select="."/></fo:block>
+            </fo:table-cell>
+        </fo:table-row>
+    </xsl:template>
+
+    <xsl:template match="macro">
+        <fo:table-row>
+            <fo:table-cell column-number="1" padding-before="1.5mm">
+                <fo:block text-align="left" font-weight="bold"><xsl:value-of select="@name"/></fo:block>
+            </fo:table-cell>
+            <fo:table-cell column-number="2" padding-before="1.5mm">
+                <fo:block text-align="left"><xsl:value-of select="."/></fo:block>
+            </fo:table-cell>
+        </fo:table-row>
+    </xsl:template>
+
+    <xsl:template match="dir">
+        <fo:table-row>
+            <fo:table-cell column-number="1" padding-before="1.5mm">
+                <fo:block text-align="left" font-weight="bold"><xsl:value-of select="@name"/></fo:block>
+            </fo:table-cell>
+            <fo:table-cell column-number="2" padding-before="1.5mm">
                 <fo:block text-align="left"><xsl:value-of select="."/></fo:block>
             </fo:table-cell>
         </fo:table-row>

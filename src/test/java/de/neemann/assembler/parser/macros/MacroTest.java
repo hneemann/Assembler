@@ -74,5 +74,20 @@ public class MacroTest extends TestCase {
                 "ADDIs SP,1\n", p.toString());
     }
 
+    public void testEnterI() throws Exception {
+        Program p = new Parser("enteri").parseProgram();
+        assertEquals("STD [SP+-1],R0\n" +
+                "IN R0,0\n" +
+                "STD [SP+-2],R0\n" +
+                "SUBIs SP,2\n", p.toString());
+    }
+
+    public void testLeaveI() throws Exception {
+        Program p = new Parser("leavei").parseProgram();
+        assertEquals("ADDIs SP,2\n" +
+                "LDD R0,[SP+-2]\n" +
+                "OUT 0,R0\n" +
+                "LDD R0,[SP+-1]\n", p.toString());
+    }
 
 }
