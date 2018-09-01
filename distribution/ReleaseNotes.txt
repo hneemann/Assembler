@@ -1,5 +1,11 @@
 Release Notes
 
+v0.5, released on 1. Sep 2018
+ - Added ENTERI and LEAVEI pseudo instructions.
+ - Added pseudo instructions and directives to the
+   instruction sheet.
+ - fixed some bugs
+
 v0.4, released on 30. Aug 2017
 - added support for von Neumann architecture: You can place
   the ram data origin with the new .dorg [addr] directive.
