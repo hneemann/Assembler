@@ -1,6 +1,6 @@
 Release Notes
 
-v0.5, released on 1. Sep 2018
+v0.5.1, released on 3. Sep 2018
  - Added ENTERI and LEAVEI pseudo instructions.
  - Added pseudo instructions and directives to the
    instruction sheet.
