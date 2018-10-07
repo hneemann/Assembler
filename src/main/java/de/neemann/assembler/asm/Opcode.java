@@ -200,31 +200,31 @@ public enum Opcode {
             .set(StoreFlags.Yes)
             .set(ALUBSel.instrSource)),
 
-    LSL("Shifts register Rd by one bit to the left. A zero bit is filled in.",
+    LSL("Shifts register Rd by one bit to the left. A zero bit is filled in and the highest bit is moved to the carry bit.",
             MnemonicArguments.DEST, new Flags()
             .set(ALUCmd.LSL)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
-    LSR("Shifts register Rd by one bit to the right. A zero bit is filled in.",
+    LSR("Shifts register Rd by one bit to the right. A zero bit is filled in and the lowest bit is moved to the carry bit.",
             MnemonicArguments.DEST, new Flags()
             .set(ALUCmd.LSR)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
-    ROL("Shifts register Rd by one bit to the left. The carry bit is filled in.",
+    ROL("Shifts register Rd by one bit to the left. The carry bit is filled in and the highest bit is moved to the carry bit.",
             MnemonicArguments.DEST, new Flags()
             .set(ALUCmd.ROL)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
-    ROR("Shifts register Rd by one bit to the right. The carry bit is filled in.",
+    ROR("Shifts register Rd by one bit to the right. The carry bit is filled in and the lowest bit is moved to the carry bit.",
             MnemonicArguments.DEST, new Flags()
             .set(ALUCmd.ROR)
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)),
-    ASR("Shifts register Rd by one bit to the right. The MSB remains unchanged.",
+    ASR("Shifts register Rd by one bit to the right. The MSB remains unchanged and the lowest bit is moved to the carry bit.",
             MnemonicArguments.DEST, new Flags()
             .set(ALUCmd.ASR)
             .set(StoreFlags.Yes)
