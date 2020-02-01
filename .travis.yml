@@ -1,6 +1,6 @@
 language: java
 jdk:
-- oraclejdk8
+- openjdk9
 sudo: false
 script: mvn clean install
 deploy:
