@@ -3,6 +3,7 @@ package de.neemann.assembler.asm;
 import de.neemann.assembler.expression.Context;
 import de.neemann.assembler.expression.ExpressionException;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -299,6 +300,36 @@ public class Program {
         if (!dataMap.isEmpty())
             throw new ExpressionException(".dorg must used before constants are defined!");
         vonNeumann = true;
+    }
+
+    /**
+     * Creates a map file which contains a mapping of addresses to line numbers.
+     *
+     * @param filename the fil to create
+     * @throws IOException IOException
+     */
+    public void writeAddrList(File filename) throws IOException {
+        try (BufferedWriter out = new BufferedWriter(new FileWriter(filename))) {
+            out.write("[");
+            boolean first = true;
+            for (Map.Entry<Integer, Integer> e : addrToLineMap.entrySet()) {
+                int addr = e.getKey();
+                int line = e.getValue();
+                if (line != 0) {
+                    if (first) first = false;
+                    else {
+                        out.write(",");
+                        out.newLine();
+                    }
+                    out.write("{\"addr\":");
+                    out.write(Integer.toString(addr));
+                    out.write(",\"line\":");
+                    out.write(Integer.toString(line));
+                    out.write("}");
+                }
+            }
+            out.write("]");
+        }
     }
 
     private static class LinkAddVisitor implements InstructionVisitor {

@@ -22,6 +22,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.*;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
@@ -473,7 +474,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
     }
 
     private void writeSource(File file) throws IOException {
-        try (Writer w = new OutputStreamWriter(new FileOutputStream(file), "utf-8")) {
+        try (Writer w = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             String text = this.source.getText();
             w.write(text);
             sourceOnDisk = text;
@@ -512,7 +513,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
     }
 
     private void load(File file) throws IOException {
-        try (Reader in = new InputStreamReader(new FileInputStream(file), "utf-8")) {
+        try (Reader in = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
             StringBuilder sb = new StringBuilder();
 
             int c;
@@ -571,6 +572,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
                     Program prog = p.parseProgram().optimizeAndLink();
                     writeHex(prog, file);
                     writeLst(prog, file);
+                    prog.writeAddrList(makeFilename(file, ".asm", ".map"));
                 }
             } catch (Throwable e) {
                 System.out.println(e.getClass().getSimpleName() + ": " + e.getMessage());
