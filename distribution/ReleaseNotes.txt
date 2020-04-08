@@ -1,6 +1,6 @@
 Release Notes
 
-v0.6, released on 8. Apr 2020
+v0.6.1, released on 8. Apr 2020
  - Added a map file export
 
 v0.5.1, released on 3. Sep 2018
