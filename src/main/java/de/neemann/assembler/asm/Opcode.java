@@ -1,5 +1,6 @@
 package de.neemann.assembler.asm;
 
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
 /**
@@ -60,6 +61,7 @@ public enum Opcode {
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)),
     LDIs("Loads Register Rd with the constant value [const].",
             MnemonicArguments.DEST_CONST, new Flags()
@@ -72,6 +74,7 @@ public enum Opcode {
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)),
     ADDIs("Adds the constant [const] to register Rd without carry.",
             MnemonicArguments.DEST_CONST, new Flags()
@@ -86,6 +89,7 @@ public enum Opcode {
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)),
     ADCIs("Adds the constant [const] to register Rd with carry.",
             MnemonicArguments.DEST_CONST, new Flags()
@@ -100,6 +104,7 @@ public enum Opcode {
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)),
     SUBIs("Subtracts a constant [const] from register Rd without carry.",
             MnemonicArguments.DEST_CONST, new Flags()
@@ -114,6 +119,7 @@ public enum Opcode {
             .set(ALUToBus.Yes)
             .set(StoreFlags.Yes)
             .set(EnRegWrite.Yes)
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)),
     SBCIs("Subtracts a constant [const] from register Rd with carry.",
             MnemonicArguments.DEST_CONST, new Flags()
@@ -128,6 +134,7 @@ public enum Opcode {
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)),
     ANDIs("Stores Rd and [const] in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
@@ -142,6 +149,7 @@ public enum Opcode {
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)),
     ORIs("Stores Rd or [const] in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
@@ -156,6 +164,7 @@ public enum Opcode {
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)),
     EORIs("Stores Rd xor [const] in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
@@ -176,6 +185,7 @@ public enum Opcode {
             .set(StoreFlags.Yes)
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)),
     MULIs("Multiplies the constant [const] with register Rd and stores result in Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
@@ -185,18 +195,34 @@ public enum Opcode {
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
 
-    CMP("Subtracts the content of register Rs from register Rd without carry, does not store the value.",
+    CMP("Subtracts the content of register Rs from register Rd without carry, does not store the result.",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(StoreFlags.Yes)
             .set(ALUCmd.SUB)),
-    CPI("Subtracts a constant [const] from register Rd without carry, does not store the value.",
+    CPC("Subtracts the content of register Rs from register Rd with carry, does not store the result.",
+            MnemonicArguments.DEST_SOURCE, new Flags()
+            .set(StoreFlags.Yes)
+            .set(ALUCmd.SBC)),
+    CPI("Subtracts a constant [const] from register Rd without carry, does not store the result.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SUB)
             .set(StoreFlags.Yes)
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)),
-    CPIs("Subtracts a constant [const] from register Rd without carry, does not store the value.",
+    CPIs("Subtracts a constant [const] from register Rd without carry, does not store the result.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.SUB)
+            .set(StoreFlags.Yes)
+            .set(ALUBSel.instrSource)),
+    CPCI("Subtracts a constant [const] from register Rd with carry, does not store the result.",
+            MnemonicArguments.DEST_CONST, new Flags()
+            .set(ALUCmd.SBC)
+            .set(StoreFlags.Yes)
+            .set(ImmExtMode.src0)
+            .set(ALUBSel.ImReg)),
+    CPCIs("Subtracts a constant [const] from register Rd with carry, does not store the result.",
+            MnemonicArguments.DEST_CONST, new Flags()
+            .set(ALUCmd.SBC)
             .set(StoreFlags.Yes)
             .set(ALUBSel.instrSource)),
 
@@ -258,6 +284,7 @@ public enum Opcode {
             MnemonicArguments.CONST_SOURCE, new Flags()
             .set(WriteRam.Yes)
             .set(SrcToBus.Yes)
+            .set(ImmExtMode.dest0)
             .set(ALUBSel.ImReg)),
     STSs("Stores the content of register Rs to memory at the location given by [const].",
             MnemonicArguments.CONST_SOURCE, new Flags()
@@ -267,6 +294,7 @@ public enum Opcode {
     LDS("Loads the memory value at the location given by [const] to register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ReadRam.Yes)
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)
             .set(EnRegWrite.Yes)),
     LDSs("Loads the memory value at the location given by [const] to register Rd.",
@@ -278,11 +306,13 @@ public enum Opcode {
             MnemonicArguments.BDEST_BCONST_SOURCE, new Flags()
             .set(WriteRam.Yes)
             .set(SrcToBus.Yes)
+            .set(ImmExtMode.extend)
             .set(ALUBSel.ImReg)
             .set(ALUCmd.ADD)),
     LDD("Loads the value at memory address (Rs+[const]) to register Rd.",
             MnemonicArguments.DEST_BSOURCE_BCONST, new Flags()
             .set(ReadRam.Yes)
+            .set(ImmExtMode.extend)
             .set(ALUBSel.ImReg)
             .set(ALUCmd.ADD)
             .set(EnRegWrite.Yes)
@@ -315,6 +345,7 @@ public enum Opcode {
 
     RCALL("Jumps to the address given by const, the return address is stored in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)
             .set(StorePC.Yes)
             .set(EnRegWrite.Yes)
@@ -325,6 +356,7 @@ public enum Opcode {
 
     JMP("Jumps to the address given by [const].",
             MnemonicArguments.CONST, new Flags()
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)
             .set(JmpAbs.Yes)),
     JMPs("Jumps to the address given by [const].",
@@ -335,6 +367,7 @@ public enum Opcode {
 
     OUT("Writes the content of register Rs to io location given by [const].",
             MnemonicArguments.CONST_SOURCE, new Flags()
+            .set(ImmExtMode.dest0)
             .set(ALUBSel.ImReg)
             .set(SrcToBus.Yes)
             .set(WriteIO.Yes)),
@@ -353,6 +386,7 @@ public enum Opcode {
 
     IN("Reads the io location given by [const] and stores it in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
+            .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)
             .set(EnRegWrite.Yes)
             .set(SourceToAluA.Yes)
@@ -376,7 +410,7 @@ public enum Opcode {
             .set(Break.Yes)),
 
     RETI("Return from Interrupt.",
-        MnemonicArguments.NOTHING, new Flags()
+            MnemonicArguments.NOTHING, new Flags()
             .set(JmpAbs.Yes)
             .set(RetI.Yes));
 
@@ -402,6 +436,8 @@ public enum Opcode {
 
     enum SrcToBus {No, Yes}
 
+    enum ImmExtMode {extend, res, src0, dest0}
+
     enum ALUCmd {
         Nothing, ADD, SUB, AND, OR, XOR, LSL, LSR, ASR, SWAP, SWAPN, MUL, res4, res5, res6, res7,
         res8, ADC, SBC, res9, res10, res11, ROL, ROR
@@ -422,6 +458,7 @@ public enum Opcode {
         private WriteRam wr = WriteRam.No;
         private Branch br = Branch.No;
         private ALUBSel aluBSel = ALUBSel.Source;
+        private ImmExtMode immExtMode = ImmExtMode.extend;
         private ALUToBus aluToBus = ALUToBus.No;
         private SrcToBus srcToBus = SrcToBus.No;
         private ALUCmd aluCmd = ALUCmd.Nothing;
@@ -442,6 +479,11 @@ public enum Opcode {
 
         public Flags set(WriteRam wr) {
             this.wr = wr;
+            return this;
+        }
+
+        public Flags set(ImmExtMode immExtMode) {
+            this.immExtMode = immExtMode;
             return this;
         }
 
@@ -528,10 +570,10 @@ public enum Opcode {
 
     private String addConstLimit(String description, ALUBSel imed) {
         if (imed.equals(ALUBSel.instrDest) || imed.equals(ALUBSel.instrSource)) {
-            description += " (0<=[const]<=31)";
+            description += " (0<=[const]<=15)";
         } else {
             if (imed.equals(ALUBSel.instrSourceAndDest)) {
-                description += " (-256<=[const]<=255)";
+                description += " (-128<=[const]<=127)";
             }
         }
         return description;
@@ -554,7 +596,8 @@ public enum Opcode {
                 | (f.brk.ordinal() << 20)
                 | (f.srcToBus.ordinal() << 21)
                 | (f.strFlags.ordinal() << 22)
-                | (f.retI.ordinal() << 23);
+                | (f.retI.ordinal() << 23)
+                | (f.immExtMode.ordinal() << 24);
     }
 
 
@@ -636,6 +679,13 @@ public enum Opcode {
     }
 
     /**
+     * @return returns the immediate register extend mode
+     */
+    public ImmExtMode getImmExtMode() {
+        return f.immExtMode;
+    }
+
+    /**
      * returns an opcode given by the string
      *
      * @param name the string representation of the opcode
@@ -667,10 +717,10 @@ public enum Opcode {
         return name() + " " + arguments.toString() + "\n\t" + description;
     }
 
-    /* used to create the Control Unit Rom content!
+    //* used to create the Control Unit Rom content!
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println(Opcode.values().length + " opcodes");
-        try (PrintStream p = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_II/Systemnahes_Programmieren/control.dat")) {
+        try (PrintStream p = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_II/Systemnahes_Programmieren/control.hex")) {
             writeControlWords(p);
         }
 
@@ -681,5 +731,5 @@ public enum Opcode {
         for (Register r : Register.values()) {
             System.out.print(r.name() + ", ");
         }
-    }*/
+    }/* */
 }

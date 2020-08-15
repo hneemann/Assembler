@@ -16,10 +16,10 @@ public class InstructionTest extends TestCase {
     };
 
     public void testConstantLDS() throws InstructionException, ExpressionException {
-        new InstructionBuilder(Opcode.LDSs).setDest(Register.R0).setConstant(31).build().createMachineCode(null, mc);
+        new InstructionBuilder(Opcode.LDSs).setDest(Register.R0).setConstant(15).build().createMachineCode(null, mc);
 
         try {
-            new InstructionBuilder(Opcode.LDSs).setDest(Register.R0).setConstant(32).build().createMachineCode(null, mc);
+            new InstructionBuilder(Opcode.LDSs).setDest(Register.R0).setConstant(16).build().createMachineCode(null, mc);
             assertTrue(false);
         } catch (ExpressionException e) {
             assertTrue(true);
@@ -34,10 +34,10 @@ public class InstructionTest extends TestCase {
     }
 
     public void testConstantSTS() throws InstructionException, ExpressionException {
-        new InstructionBuilder(Opcode.STSs).setSource(Register.R0).setConstant(31).build().createMachineCode(null, mc);
+        new InstructionBuilder(Opcode.STSs).setSource(Register.R0).setConstant(15).build().createMachineCode(null, mc);
 
         try {
-            new InstructionBuilder(Opcode.STSs).setSource(Register.R0).setConstant(32).build().createMachineCode(null, mc);
+            new InstructionBuilder(Opcode.STSs).setSource(Register.R0).setConstant(16).build().createMachineCode(null, mc);
             assertTrue(false);
         } catch (ExpressionException e) {
             assertTrue(true);
@@ -55,17 +55,17 @@ public class InstructionTest extends TestCase {
         Context c = new Context();
         c.setInstrAddr(1000);
 
-        new InstructionBuilder(Opcode.JMPs).setConstant(1001 + 255).build().createMachineCode(c, mc);
+        new InstructionBuilder(Opcode.JMPs).setConstant(1001 + 127).build().createMachineCode(c, mc);
         try {
-            new InstructionBuilder(Opcode.JMPs).setConstant(1001 + 256).build().createMachineCode(c, mc);
+            new InstructionBuilder(Opcode.JMPs).setConstant(1001 + 128).build().createMachineCode(c, mc);
             assertTrue(false);
         } catch (ExpressionException e) {
             assertTrue(true);
         }
 
-        new InstructionBuilder(Opcode.JMPs).setConstant(1001 - 256).build().createMachineCode(c, mc);
+        new InstructionBuilder(Opcode.JMPs).setConstant(1001 - 128).build().createMachineCode(c, mc);
         try {
-            new InstructionBuilder(Opcode.JMPs).setConstant(1001 - 257).build().createMachineCode(c, mc);
+            new InstructionBuilder(Opcode.JMPs).setConstant(1001 - 129).build().createMachineCode(c, mc);
             assertTrue(false);
         } catch (ExpressionException e) {
             assertTrue(true);

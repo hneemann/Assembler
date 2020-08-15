@@ -18,14 +18,14 @@ public class VonNeumannTest extends TestCase {
     public void testHarvard() throws IOException, ParserException, InstructionException, ExpressionException {
         Parser p = new Parser(".data text \"AA\",0\n.word test\nLDI R0,text\nLDI R0,test");
         assertEquals("v2.0 raw\n" +
-                "1400\n" +
-                "5220\n" +
+                "a00\n" +
+                "2c20\n" +
                 "8041\n" +
-                "1200\n" +
-                "5200\n" +
-                "5210\n" +
-                "1400\n" +
-                "1403\n", getHex(p));
+                "900\n" +
+                "2c00\n" +
+                "2c10\n" +
+                "a00\n" +
+                "a03\n", getHex(p));
     }
 
     public void testVonNeumann() throws IOException, ParserException, InstructionException, ExpressionException {
@@ -34,9 +34,9 @@ public class VonNeumannTest extends TestCase {
                 "41\n" +
                 "41\n" +
                 "0\n" +
-                "1400\n" +
+                "a00\n" +
                 "8000\n" +
-                "1300\n", getHex(p));
+                "901\n", getHex(p));
     }
 
     public void testVonNeumannError() throws IOException, ParserException, InstructionException, ExpressionException {

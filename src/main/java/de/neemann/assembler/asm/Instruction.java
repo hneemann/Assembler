@@ -108,45 +108,60 @@ public final class Instruction implements InstructionInterface {
             if (constant != null)
                 con = constant.getValue(context);
 
-            int constBit = 0;
-            if (opcode.getALUBSel() == Opcode.ALUBSel.ImReg) {
-                mc.add((con & 0x7fff) | 0x8000);
-                if ((con & 0x8000) != 0)
-                    constBit = 1;
-            }
+            int mcode = sourceReg.ordinal() | (destReg.ordinal() << 4);
 
             switch (opcode.getALUBSel()) {
                 case instrSourceAndDest:
                     int ofs = con - context.getInstrAddr() - 1;
-                    if (ofs > 0xff || ofs < -0x100)
-                        throw new ExpressionException("branch out of range in line "+lineNumber);
-                    mc.add(ofs & 0x1ff
-                            | (opcode.ordinal() << 9));
+                    if (constInvalid(ofs, 8, true))
+                        throw new ExpressionException("branch out of range in line " + lineNumber);
+                    mcode = ofs & 0xff;
                     break;
                 case instrDest:
-                    if (con < 0 || con > 31)
-                        throw new ExpressionException("constant to large in line "+lineNumber);
-                    mc.add(sourceReg.ordinal()
-                            | (con << 4)
-                            | (opcode.ordinal() << 9));
+                    if (constInvalid(con, 4, false))
+                        throw new ExpressionException("constant to large in line " + lineNumber);
+                    mcode = sourceReg.ordinal()
+                            | ((con & 0xf) << 4);
                     break;
                 case instrSource:
-                    if (con < 0 || con > 31)
-                        throw new ExpressionException("constant to large in line "+lineNumber);
-                    mc.add(con & 0xf
-                            | (destReg.ordinal() << 4)
-                            | ((con >> 4) << 8)
-                            | (opcode.ordinal() << 9));
+                    if (constInvalid(con, 4, false))
+                        throw new ExpressionException("constant to large in line " + lineNumber);
+                    mcode = (con & 0xf)
+                            | (destReg.ordinal() << 4);
                     break;
-                default:
-                    mc.add(sourceReg.ordinal()
-                            | (destReg.ordinal() << 4)
-                            | (constBit << 8)
-                            | (opcode.ordinal() << 9));
+                case ImReg:
+                    int constBit = 0;
+                    mc.add((con & 0x7fff) | 0x8000);
+                    if ((con & 0x8000) != 0)
+                        constBit = 1;
+                    switch (opcode.getImmExtMode()) {
+                        case extend:
+                            if (constInvalid(con, 15, true))
+                                throw new ExpressionException("displacement to large in line " + lineNumber);
+                            break;
+                        case src0:
+                            mcode = constBit
+                                    | (destReg.ordinal() << 4);
+                            break;
+                        case dest0:
+                            mcode = sourceReg.ordinal()
+                                    | (constBit << 4);
+                            break;
+                    }
             }
+            mcode |= mcode | (opcode.ordinal() << 8);
+            mc.add(mcode);
         } catch (ExpressionException e) {
             e.setLineNumber(lineNumber);
             throw e;
+        }
+    }
+
+    private boolean constInvalid(int value, int bits, boolean signed) {
+        if (signed) {
+            return value < -(1 << (bits - 1)) || value >= (1 << (bits - 1));
+        } else {
+            return value < 0 || value >= (1 << bits);
         }
     }
 

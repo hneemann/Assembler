@@ -28,6 +28,7 @@ public class OptimizerShort implements InstructionVisitor {
         shortConstantMap.put(Opcode.ORI, Opcode.ORIs);
         shortConstantMap.put(Opcode.EORI, Opcode.EORIs);
         shortConstantMap.put(Opcode.CPI, Opcode.CPIs);
+        shortConstantMap.put(Opcode.CPCI, Opcode.CPCIs);
         shortConstantMap.put(Opcode.LDS, Opcode.LDSs);
         shortConstantMap.put(Opcode.STS, Opcode.STSs);
         shortConstantMap.put(Opcode.MULI, Opcode.MULIs);
@@ -42,7 +43,7 @@ public class OptimizerShort implements InstructionVisitor {
             Opcode opShort = shortConstantMap.get(op);
             if (opShort != null) {
                 int con = instruction.getConstant().getValue(context);
-                if (con >= 0 && con <= 31)
+                if (con >= 0 && con <= 15)
                     instruction.setOpcode(opShort);
             }
         }
