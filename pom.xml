@@ -206,7 +206,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.0</version>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
 
@@ -231,6 +231,14 @@
             <artifactId>fop-hyph</artifactId>
             <version>2.0</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>de.neemann.digital</groupId>
+            <artifactId>Digital</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/Digital.jar</systemPath>
         </dependency>
 
     </dependencies>

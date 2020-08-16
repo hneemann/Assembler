@@ -149,7 +149,7 @@ public final class Instruction implements InstructionInterface {
                             break;
                     }
             }
-            mcode |= mcode | (opcode.ordinal() << 8);
+            mcode |= (opcode.ordinal() << 8);
             mc.add(mcode);
         } catch (ExpressionException e) {
             e.setLineNumber(lineNumber);

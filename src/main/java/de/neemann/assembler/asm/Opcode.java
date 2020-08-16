@@ -2,6 +2,7 @@ package de.neemann.assembler.asm;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.HashMap;
 
 /**
  * Defines the opcodes and creates the table for the control unit from the opcode description.
@@ -128,6 +129,14 @@ public enum Opcode {
             .set(ALUToBus.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
+
+    NEG("Stores the two's complement of Rd in register Rd.",
+            MnemonicArguments.DEST, new Flags()
+            .set(ALUCmd.NEG)
+            .set(StoreFlags.No)
+            .set(ALUToBus.Yes)
+            .set(EnRegWrite.Yes)),
+
     ANDI("Stores Rd and [const] in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ALUCmd.AND)
@@ -173,6 +182,14 @@ public enum Opcode {
             .set(StoreFlags.Yes)
             .set(EnRegWrite.Yes)
             .set(ALUBSel.instrSource)),
+
+    NOT("Stores not Rd in register Rd.",
+            MnemonicArguments.DEST, new Flags()
+            .set(ALUCmd.NOT)
+            .set(StoreFlags.No)
+            .set(ALUToBus.Yes)
+            .set(EnRegWrite.Yes)),
+
     MUL("Multiplies the content of register Rs with register Rd and stores result in Rd.",
             MnemonicArguments.DEST_SOURCE, new Flags()
             .set(ALUCmd.MUL)
@@ -439,8 +456,8 @@ public enum Opcode {
     enum ImmExtMode {extend, res, src0, dest0}
 
     enum ALUCmd {
-        Nothing, ADD, SUB, AND, OR, XOR, LSL, LSR, ASR, SWAP, SWAPN, MUL, res4, res5, res6, res7,
-        res8, ADC, SBC, res9, res10, res11, ROL, ROR
+        Nothing, ADD, SUB, AND, OR, XOR, NOT, NEG, LSL, LSR, ASR, SWAP, SWAPN, MUL, res4, res5,
+        res6, ADC, SBC, res7, res8, res9, res10, res11, ROL, ROR
     }
 
     enum EnRegWrite {No, Yes}
@@ -579,37 +596,102 @@ public enum Opcode {
         return description;
     }
 
-    int createControlWord() {
-        return f.rr.ordinal()
-                | (f.wr.ordinal() << 1)
-                | (f.aluBSel.ordinal() << 2)
-                | (f.jmpAbs.ordinal() << 5)
-                | (f.aluToBus.ordinal() << 6)
-                | (f.enRegWrite.ordinal() << 7)
-                | (f.storePC.ordinal() << 8)
-                | (f.sourceToAluA.ordinal() << 9)
-
-                | (f.aluCmd.ordinal() << 10)
-                | (f.br.ordinal() << 15)
-                | (f.wio.ordinal() << 18)
-                | (f.rio.ordinal() << 19)
-                | (f.brk.ordinal() << 20)
-                | (f.srcToBus.ordinal() << 21)
-                | (f.strFlags.ordinal() << 22)
-                | (f.retI.ordinal() << 23)
-                | (f.immExtMode.ordinal() << 24);
+    int createControlWord(boolean out) {
+        return new ControlWordBuilder(out)
+                .add(f.aluBSel)
+                .add(f.srcToBus)
+                .add(f.aluCmd)
+                .add(f.enRegWrite)
+                .add(f.strFlags)
+                .add(f.aluToBus)
+                .add(f.immExtMode)
+                .add(f.br)
+                .add(f.sourceToAluA)
+                .add(f.rr)
+                .add(f.wr)
+                .add(f.jmpAbs)
+                .add(f.wio)
+                .add(f.rio)
+                .add(f.storePC)
+                .add(f.brk)
+                .add(f.retI)
+                .getControlWord();
     }
 
+//    private static HashMap<String, Integer> countMap = new HashMap<>();
+
+    private static class ControlWordBuilder {
+        private final boolean out;
+        private int pos;
+        private int controlWord;
+        private StringBuilder sb;
+
+        public ControlWordBuilder(boolean out) {
+            this.out = out;
+        }
+
+        private ControlWordBuilder add(Enum<?> e) {
+            controlWord |= e.ordinal() << pos;
+
+//            if (e.ordinal() != 0) {
+//                String simpleName = e.getClass().getSimpleName();
+//                Integer v = countMap.get(simpleName);
+//                if (v == null) v = 0;
+//                countMap.put(simpleName, v + 1);
+//            }
+
+            int vals = e.getClass().getEnumConstants().length;
+            int width;
+            switch (vals) {
+                case 2:
+                    width = 1;
+                    break;
+                case 4:
+                    width = 2;
+                    break;
+                case 8:
+                    width = 3;
+                    break;
+                case 26:
+                    width = 5;
+                    break;
+                default:
+                    throw new RuntimeException("invalid enum count: " + e.getClass().getSimpleName() + ": " + vals);
+            }
+            if (out) {
+                if (sb == null)
+                    sb = new StringBuilder();
+                else
+                    sb.append(",");
+                sb.append(width);
+
+                if (width == 1) {
+                    System.out.print(pos);
+                } else {
+                    System.out.print(pos + "-" + (pos + width - 1));
+                }
+                System.out.println("\t:" + e.getClass().getSimpleName());
+            }
+            pos += width;
+            return this;
+        }
+
+        public int getControlWord() {
+            if (sb != null)
+                System.out.println("Splitter: " + sb);
+            return controlWord;
+        }
+    }
 
     /**
-     * @return the decription of this opcode
+     * @return the description of this opcode
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * @return the controll value for the ALUB multiplexer
+     * @return the control value for the ALUB multiplexer
      */
     public ALUBSel getALUBSel() {
         return f.aluBSel;
@@ -707,7 +789,7 @@ public enum Opcode {
     public static void writeControlWords(PrintStream out) {
         out.print("v2.0 raw\n");
         for (Opcode oc : Opcode.values()) {
-            out.print(Integer.toHexString(oc.createControlWord()));
+            out.print(Integer.toHexString(oc.createControlWord(false)));
             out.print("\n");
         }
     }
@@ -724,6 +806,8 @@ public enum Opcode {
             writeControlWords(p);
         }
 
+//        System.out.println(countMap);
+
         for (Opcode op : Opcode.values()) {
             System.out.print(op.name() + ", ");
         }
@@ -731,5 +815,8 @@ public enum Opcode {
         for (Register r : Register.values()) {
             System.out.print(r.name() + ", ");
         }
+
+        System.out.println();
+        NOP.createControlWord(true);
     }/* */
 }
