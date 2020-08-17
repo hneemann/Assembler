@@ -29,19 +29,15 @@ public class ProcessorTester {
     }
 
     public ProcessorTester setRegister(String name, long value) throws TesterException {
-        Signal reg = getSignal(name);
-        if (reg == null)
-            throw new TesterException("Register " + name + " not found!");
-        reg.getSetter().set(value, 0);
+        getSignal(name).getSetter().set(value, 0);
         return this;
     }
 
-    private Signal getSignal(String name) {
+    private Signal getSignal(String name) throws TesterException {
         for (Signal s : model.getSignals())
             if (s.getName().equals(name))
                 return s;
-        return null;
-
+        throw new TesterException("signal "+name+" not found");
     }
 
     public ProcessorTester runToBrk(String code) throws ExpressionException, ParserException, InstructionException, IOException, TesterException, NodeException {
@@ -82,12 +78,27 @@ public class ProcessorTester {
     }
 
     public ProcessorTester checkRegister(String name, long value) throws TesterException {
-        Signal reg = getSignal(name);
-        if (reg == null)
-            throw new TesterException("Register " + name + " not found!");
+        assertEquals(name + "=" + value, value, getSignal(name).getValue().getValue());
+        return this;
+    }
 
-        assertEquals(name + "=" + value, value, reg.getValue().getValue());
+    public ProcessorTester setCarry(boolean value) throws TesterException {
+        getSignal("Carry").getSetter().set(value ? 1 : 0, 0);
+        return this;
+    }
 
+    public ProcessorTester checkCarry(boolean value) throws TesterException {
+        assertEquals(value, getSignal("Carry").getValue().getBool());
+        return this;
+    }
+
+    public ProcessorTester setNegative(boolean value) throws TesterException {
+        getSignal("Neg").getSetter().set(value ? 1 : 0, 0);
+        return this;
+    }
+
+    public ProcessorTester setZero(boolean value) throws TesterException {
+        getSignal("Zero").getSetter().set(value ? 1 : 0, 0);
         return this;
     }
 

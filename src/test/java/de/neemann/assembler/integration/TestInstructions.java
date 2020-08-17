@@ -19,7 +19,14 @@ public class TestInstructions extends TestCase {
                 .setRegister("R1", 3)
                 .setRegister("R2", 4)
                 .runToBrk("add r2,r1\nbrk")
+                .checkCarry(false)
                 .checkRegister("R2", 7);
+        new ProcessorTester(PROCESSOR)
+                .setRegister("R1", -1)
+                .setRegister("R2", -1)
+                .runToBrk("add r2,r1\nbrk")
+                .checkCarry(true)
+                .checkRegister("R2", 0xfffe);
     }
 
     public void testADC() throws Exception {
@@ -27,12 +34,21 @@ public class TestInstructions extends TestCase {
                 .setRegister("R1", 3)
                 .setRegister("R2", 4)
                 .runToBrk("adc r2,r1\nbrk")
+                .checkCarry(false)
                 .checkRegister("R2", 7);
         new ProcessorTester(PROCESSOR)
                 .setRegister("R1", 3)
                 .setRegister("R2", 4)
-                .runToBrk("subi R0,1\nadc r2,r1\nbrk")
+                .setCarry(true)
+                .runToBrk("adc r2,r1\nbrk")
+                .checkCarry(false)
                 .checkRegister("R2", 8);
+        new ProcessorTester(PROCESSOR)
+                .setRegister("R1", -1)
+                .setRegister("R2", -1)
+                .runToBrk("adc r2,r1\nbrk")
+                .checkCarry(true)
+                .checkRegister("R2", 0xfffe);
     }
 
     public void testADDI() throws Exception {
@@ -58,11 +74,13 @@ public class TestInstructions extends TestCase {
 
         new ProcessorTester(PROCESSOR)
                 .setRegister("R1", 3)
-                .runToBrk("subi R0,1\nadci r1,4\nbrk")
+                .setCarry(true)
+                .runToBrk("adci r1,4\nbrk")
                 .checkRegister("R1", 8);
         new ProcessorTester(PROCESSOR)
                 .setRegister("R1", 3)
-                .runToBrk("subi R0,1\nadci r1,20\nbrk")
+                .setCarry(true)
+                .runToBrk("adci r1,20\nbrk")
                 .checkRegister("R1", 24);
     }
 
@@ -71,7 +89,14 @@ public class TestInstructions extends TestCase {
                 .setRegister("R1", 3)
                 .setRegister("R2", 4)
                 .runToBrk("sub r2,r1\nbrk")
+                .checkCarry(false)
                 .checkRegister("R2", 1);
+        new ProcessorTester(PROCESSOR)
+                .setRegister("R1", 4)
+                .setRegister("R2", 3)
+                .runToBrk("sub r2,r1\nbrk")
+                .checkCarry(true)
+                .checkRegister("R2", 0xffff);
     }
 
     public void testSBC() throws Exception {
@@ -79,11 +104,14 @@ public class TestInstructions extends TestCase {
                 .setRegister("R1", 3)
                 .setRegister("R2", 4)
                 .runToBrk("sbc r2,r1\nbrk")
+                .checkCarry(false)
                 .checkRegister("R2", 1);
         new ProcessorTester(PROCESSOR)
                 .setRegister("R1", 3)
                 .setRegister("R2", 5)
-                .runToBrk("subi R0,1\nsbc r2,r1\nbrk")
+                .setCarry(true)
+                .runToBrk("sbc r2,r1\nbrk")
+                .checkCarry(false)
                 .checkRegister("R2", 1);
     }
 
@@ -110,11 +138,13 @@ public class TestInstructions extends TestCase {
 
         new ProcessorTester(PROCESSOR)
                 .setRegister("R1", 6)
-                .runToBrk("subi R0,1\nsbci r1,4\nbrk")
+                .setCarry(true)
+                .runToBrk("sbci r1,4\nbrk")
                 .checkRegister("R1", 1);
         new ProcessorTester(PROCESSOR)
                 .setRegister("R1", 30)
-                .runToBrk("subi R0,1\nsbci r1,20\nbrk")
+                .setCarry(true)
+                .runToBrk("sbci r1,20\nbrk")
                 .checkRegister("R1", 9);
     }
 
