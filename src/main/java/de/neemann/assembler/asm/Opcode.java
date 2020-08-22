@@ -2,7 +2,6 @@ package de.neemann.assembler.asm;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.HashMap;
 
 /**
  * Defines the opcodes and creates the table for the control unit from the opcode description.
@@ -335,6 +334,13 @@ public enum Opcode {
             .set(EnRegWrite.Yes)
             .set(SourceToAluA.Yes)),
 
+    LPM("Loads the value at program address [Rs] to register Rd.",
+            MnemonicArguments.DEST_BSOURCE, new Flags()
+            .set(ALUBSel.Rom)
+            .set(ALUCmd.PassInB)
+            .set(ALUToBus.Yes)
+            .set(EnRegWrite.Yes)),
+
     BRCS("Jumps to the address given by [const] if carry flag is set.",
             MnemonicArguments.CONST, new Flags()
             .set(ALUBSel.instrSourceAndDest)
@@ -447,7 +453,7 @@ public enum Opcode {
 
     enum Branch {No, BRC, BRZ, BRN, uncond, BRNC, BRNZ, BRNN}
 
-    enum ALUBSel {Source, ImReg, Zero, hFF, hFFF, instrSource, instrSourceAndDest, instrDest}
+    enum ALUBSel {Source, Rom, ImReg, Zero, res, instrSource, instrSourceAndDest, instrDest}
 
     enum ALUToBus {No, Yes}
 
@@ -456,7 +462,7 @@ public enum Opcode {
     enum ImmExtMode {extend, res, src0, dest0}
 
     enum ALUCmd {
-        Nothing, ADD, SUB, AND, OR, XOR, NOT, NEG, LSL, LSR, ASR, SWAP, SWAPN, MUL, res4, res5,
+        PassInB, ADD, SUB, AND, OR, XOR, NOT, NEG, LSL, LSR, ASR, SWAP, SWAPN, MUL, res4, res5,
         res6, ADC, SBC, res7, res8, res9, res10, res11, ROL, ROR
     }
 
@@ -478,7 +484,7 @@ public enum Opcode {
         private ImmExtMode immExtMode = ImmExtMode.extend;
         private ALUToBus aluToBus = ALUToBus.No;
         private SrcToBus srcToBus = SrcToBus.No;
-        private ALUCmd aluCmd = ALUCmd.Nothing;
+        private ALUCmd aluCmd = ALUCmd.PassInB;
         private EnRegWrite enRegWrite = EnRegWrite.No;
         private StorePC storePC = StorePC.No;
         private SourceToAluA sourceToAluA = SourceToAluA.No;
