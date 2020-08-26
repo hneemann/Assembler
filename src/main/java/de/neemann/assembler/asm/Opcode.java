@@ -1,6 +1,5 @@
 package de.neemann.assembler.asm;
 
-import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
 /**
@@ -626,13 +625,13 @@ public enum Opcode {
 
 //    private static HashMap<String, Integer> countMap = new HashMap<>();
 
-    private static class ControlWordBuilder {
+    private static final class ControlWordBuilder {
         private final boolean out;
         private int pos;
         private int controlWord;
         private StringBuilder sb;
 
-        public ControlWordBuilder(boolean out) {
+        private ControlWordBuilder(boolean out) {
             this.out = out;
         }
 
@@ -805,7 +804,7 @@ public enum Opcode {
         return name() + " " + arguments.toString() + "\n\t" + description;
     }
 
-    //* used to create the Control Unit Rom content!
+    /* used to create the Control Unit Rom content!
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println(Opcode.values().length + " opcodes");
         try (PrintStream p = new PrintStream("/home/hneemann/Dokumente/DHBW/Technische_Informatik_II/Systemnahes_Programmieren/control.hex")) {

@@ -234,14 +234,14 @@ public class ParserTest extends TestCase {
 
         assertEquals("v2.0 raw\n"+
                 "a00\n"+
-                "3a06\n"+
+                "3d06\n"+
                 "0\n"+
                 "0\n"+
                 "0\n"+
                 "0\n"+
                 "0\n"+
                 "0\n"+
-                "3aff\n",baos.toString());
+                "3dff\n",baos.toString());
     }
 
     public void testOrgExc() throws ParserException, IOException, ExpressionException, InstructionException {

@@ -19,11 +19,11 @@ public class VonNeumannTest extends TestCase {
         Parser p = new Parser(".data text \"AA\",0\n.word test\nLDI R0,text\nLDI R0,test");
         assertEquals("v2.0 raw\n" +
                 "a00\n" +
-                "2c20\n" +
+                "2e20\n" +
                 "8041\n" +
                 "900\n" +
-                "2c00\n" +
-                "2c10\n" +
+                "2e00\n" +
+                "2e10\n" +
                 "a00\n" +
                 "a03\n", getHex(p));
     }
