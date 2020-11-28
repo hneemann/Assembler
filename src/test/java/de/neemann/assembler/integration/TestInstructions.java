@@ -1,197 +1,201 @@
 package de.neemann.assembler.integration;
 
-import junit.framework.TestCase;
+import java.io.IOException;
 
-public class TestInstructions extends TestCase {
-    private static final String PROCESSOR = "/home/hneemann/Dokumente/Java/digital/src/main/dig/processor/Processor.dig";
+public class TestInstructions {
 
-    public void testMOV() throws Exception {
-        new ProcessorTester(PROCESSOR)
+    public static void main(String[] args) throws IOException {
+        new TestGenerator(new TestInstructions())
+                .write("/home/hneemann/Dokumente/Java/digital/src/main/dig/processor/ProcessorTest.dig");
+    }
+
+    public void testMOV(Test test) throws Exception {
+        test.add(new ProcessorTest("MOV")
                 .setRegister("R1", 3)
                 .setRegister("R2", 4)
-                .runToBrk("mov r2,r1\nbrk")
+                .run("mov r2,r1")
                 .checkRegister("R1", 3)
-                .checkRegister("R2", 3);
+                .checkRegister("R2", 3));
     }
 
-    public void testADD() throws Exception {
-        new ProcessorTester(PROCESSOR)
+    public void testADD(Test test) throws Exception {
+        test.add(new ProcessorTest("ADD no carry")
                 .setRegister("R1", 3)
                 .setRegister("R2", 4)
-                .runToBrk("add r2,r1\nbrk")
+                .run("add r2,r1")
                 .checkCarry(false)
-                .checkRegister("R2", 7);
-        new ProcessorTester(PROCESSOR)
+                .checkRegister("R2", 7));
+        test.add(new ProcessorTest("ADD carry")
                 .setRegister("R1", -1)
                 .setRegister("R2", -1)
-                .runToBrk("add r2,r1\nbrk")
+                .run("add r2,r1")
                 .checkCarry(true)
-                .checkRegister("R2", 0xfffe);
+                .checkRegister("R2", 0xfffe));
     }
 
-    public void testADC() throws Exception {
-        new ProcessorTester(PROCESSOR)
+    public void testADC(Test test) throws Exception {
+        test.add(new ProcessorTest("ADC no carry")
                 .setRegister("R1", 3)
                 .setRegister("R2", 4)
-                .runToBrk("adc r2,r1\nbrk")
+                .run("adc r2,r1")
                 .checkCarry(false)
-                .checkRegister("R2", 7);
-        new ProcessorTester(PROCESSOR)
+                .checkRegister("R2", 7));
+        test.add(new ProcessorTest("ADC carry")
                 .setRegister("R1", 3)
                 .setRegister("R2", 4)
                 .setCarry(true)
-                .runToBrk("adc r2,r1\nbrk")
+                .run("adc r2,r1")
                 .checkCarry(false)
-                .checkRegister("R2", 8);
-        new ProcessorTester(PROCESSOR)
+                .checkRegister("R2", 8));
+        test.add(new ProcessorTest("ADC carry out")
                 .setRegister("R1", -1)
                 .setRegister("R2", -1)
-                .runToBrk("adc r2,r1\nbrk")
+                .run("adc r2,r1")
                 .checkCarry(true)
-                .checkRegister("R2", 0xfffe);
+                .checkRegister("R2", 0xfffe));
     }
 
-    public void testADDI() throws Exception {
-        new ProcessorTester(PROCESSOR)
+    public void testADDI(Test test) throws Exception {
+        test.add(new ProcessorTest("ADDI small")
                 .setRegister("R1", 3)
-                .runToBrk("addi r1,4\nbrk")
-                .checkRegister("R1", 7);
-        new ProcessorTester(PROCESSOR)
+                .run("addi r1,4")
+                .checkRegister("R1", 7));
+        test.add(new ProcessorTest("ADDI large")
                 .setRegister("R1", 3)
-                .runToBrk("addi r1,20\nbrk")
-                .checkRegister("R1", 23);
+                .run("addi r1,20")
+                .checkRegister("R1", 23));
     }
 
-    public void testADCI() throws Exception {
-        new ProcessorTester(PROCESSOR)
+    public void testADCI(Test test) throws Exception {
+        test.add(new ProcessorTest("ADCI small")
                 .setRegister("R1", 3)
-                .runToBrk("adci r1,4\nbrk")
-                .checkRegister("R1", 7);
-        new ProcessorTester(PROCESSOR)
+                .run("adci r1,4")
+                .checkRegister("R1", 7));
+        test.add(new ProcessorTest("ADCI large")
                 .setRegister("R1", 3)
-                .runToBrk("adci r1,20\nbrk")
-                .checkRegister("R1", 23);
+                .run("adci r1,20")
+                .checkRegister("R1", 23));
 
-        new ProcessorTester(PROCESSOR)
+        test.add(new ProcessorTest("ADCI small, carry")
                 .setRegister("R1", 3)
                 .setCarry(true)
-                .runToBrk("adci r1,4\nbrk")
-                .checkRegister("R1", 8);
-        new ProcessorTester(PROCESSOR)
+                .run("adci r1,4")
+                .checkRegister("R1", 8));
+        test.add(new ProcessorTest("ADCI large, carry")
                 .setRegister("R1", 3)
                 .setCarry(true)
-                .runToBrk("adci r1,20\nbrk")
-                .checkRegister("R1", 24);
+                .run("adci r1,20")
+                .checkRegister("R1", 24));
     }
 
-    public void testSUB() throws Exception {
-        new ProcessorTester(PROCESSOR)
+    public void testSUB(Test test) throws Exception {
+        test.add(new ProcessorTest("SUB")
                 .setRegister("R1", 3)
                 .setRegister("R2", 4)
-                .runToBrk("sub r2,r1\nbrk")
+                .run("sub r2,r1")
                 .checkCarry(false)
-                .checkRegister("R2", 1);
-        new ProcessorTester(PROCESSOR)
+                .checkRegister("R2", 1));
+        test.add(new ProcessorTest("SUB carry out")
                 .setRegister("R1", 4)
                 .setRegister("R2", 3)
-                .runToBrk("sub r2,r1\nbrk")
+                .run("sub r2,r1")
                 .checkCarry(true)
-                .checkRegister("R2", 0xffff);
+                .checkRegister("R2", 0xffff));
     }
 
-    public void testSBC() throws Exception {
-        new ProcessorTester(PROCESSOR)
+    public void testSBC(Test test) throws Exception {
+        test.add(new ProcessorTest("SBC")
                 .setRegister("R1", 3)
                 .setRegister("R2", 4)
-                .runToBrk("sbc r2,r1\nbrk")
+                .run("sbc r2,r1")
                 .checkCarry(false)
-                .checkRegister("R2", 1);
-        new ProcessorTester(PROCESSOR)
+                .checkRegister("R2", 1));
+        test.add(new ProcessorTest("SBC carry in")
                 .setRegister("R1", 3)
                 .setRegister("R2", 5)
                 .setCarry(true)
-                .runToBrk("sbc r2,r1\nbrk")
+                .run("sbc r2,r1")
                 .checkCarry(false)
-                .checkRegister("R2", 1);
+                .checkRegister("R2", 1));
     }
 
-    public void testSUBI() throws Exception {
-        new ProcessorTester(PROCESSOR)
+    public void testSUBI(Test test) throws Exception {
+        test.add(new ProcessorTest("SUBI small")
                 .setRegister("R1", 4)
-                .runToBrk("subi r1,2\nbrk")
-                .checkRegister("R1", 2);
-        new ProcessorTester(PROCESSOR)
+                .run("subi r1,2")
+                .checkRegister("R1", 2));
+        test.add(new ProcessorTest("SUBI large")
                 .setRegister("R1", 30)
-                .runToBrk("subi r1,20\nbrk")
-                .checkRegister("R1", 10);
+                .run("subi r1,20")
+                .checkRegister("R1", 10));
     }
 
-    public void testSBCI() throws Exception {
-        new ProcessorTester(PROCESSOR)
+    public void testSBCI(Test test) throws Exception {
+        test.add(new ProcessorTest("SBCI no carry, small")
                 .setRegister("R1", 6)
-                .runToBrk("sbci r1,4\nbrk")
-                .checkRegister("R1", 2);
-        new ProcessorTester(PROCESSOR)
+                .run("sbci r1,4")
+                .checkRegister("R1", 2));
+        test.add(new ProcessorTest("SBCI no carry, large")
                 .setRegister("R1", 30)
-                .runToBrk("sbci r1,20\nbrk")
-                .checkRegister("R1", 10);
+                .run("sbci r1,20")
+                .checkRegister("R1", 10));
 
-        new ProcessorTester(PROCESSOR)
+        test.add(new ProcessorTest("SBCI carry in, small")
                 .setRegister("R1", 6)
                 .setCarry(true)
-                .runToBrk("sbci r1,4\nbrk")
-                .checkRegister("R1", 1);
-        new ProcessorTester(PROCESSOR)
+                .run("sbci r1,4")
+                .checkRegister("R1", 1));
+        test.add(new ProcessorTest("SBCI carry in, large")
                 .setRegister("R1", 30)
                 .setCarry(true)
-                .runToBrk("sbci r1,20\nbrk")
-                .checkRegister("R1", 9);
+                .run("sbci r1,20")
+                .checkRegister("R1", 9));
     }
 
-    public void testNOT() throws Exception {
-        new ProcessorTester(PROCESSOR)
+    public void testNOT(Test test) throws Exception {
+        test.add(new ProcessorTest("NOT")
                 .setRegister("R1", 0)
-                .runToBrk("not r1\nbrk")
-                .checkRegister("R1", 0xffff);
+                .run("not r1")
+                .checkRegister("R1", 0xffff));
     }
 
-    public void testNEG() throws Exception {
-        new ProcessorTester(PROCESSOR)
+    public void testNEG(Test test) throws Exception {
+        test.add(new ProcessorTest("NEG")
                 .setRegister("R1", 1)
-                .runToBrk("neg r1\nbrk")
-                .checkRegister("R1", 0xffff);
+                .run("neg r1")
+                .checkRegister("R1", 0xffff));
     }
 
-    public void testSWAP() throws Exception {
-        new ProcessorTester(PROCESSOR)
+    public void testSWAP(Test test) throws Exception {
+        test.add(new ProcessorTest("SWAP")
                 .setRegister("R1", 0x1234)
-                .runToBrk("swap r1\nbrk")
-                .checkRegister("R1", 0x3412);
+                .run("swap r1\nbrk")
+                .checkRegister("R1", 0x3412));
     }
 
-    public void testSWAPN() throws Exception {
-        new ProcessorTester(PROCESSOR)
+    public void testSWAPN(Test test) throws Exception {
+        test.add(new ProcessorTest("SWAPN")
                 .setRegister("R1", 0x1234)
-                .runToBrk("swapn r1\nbrk")
-                .checkRegister("R1", 0x2143);
+                .run("swapn r1")
+                .checkRegister("R1", 0x2143));
     }
 
-    public void testLDI() throws Exception {
-        new ProcessorTester(PROCESSOR)
-                .runToBrk("ldi r1,5\nbrk", 2)
-                .checkRegister("R1", 5);
+    public void testLDI(Test test) throws Exception {
+        test.add(new ProcessorTest("LDI small")
+                .run("ldi r1,5", 1)
+                .checkRegister("R1", 5));
 
-        new ProcessorTester(PROCESSOR)
-                .runToBrk("ldi r1,15\nbrk", 2)
-                .checkRegister("R1", 15);
+        test.add(new ProcessorTest("LDI small")
+                .run("ldi r1,15", 1)
+                .checkRegister("R1", 15));
 
-        new ProcessorTester(PROCESSOR)
-                .runToBrk("ldi r1,16\nbrk", 3)
-                .checkRegister("R1", 16);
+        test.add(new ProcessorTest("LDI large")
+                .run("ldi r1,16", 2)
+                .checkRegister("R1", 16));
 
-        new ProcessorTester(PROCESSOR)
-                .runToBrk("ldi r1,0x8000\nbrk", 3)
-                .checkRegister("R1", 0x8000);
+        test.add(new ProcessorTest("LDI large")
+                .run("ldi r1,0x8000", 2)
+                .checkRegister("R1", 0x8000));
     }
 
 }
