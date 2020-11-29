@@ -16,10 +16,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
+import javax.swing.text.JTextComponent;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.event.*;
 import java.io.*;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -94,6 +94,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
 
         source = new JTextArea(40, 50);
         source.setFont(new Font(Font.MONOSPACED, Font.PLAIN, source.getFont().getSize()));
+        createUndoManager(source);
 
         if (fileToOpen == null) {
             String n = PREFS.get("name", null);
@@ -154,6 +155,23 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
         setLocationRelativeTo(null);
 
         addAddrListener(this);
+    }
+
+    public static void createUndoManager(JTextComponent text) {
+        UndoManager undoManager = new UndoManager();
+        text.getDocument().addUndoableEditListener(undoManager);
+        text.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_Z && (e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
+                    if (undoManager.canUndo())
+                        undoManager.undo();
+                } else if (e.getKeyCode() == KeyEvent.VK_Y && (e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
+                    if (undoManager.canRedo())
+                        undoManager.redo();
+                }
+            }
+        });
     }
 
     private void createRemoteToolBar(JToolBar toolBar) {
