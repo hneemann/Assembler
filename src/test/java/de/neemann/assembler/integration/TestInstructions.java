@@ -180,6 +180,15 @@ public class TestInstructions {
                 .checkRegister("R1", 0x2143));
     }
 
+    public void testMUL(Test test) throws Exception {
+        test.add(new ProcessorTest("MUL")
+                .setRegister("R0", 7)
+                .setRegister("R1", 8)
+                .run("mul r0,r1")
+                .checkRegister("R1", 8)
+                .checkRegister("R0", 7 * 8));
+    }
+
     public void testLDI(Test test) throws Exception {
         test.add(new ProcessorTest("LDI small")
                 .run("ldi r1,5", 1)
@@ -200,36 +209,36 @@ public class TestInstructions {
 
     public void testLDS(Test test) throws Exception {
         test.add(new ProcessorTest("LDS small")
-                .setMemory(0,6)
-                .setMemory(1,7)
+                .setMemory(0, 6)
+                .setMemory(1, 7)
                 .run("lds r1,0\nlds r2,1", 2)
                 .checkRegister("R1", 6)
                 .checkRegister("R2", 7));
 
         test.add(new ProcessorTest("LDS large")
-                .setMemory(0x8000,8)
+                .setMemory(0x8000, 8)
                 .run("lds r1,0x8000", 2)
                 .checkRegister("R1", 8));
     }
 
     public void testSTS(Test test) throws Exception {
         test.add(new ProcessorTest("STS small")
-                .setRegister("R1",7)
+                .setRegister("R1", 7)
                 .run("sts 1,r1\nlds r2,1", 2)
                 .checkRegister("R2", 7));
 
         test.add(new ProcessorTest("STS large")
-                .setRegister("R1",8)
+                .setRegister("R1", 8)
                 .run("sts 0x8000,r1\nlds r2,0x8000", 4)
                 .checkRegister("R1", 8));
     }
 
     public void testLD(Test test) throws Exception {
         test.add(new ProcessorTest("LD")
-                .setMemory(1,7)
-                .setMemory(0x8000,8)
-                .setRegister("R2",1)
-                .setRegister("R3",0x8000)
+                .setMemory(1, 7)
+                .setMemory(0x8000, 8)
+                .setRegister("R2", 1)
+                .setRegister("R3", 0x8000)
                 .run("ld r0,[r2]\nld r1,[r3]", 2)
                 .checkRegister("R0", 7)
                 .checkRegister("R1", 8));
@@ -237,10 +246,10 @@ public class TestInstructions {
 
     public void testLDD(Test test) throws Exception {
         test.add(new ProcessorTest("LDD")
-                .setMemory(3,7)
-                .setMemory(0x8000,8)
-                .setRegister("R2",1)
-                .setRegister("R3",0x8002)
+                .setMemory(3, 7)
+                .setMemory(0x8000, 8)
+                .setRegister("R2", 1)
+                .setRegister("R3", 0x8002)
                 .run("ldd r0,[r2+2]\nldd r1,[r3-2]", 4)
                 .checkRegister("R0", 7)
                 .checkRegister("R1", 8));
@@ -248,20 +257,49 @@ public class TestInstructions {
 
     public void testST(Test test) throws Exception {
         test.add(new ProcessorTest("ST")
-                .setRegister("R1",1)
-                .setRegister("R2",7)
+                .setRegister("R1", 1)
+                .setRegister("R2", 7)
                 .run("st [r1],r2\nlds r0,1", 2)
                 .checkRegister("R0", 7));
     }
 
     public void testSTD(Test test) throws Exception {
         test.add(new ProcessorTest("STD")
-                .setRegister("R2",4)
-                .setRegister("R3",7)
-                .setRegister("R4",8)
+                .setRegister("R2", 4)
+                .setRegister("R3", 7)
+                .setRegister("R4", 8)
                 .run("std [r2+2],r3\nstd [r2-2],r4\nlds r0,6\nlds r1,2", 6)
                 .checkRegister("R0", 7)
                 .checkRegister("R1", 8));
+    }
+
+    public void testJmp(Test test) throws Exception {
+        test.add(new ProcessorTest("JMP short")
+                .setRegister("R0", 2)
+                .run("jmp end\n ldi r0, 1\nend: nop", 3)
+                .checkRegister("R0", 2));
+        test.add(new ProcessorTest("JMP short back")
+                .setRegister("PC", 20)
+                .run("ldi r0,1\n.org 10\ncode: ldi r0,3\n.org 20\njmp code\n ldi r0, 2", 22)
+                .setCycles(2)
+                .checkRegister("R0", 3));
+        test.add(new ProcessorTest("JMP long")
+                .run("jmp 130\n ldi r0, 1\n.org 130\nldi r0,2", 131)
+                .setCycles(3)
+                .checkRegister("R0", 2));
+    }
+
+    public void testCall(Test test) throws Exception {
+        test.add(new ProcessorTest("RCALL")
+                .setRegister("R0", 3)
+                .run("jmp end\n" +
+                        "ldi r0, 1\n" +
+                        "func: ldi r0,1\n" +
+                        "rret ra\n" +
+                        "ldi r0,2\n" +
+                        "end: rcall ra,func", 7)
+                .checkRegister("R0", 1)
+                .checkRegister("RA", 7));
     }
 
 }

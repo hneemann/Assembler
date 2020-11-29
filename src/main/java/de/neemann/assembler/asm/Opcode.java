@@ -365,7 +365,7 @@ public enum Opcode {
             .set(ALUBSel.instrSourceAndDest)
             .set(Branch.BRNN)),
 
-    RCALL("Jumps to the address given by const, the return address is stored in register Rd.",
+    RCALL("Jumps to the address given by [const], the return address is stored in register Rd.",
             MnemonicArguments.DEST_CONST, new Flags()
             .set(ImmExtMode.src0)
             .set(ALUBSel.ImReg)

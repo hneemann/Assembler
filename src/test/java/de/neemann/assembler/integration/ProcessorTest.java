@@ -16,6 +16,8 @@ public class ProcessorTest {
     private final ArrayList<Check> checks;
     private ArrayList<Integer> code;
     private String source;
+    private int instrAddr;
+    private int cycles;
 
     public ProcessorTest(String label) {
         this.label = label;
@@ -49,6 +51,7 @@ public class ProcessorTest {
     public ProcessorTest run(String code) throws ParserException, IOException, ExpressionException, InstructionException {
         this.source = code;
         this.code = makeHex(code);
+        setCycles(this.code.size());
         return this;
     }
 
@@ -56,7 +59,13 @@ public class ProcessorTest {
         this.source = code;
         this.code = makeHex(code);
         if (this.code.size() != instructions)
-            throw new RuntimeException("wrong code size");
+            throw new RuntimeException("wrong code size: expected " + instructions + ", but was " + this.code.size());
+        setCycles(instructions);
+        return this;
+    }
+
+    public ProcessorTest setCycles(int cycles) {
+        this.cycles = cycles;
         return this;
     }
 
@@ -64,7 +73,13 @@ public class ProcessorTest {
         Program p = new Parser(code).parseProgram().optimizeAndLink();
         ArrayList<Integer> c = new ArrayList<>();
         p.traverse((in, context) -> {
-            in.createMachineCode(context, c::add);
+            instrAddr = context.getInstrAddr();
+            in.createMachineCode(context, e -> {
+                while (c.size() <= instrAddr)
+                    c.add(0);
+                c.set(instrAddr, e);
+                instrAddr++;
+            });
             return true;
         });
         return c;
@@ -104,8 +119,8 @@ public class ProcessorTest {
         }
         c.append(")\n\n");
 
-        if (code.size() > 1)
-            c.append("repeat (").append(code.size()).append(") ");
+        if (cycles > 1)
+            c.append("repeat (").append(cycles).append(") ");
 
         c.append("C");
         for (Check ignored : checks)
