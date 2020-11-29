@@ -171,6 +171,17 @@ public class TestInstructions {
                 .checkRegister("R0", 7 * 8));
     }
 
+    public void testMULI(Test test) throws Exception {
+        test.add(new ProcessorTest("MULI short")
+                .setRegister("R0", 7)
+                .run("muli r0,3", 1)
+                .checkRegister("R0", 7 * 3));
+        test.add(new ProcessorTest("MULI long")
+                .setRegister("R0", 7)
+                .run("muli r0,32", 2)
+                .checkRegister("R0", 7 * 32));
+    }
+
     public void testLDI(Test test) throws Exception {
         test.add(new ProcessorTest("LDI small")
                 .run("ldi r1,5", 1)
@@ -284,6 +295,66 @@ public class TestInstructions {
                 .checkRegister("RA", 7));
     }
 
+    public void testCompare(Test test) throws ExpressionException, ParserException, InstructionException, IOException {
+        createCompare(test, "cmp", 2, 1, 0, 0, 0, 0);
+        createCompare(test, "cmp", 2, 1, 1, 0, 0, 0);
+        createCompare(test, "cmp", 2, 2, 0, 0, 1, 0);
+        createCompare(test, "cmp", 2, 2, 1, 0, 1, 0);
+        createCompare(test, "cmp", 2, 3, 0, 1, 0, 1);
+        createCompare(test, "cmp", 2, 3, 1, 1, 0, 1);
+
+        createCompare(test, "cpc", 2, 1, 0, 0, 0, 0);
+        createCompare(test, "cpc", 2, 0, 1, 0, 0, 0);
+        createCompare(test, "cpc", 2, 2, 0, 0, 1, 0);
+        createCompare(test, "cpc", 2, 1, 1, 0, 1, 0);
+        createCompare(test, "cpc", 2, 3, 0, 1, 0, 1);
+        createCompare(test, "cpc", 2, 2, 1, 1, 0, 1);
+    }
+
+    private void createCompare(Test test, String command, int a, int b, int carryIn, int carry, int zero, int neg) throws ExpressionException, ParserException, InstructionException, IOException {
+        test.add(new ProcessorTest(command.toUpperCase() + " " + a + b + carryIn)
+                .setRegister("Carry", carryIn)
+                .setRegister("R0", a)
+                .setRegister("R1", b)
+                .run(command + " r0,r1", 1)
+                .checkRegister("Carry", carry)
+                .checkRegister("Zero", zero)
+                .checkRegister("Neg", neg));
+    }
+
+    public void testCompareI(Test test) throws ExpressionException, ParserException, InstructionException, IOException {
+        createCompareI(test, "cpi", 2, 1, 0, 0, 0, 0);
+        createCompareI(test, "cpi", 2, 1, 1, 0, 0, 0);
+        createCompareI(test, "cpi", 2, 2, 0, 0, 1, 0);
+        createCompareI(test, "cpi", 2, 2, 1, 0, 1, 0);
+        createCompareI(test, "cpi", 2, 3, 0, 1, 0, 1);
+        createCompareI(test, "cpi", 2, 3, 1, 1, 0, 1);
+
+        createCompareI(test, "cpci", 2, 1, 0, 0, 0, 0);
+        createCompareI(test, "cpci", 2, 0, 1, 0, 0, 0);
+        createCompareI(test, "cpci", 2, 2, 0, 0, 1, 0);
+        createCompareI(test, "cpci", 2, 1, 1, 0, 1, 0);
+        createCompareI(test, "cpci", 2, 3, 0, 1, 0, 1);
+        createCompareI(test, "cpci", 2, 2, 1, 1, 0, 1);
+    }
+
+    private void createCompareI(Test test, String command, int a, int b, int carryIn, int carry, int zero, int neg) throws ExpressionException, ParserException, InstructionException, IOException {
+        test.add(new ProcessorTest(command.toUpperCase() + " " + a + b + carryIn + "S")
+                .setRegister("Carry", carryIn)
+                .setRegister("R0", a)
+                .run(command + " r0," + b, 1)
+                .checkRegister("Carry", carry)
+                .checkRegister("Zero", zero)
+                .checkRegister("Neg", neg));
+        test.add(new ProcessorTest(command.toUpperCase() + " " + a + b + carryIn + "L")
+                .setRegister("Carry", carryIn)
+                .setRegister("R0", a+20)
+                .run(command + " r0," + (b+20), 2)
+                .checkRegister("Carry", carry)
+                .checkRegister("Zero", zero)
+                .checkRegister("Neg", neg));
+    }
+
     public void testBranches(Test test) throws Exception {
         createBranchTest(test, "brcs", "Carry", 1);
         createBranchTest(test, "brcc", "Carry", 0);
@@ -293,14 +364,14 @@ public class TestInstructions {
         createBranchTest(test, "brne", "Zero", 0);
     }
 
-    private void createBranchTest(Test test, String command, String flag, int val) throws ParserException, IOException, ExpressionException, InstructionException {
+    private void createBranchTest(Test test, String command, String flag, int branchOn) throws ParserException, IOException, ExpressionException, InstructionException {
         test.add(new ProcessorTest(command.toUpperCase() + " jmp")
-                .setRegister(flag, val)
+                .setRegister(flag, branchOn)
                 .setRegister("R0", 2)
                 .run(command + " end\n ldi r0, 1\nend: nop", 3)
                 .checkRegister("R0", 2));
         test.add(new ProcessorTest(command.toUpperCase() + " skip")
-                .setRegister(flag, 1 - val)
+                .setRegister(flag, 1 - branchOn)
                 .setRegister("R0", 2)
                 .run(command + " end\n ldi r0, 1\nend: nop", 3)
                 .checkRegister("R0", 1));

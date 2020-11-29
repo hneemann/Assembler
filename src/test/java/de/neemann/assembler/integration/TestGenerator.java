@@ -11,8 +11,8 @@ public class TestGenerator implements Test {
     private final ArrayList<Method> methodList;
     private final Object testMethods;
     private BufferedWriter writer;
-    private int maxRows = 10;
-    private int row;
+    private int maxCols = 10;
+    private int col;
     private int xPos;
     private int yPos;
 
@@ -27,7 +27,7 @@ public class TestGenerator implements Test {
     }
 
     public TestGenerator setRows(int maxRows) {
-        this.maxRows = maxRows;
+        this.maxCols = maxRows;
         return this;
     }
 
@@ -114,12 +114,12 @@ public class TestGenerator implements Test {
             throw new RuntimeException(e);
         }
 
-        yPos += DELTAY;
-        row++;
-        if (row >= maxRows) {
-            row = 0;
-            yPos = 0;
-            xPos += DELTAX;
+        xPos += DELTAX;
+        col++;
+        if (col >= maxCols) {
+            col = 0;
+            xPos = 0;
+            yPos += DELTAY;
         }
     }
 }
