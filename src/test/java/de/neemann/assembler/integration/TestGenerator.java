@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class TestGenerator implements Test {
     private static final int DELTAY = 80;
-    private static final int DELTAX = 260;
+    private static final int DELTAX = 160;
     private final ArrayList<Method> methodList;
     private final Object testMethods;
     private BufferedWriter writer;

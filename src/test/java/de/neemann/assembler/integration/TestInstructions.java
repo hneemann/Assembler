@@ -22,138 +22,44 @@ public class TestInstructions {
                 .checkRegister("R2", 3));
     }
 
-    public void testADD(Test test) throws Exception {
-        test.add(new ProcessorTest("ADD no carry")
-                .setRegister("R1", 3)
-                .setRegister("R2", 4)
-                .run("add r2,r1")
-                .checkCarry(false)
-                .checkRegister("R2", 7));
-        test.add(new ProcessorTest("ADD carry")
-                .setRegister("R1", -1)
-                .setRegister("R2", -1)
-                .run("add r2,r1")
-                .checkCarry(true)
-                .checkRegister("R2", 0xfffe));
+    public void testArithmetic(Test test) throws ExpressionException, ParserException, InstructionException, IOException {
+        createArithmeticTest(test, "add", 2, 3, false, 5, false);
+        createArithmeticTest(test, "add", 2, 3, true, 5, false);
+        createArithmeticTest(test, "add", -1, 3, false, 2, true);
+        createArithmeticTest(test, "add", -1, 3, true, 2, true);
+
+        createArithmeticTest(test, "adc", 2, 3, false, 5, false);
+        createArithmeticTest(test, "adc", 2, 3, true, 6, false);
+        createArithmeticTest(test, "adc", -1, 3, false, 2, true);
+        createArithmeticTest(test, "adc", -1, 3, true, 3, true);
+
+        createArithmeticTest(test, "sub", 3, 2, false, 1, false);
+        createArithmeticTest(test, "sub", 3, 2, true, 1, false);
+        createArithmeticTest(test, "sub", 2, 3, false, 0xffff, true);
+        createArithmeticTest(test, "sub", 2, 3, true, 0xffff, true);
+
+        createArithmeticTest(test, "sbc", 3, 2, false, 1, false);
+        createArithmeticTest(test, "sbc", 3, 2, true, 0, false);
+        createArithmeticTest(test, "sbc", 2, 3, false, 0xffff, true);
+        createArithmeticTest(test, "sbc", 2, 3, true, 0xfffe, true);
     }
 
-    public void testADC(Test test) throws Exception {
-        test.add(new ProcessorTest("ADC no carry")
-                .setRegister("R1", 3)
-                .setRegister("R2", 4)
-                .run("adc r2,r1")
-                .checkCarry(false)
-                .checkRegister("R2", 7));
-        test.add(new ProcessorTest("ADC carry")
-                .setRegister("R1", 3)
-                .setRegister("R2", 4)
-                .setCarry(true)
-                .run("adc r2,r1")
-                .checkCarry(false)
-                .checkRegister("R2", 8));
-        test.add(new ProcessorTest("ADC carry out")
-                .setRegister("R1", -1)
-                .setRegister("R2", -1)
-                .run("adc r2,r1")
-                .checkCarry(true)
-                .checkRegister("R2", 0xfffe));
-    }
+    private void createArithmeticTest(Test test, String command, int a, int b, boolean carryIn, int result, boolean carryOut) throws ExpressionException, ParserException, InstructionException, IOException {
+        test.add(new ProcessorTest(command.toUpperCase() + (carryIn ? " C_in" : "") + (carryOut ? " C_out" : ""))
+                .setCarry(carryIn)
+                .setRegister("R1", a)
+                .setRegister("R2", b)
+                .run(command + " r1,r2")
+                .checkCarry(carryOut)
+                .checkRegister("R1", result)
+                .checkRegister("R2", b));
 
-    public void testADDI(Test test) throws Exception {
-        test.add(new ProcessorTest("ADDI small")
-                .setRegister("R1", 3)
-                .run("addi r1,4")
-                .checkRegister("R1", 7));
-        test.add(new ProcessorTest("ADDI large")
-                .setRegister("R1", 3)
-                .run("addi r1,20")
-                .checkRegister("R1", 23));
-    }
-
-    public void testADCI(Test test) throws Exception {
-        test.add(new ProcessorTest("ADCI small")
-                .setRegister("R1", 3)
-                .run("adci r1,4")
-                .checkRegister("R1", 7));
-        test.add(new ProcessorTest("ADCI large")
-                .setRegister("R1", 3)
-                .run("adci r1,20")
-                .checkRegister("R1", 23));
-
-        test.add(new ProcessorTest("ADCI small, carry")
-                .setRegister("R1", 3)
-                .setCarry(true)
-                .run("adci r1,4")
-                .checkRegister("R1", 8));
-        test.add(new ProcessorTest("ADCI large, carry")
-                .setRegister("R1", 3)
-                .setCarry(true)
-                .run("adci r1,20")
-                .checkRegister("R1", 24));
-    }
-
-    public void testSUB(Test test) throws Exception {
-        test.add(new ProcessorTest("SUB")
-                .setRegister("R1", 3)
-                .setRegister("R2", 4)
-                .run("sub r2,r1")
-                .checkCarry(false)
-                .checkRegister("R2", 1));
-        test.add(new ProcessorTest("SUB carry out")
-                .setRegister("R1", 4)
-                .setRegister("R2", 3)
-                .run("sub r2,r1")
-                .checkCarry(true)
-                .checkRegister("R2", 0xffff));
-    }
-
-    public void testSBC(Test test) throws Exception {
-        test.add(new ProcessorTest("SBC")
-                .setRegister("R1", 3)
-                .setRegister("R2", 4)
-                .run("sbc r2,r1")
-                .checkCarry(false)
-                .checkRegister("R2", 1));
-        test.add(new ProcessorTest("SBC carry in")
-                .setRegister("R1", 3)
-                .setRegister("R2", 5)
-                .setCarry(true)
-                .run("sbc r2,r1")
-                .checkCarry(false)
-                .checkRegister("R2", 1));
-    }
-
-    public void testSUBI(Test test) throws Exception {
-        test.add(new ProcessorTest("SUBI small")
-                .setRegister("R1", 4)
-                .run("subi r1,2")
-                .checkRegister("R1", 2));
-        test.add(new ProcessorTest("SUBI large")
-                .setRegister("R1", 30)
-                .run("subi r1,20")
-                .checkRegister("R1", 10));
-    }
-
-    public void testSBCI(Test test) throws Exception {
-        test.add(new ProcessorTest("SBCI no carry, small")
-                .setRegister("R1", 6)
-                .run("sbci r1,4")
-                .checkRegister("R1", 2));
-        test.add(new ProcessorTest("SBCI no carry, large")
-                .setRegister("R1", 30)
-                .run("sbci r1,20")
-                .checkRegister("R1", 10));
-
-        test.add(new ProcessorTest("SBCI carry in, small")
-                .setRegister("R1", 6)
-                .setCarry(true)
-                .run("sbci r1,4")
-                .checkRegister("R1", 1));
-        test.add(new ProcessorTest("SBCI carry in, large")
-                .setRegister("R1", 30)
-                .setCarry(true)
-                .run("sbci r1,20")
-                .checkRegister("R1", 9));
+        test.add(new ProcessorTest(command.toUpperCase() + "I" + (carryIn ? " C_in" : "") + (carryOut ? " C_out" : ""))
+                .setCarry(carryIn)
+                .setRegister("R1", a)
+                .run(command + "i r1," + b)
+                .checkCarry(carryOut)
+                .checkRegister("R1", result));
     }
 
     public void testNOT(Test test) throws Exception {
@@ -170,10 +76,82 @@ public class TestInstructions {
                 .checkRegister("R1", 0xffff));
     }
 
+    public void testLogic(Test test) throws ExpressionException, ParserException, InstructionException, IOException {
+        createLogicTest(test, "and", 2, 3, 2);
+        createLogicTest(test, "or", 2, 3, 3);
+        createLogicTest(test, "eor", 2, 3, 1);
+    }
+
+    private void createLogicTest(Test test, String command, int a, int b, int result) throws ExpressionException, ParserException, InstructionException, IOException {
+        test.add(new ProcessorTest(command.toUpperCase())
+                .setRegister("R1", a)
+                .setRegister("R2", b)
+                .run(command + " r1,r2", 1)
+                .checkRegister("R1", result)
+                .checkRegister("R2", b));
+
+        test.add(new ProcessorTest(command.toUpperCase() + "I short")
+                .setRegister("R1", a)
+                .run(command + "i r1," + b, 1)
+                .checkRegister("R1", result));
+
+        test.add(new ProcessorTest(command.toUpperCase() + "I")
+                .setRegister("R1", a * 8)
+                .run(command + "i r1," + b * 8, 2)
+                .checkRegister("R1", result * 8));
+    }
+
+    public void testShift(Test test) throws ExpressionException, ParserException, InstructionException, IOException {
+        test.add(new ProcessorTest("LSL")
+                .setRegister("R1", 8)
+                .run("lsl r1")
+                .checkRegister("R1", 16));
+        test.add(new ProcessorTest("LSR")
+                .setRegister("R1", 8)
+                .run("lsr r1")
+                .checkRegister("R1", 4));
+        test.add(new ProcessorTest("LSR")
+                .setRegister("R1", 0xffff)
+                .run("lsr r1")
+                .checkRegister("R1", 0x7fff));
+        test.add(new ProcessorTest("ASR")
+                .setRegister("R1", 8)
+                .run("asr r1")
+                .checkRegister("R1", 4));
+        test.add(new ProcessorTest("ASR")
+                .setRegister("R1", 0xffff)
+                .run("asr r1")
+                .checkRegister("R1", 0xffff));
+    }
+
+    public void testRotate(Test test) throws ExpressionException, ParserException, InstructionException, IOException {
+        test.add(new ProcessorTest("ROR")
+                .setCarry(false)
+                .setRegister("R1", 8)
+                .run("ror r1")
+                .checkRegister("R1", 4));
+        test.add(new ProcessorTest("ROR")
+                .setCarry(true)
+                .setRegister("R1", 8)
+                .run("ror r1")
+                .checkRegister("R1", 0x8004));
+        test.add(new ProcessorTest("ROL")
+                .setCarry(false)
+                .setRegister("R1", 8)
+                .run("rol r1")
+                .checkRegister("R1", 16));
+        test.add(new ProcessorTest("ROL")
+                .setCarry(true)
+                .setRegister("R1", 8)
+                .run("rol r1")
+                .checkRegister("R1", 17));
+    }
+
+
     public void testSWAP(Test test) throws Exception {
         test.add(new ProcessorTest("SWAP")
                 .setRegister("R1", 0x1234)
-                .run("swap r1\nbrk")
+                .run("swap r1")
                 .checkRegister("R1", 0x3412));
     }
 
