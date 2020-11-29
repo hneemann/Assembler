@@ -32,6 +32,15 @@ public class ProcessorTest {
         return this;
     }
 
+    public ProcessorTest setMemory(int addr, long value) {
+        return setMemory("mem", addr, value);
+    }
+
+    public ProcessorTest setMemory(String name, int addr, long value) {
+        signalInit.append("memory ").append(name).append("(").append(addr).append(")=").append(value).append(";\n");
+        return this;
+    }
+
     public ProcessorTest setCarry(boolean c) {
         signalInit.append("init Carry=").append(c ? 1 : 0).append(";\n");
         return this;
@@ -82,9 +91,9 @@ public class ProcessorTest {
         for (Check ch : checks)
             c.append(" ").append(ch.name);
 
-        c.append("\n");
+        c.append("\n\n");
         c.append(signalInit);
-        c.append("# ");
+        c.append("\n# ");
         c.append(source.trim().replace("\n", "\n# "));
 
         c.append("\nprogram(");
@@ -93,30 +102,26 @@ public class ProcessorTest {
                 c.append(",");
             c.append("0x").append(Integer.toHexString(code.get(i)));
         }
-        c.append(")\n");
-
-        StringBuilder clockLine = new StringBuilder("C");
-        for (Check ignored : checks)
-            clockLine.append(" X");
-        clockLine.append("\n");
-
+        c.append(")\n\n");
 
         if (code.size() > 1)
-            c.append("repeat (").append(code.size()).append(") ").append(clockLine);
-        else
-            c.append(clockLine);
+            c.append("repeat (").append(code.size()).append(") ");
 
+        c.append("C");
+        for (Check ignored : checks)
+            c.append(" X");
+        c.append("\n\n");
 
+        c.append("# expects\n");
+        for (Check t : checks)
+            c.append("# ").append(t).append("\n");
         c.append("0");
         for (Check t : checks)
             c.append(" ").append(t.value);
         c.append("\n");
-        for (Check t : checks)
-            c.append("# ").append(t).append("\n");
 
         return c.toString();
     }
-
 
     private static final class Check {
         private final String name;

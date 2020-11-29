@@ -198,4 +198,70 @@ public class TestInstructions {
                 .checkRegister("R1", 0x8000));
     }
 
+    public void testLDS(Test test) throws Exception {
+        test.add(new ProcessorTest("LDS small")
+                .setMemory(0,6)
+                .setMemory(1,7)
+                .run("lds r1,0\nlds r2,1", 2)
+                .checkRegister("R1", 6)
+                .checkRegister("R2", 7));
+
+        test.add(new ProcessorTest("LDS large")
+                .setMemory(0x8000,8)
+                .run("lds r1,0x8000", 2)
+                .checkRegister("R1", 8));
+    }
+
+    public void testSTS(Test test) throws Exception {
+        test.add(new ProcessorTest("STS small")
+                .setRegister("R1",7)
+                .run("sts 1,r1\nlds r2,1", 2)
+                .checkRegister("R2", 7));
+
+        test.add(new ProcessorTest("STS large")
+                .setRegister("R1",8)
+                .run("sts 0x8000,r1\nlds r2,0x8000", 4)
+                .checkRegister("R1", 8));
+    }
+
+    public void testLD(Test test) throws Exception {
+        test.add(new ProcessorTest("LD")
+                .setMemory(1,7)
+                .setMemory(0x8000,8)
+                .setRegister("R2",1)
+                .setRegister("R3",0x8000)
+                .run("ld r0,[r2]\nld r1,[r3]", 2)
+                .checkRegister("R0", 7)
+                .checkRegister("R1", 8));
+    }
+
+    public void testLDD(Test test) throws Exception {
+        test.add(new ProcessorTest("LDD")
+                .setMemory(3,7)
+                .setMemory(0x8000,8)
+                .setRegister("R2",1)
+                .setRegister("R3",0x8002)
+                .run("ldd r0,[r2+2]\nldd r1,[r3-2]", 4)
+                .checkRegister("R0", 7)
+                .checkRegister("R1", 8));
+    }
+
+    public void testST(Test test) throws Exception {
+        test.add(new ProcessorTest("ST")
+                .setRegister("R1",1)
+                .setRegister("R2",7)
+                .run("st [r1],r2\nlds r0,1", 2)
+                .checkRegister("R0", 7));
+    }
+
+    public void testSTD(Test test) throws Exception {
+        test.add(new ProcessorTest("STD")
+                .setRegister("R2",4)
+                .setRegister("R3",7)
+                .setRegister("R4",8)
+                .run("std [r2+2],r3\nstd [r2-2],r4\nlds r0,6\nlds r1,2", 6)
+                .checkRegister("R0", 7)
+                .checkRegister("R1", 8));
+    }
+
 }
