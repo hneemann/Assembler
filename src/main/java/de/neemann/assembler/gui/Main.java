@@ -157,7 +157,7 @@ public class Main extends JFrame implements ClosingWindowListener.ConfirmSave, A
         addAddrListener(this);
     }
 
-    public static void createUndoManager(JTextComponent text) {
+    private static void createUndoManager(JTextComponent text) {
         UndoManager undoManager = new UndoManager();
         text.getDocument().addUndoableEditListener(undoManager);
         text.addKeyListener(new KeyAdapter() {
