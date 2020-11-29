@@ -1,5 +1,9 @@
 package de.neemann.assembler.integration;
 
+import de.neemann.assembler.asm.InstructionException;
+import de.neemann.assembler.expression.ExpressionException;
+import de.neemann.assembler.parser.ParserException;
+
 import java.io.IOException;
 
 public class TestInstructions {
@@ -300,6 +304,28 @@ public class TestInstructions {
                         "end: rcall ra,func", 7)
                 .checkRegister("R0", 1)
                 .checkRegister("RA", 7));
+    }
+
+    public void testBranches(Test test) throws Exception {
+        createBranchTest(test, "brcs", "Carry", 1);
+        createBranchTest(test, "brcc", "Carry", 0);
+        createBranchTest(test, "brmi", "Neg", 1);
+        createBranchTest(test, "brpl", "Neg", 0);
+        createBranchTest(test, "breq", "Zero", 1);
+        createBranchTest(test, "brne", "Zero", 0);
+    }
+
+    private void createBranchTest(Test test, String command, String flag, int val) throws ParserException, IOException, ExpressionException, InstructionException {
+        test.add(new ProcessorTest(command.toUpperCase() + " jmp")
+                .setRegister(flag, val)
+                .setRegister("R0", 2)
+                .run(command + " end\n ldi r0, 1\nend: nop", 3)
+                .checkRegister("R0", 2));
+        test.add(new ProcessorTest(command.toUpperCase() + " skip")
+                .setRegister(flag, 1 - val)
+                .setRegister("R0", 2)
+                .run(command + " end\n ldi r0, 1\nend: nop", 3)
+                .checkRegister("R0", 1));
     }
 
 }
