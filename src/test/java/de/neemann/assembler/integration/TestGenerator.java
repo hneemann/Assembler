@@ -1,20 +1,29 @@
 package de.neemann.assembler.integration;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+
+import static de.neemann.assembler.docu.TestDocu.getMavenRoot;
 
 public class TestGenerator implements Test {
     private static final int DELTAY = 80;
     private static final int DELTAX = 160;
     private final ArrayList<Method> methodList;
     private final Object testMethods;
-    private BufferedWriter writer;
     private int maxCols = 10;
     private int col;
     private int xPos;
     private int yPos;
+    private Element visualElements;
 
     public TestGenerator(Object testMethods) {
         this.testMethods = testMethods;
@@ -31,89 +40,43 @@ public class TestGenerator implements Test {
         return this;
     }
 
-    public void write(String path) throws IOException {
-        write(new BufferedWriter(new FileWriter(new File(path))));
-    }
+    public void write(String path) throws IOException, JDOMException {
+        File file = new File(getMavenRoot(), "src/test/resources/dig/ProcessorTestTemplate.dig");
+        Document circuit = new SAXBuilder().build(file);
+        visualElements = circuit.getRootElement().getChild("visualElements");
 
-    public void write() throws IOException {
-        write(new BufferedWriter(new PrintWriter(System.out)));
-    }
-
-    public void write(BufferedWriter writer) throws IOException {
-        this.writer = writer;
-        try (writer) {
-            writer.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                    "<circuit>\n" +
-                    "  <version>1</version>\n" +
-                    "  <attributes/>\n" +
-                    "  <visualElements>\n" +
-                    "    <visualElement>\n" +
-                    "      <elementName>Clock</elementName>\n" +
-                    "      <elementAttributes>\n" +
-                    "        <entry>\n" +
-                    "          <string>runRealTime</string>\n" +
-                    "          <boolean>true</boolean>\n" +
-                    "        </entry>\n" +
-                    "        <entry>\n" +
-                    "          <string>Label</string>\n" +
-                    "          <string>Clk</string>\n" +
-                    "        </entry>\n" +
-                    "        <entry>\n" +
-                    "          <string>Frequency</string>\n" +
-                    "          <int>200</int>\n" +
-                    "        </entry>\n" +
-                    "      </elementAttributes>\n" +
-                    "      <pos x=\"-180\" y=\"20\"/>\n" +
-                    "    </visualElement>\n" +
-                    "    <visualElement>\n" +
-                    "      <elementName>Processor.dig</elementName>\n" +
-                    "      <elementAttributes/>\n" +
-                    "      <pos x=\"-160\" y=\"20\"/>\n" +
-                    "    </visualElement>\n");
-            for (Method m : methodList) {
-                try {
-                    m.invoke(testMethods, this);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
+        for (Method m : methodList) {
+            try {
+                m.invoke(testMethods, this);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
             }
-            writer.write("  </visualElements>\n" +
-                    "  <wires>\n" +
-                    "    <wire>\n" +
-                    "      <p1 x=\"-180\" y=\"20\"/>\n" +
-                    "      <p2 x=\"-160\" y=\"20\"/>\n" +
-                    "    </wire>\n" +
-                    "  </wires>\n" +
-                    "  <measurementOrdering/>\n" +
-                    "</circuit>");
         }
+
+        Format format = Format.getPrettyFormat()
+                .setIndent("    ")
+                .setTextMode(Format.TextMode.PRESERVE);
+        new XMLOutputter(format).output(circuit, new FileOutputStream(path));
     }
 
     @Override
     public void add(ProcessorTest processorTest) {
-        try {
-            String code = processorTest.getCode();
+        String code = processorTest.getCode();
 
-            writer.write("    <visualElement>\n" +
-                    "      <elementName>Testcase</elementName>\n" +
-                    "      <elementAttributes>\n" +
-                    "        <entry>\n" +
-                    "          <string>Label</string>\n" +
-                    "          <string>" + processorTest.getLabel() + "</string>\n" +
-                    "        </entry>\n" +
-                    "        <entry>\n" +
-                    "          <string>Testdata</string>\n" +
-                    "          <testData>\n" +
-                    "            <dataString>" + code + "</dataString>\n" +
-                    "          </testData>\n" +
-                    "        </entry>\n" +
-                    "      </elementAttributes>\n" +
-                    "      <pos x=\"" + xPos + "\" y=\"" + yPos + "\"/>\n" +
-                    "    </visualElement>\n");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        visualElements.addContent(
+                new Element("visualElement")
+                        .addContent(new Element("elementName").setText("Testcase"))
+                        .addContent(new Element("elementAttributes")
+                                .addContent(new Element("entry")
+                                        .addContent(new Element("string").setText("Label"))
+                                        .addContent(new Element("string").setText(processorTest.getLabel())))
+                                .addContent(new Element("entry")
+                                        .addContent(new Element("string").setText("Testdata"))
+                                        .addContent(new Element("testData")
+                                                .addContent(new Element("dataString").setText(code)))))
+                        .addContent(new Element("pos")
+                                .setAttribute("x", Integer.toString(xPos))
+                                .setAttribute("y", Integer.toString(yPos))));
         xPos += DELTAX;
         col++;
         if (col >= maxCols) {

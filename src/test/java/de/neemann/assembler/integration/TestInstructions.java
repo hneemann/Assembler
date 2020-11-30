@@ -3,12 +3,13 @@ package de.neemann.assembler.integration;
 import de.neemann.assembler.asm.InstructionException;
 import de.neemann.assembler.expression.ExpressionException;
 import de.neemann.assembler.parser.ParserException;
+import org.jdom2.JDOMException;
 
 import java.io.IOException;
 
 public class TestInstructions {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, JDOMException {
         new TestGenerator(new TestInstructions())
                 .write("/home/hneemann/Dokumente/Java/digital/src/main/dig/processor/ProcessorTest.dig");
     }
@@ -375,6 +376,38 @@ public class TestInstructions {
                 .setRegister("R0", 2)
                 .run(command + " end\n ldi r0, 1\nend: nop", 3)
                 .checkRegister("R0", 1));
+    }
+
+    public void testOut(Test test) throws Exception {
+        test.add(new ProcessorTest("OUT short")
+                .setRegister("R1", 7)
+                .run("out 3,R1", 1)
+                .checkRegister("Reg3", 7));
+        test.add(new ProcessorTest("OUT long")
+                .setRegister("R1", 7)
+                .run("out 32,R1", 2)
+                .checkRegister("Reg32", 7));
+        test.add(new ProcessorTest("OUTR")
+                .setRegister("R0", 3)
+                .setRegister("R1", 7)
+                .run("outr [R0],R1", 1)
+                .checkRegister("Reg3", 7));
+    }
+
+    public void testIn(Test test) throws Exception {
+        test.add(new ProcessorTest("IN short")
+                .setRegister("Reg3", 7)
+                .run("in R1,3", 1)
+                .checkRegister("R1", 7));
+        test.add(new ProcessorTest("IN long")
+                .setRegister("Reg32", 7)
+                .run("in R1,32", 2)
+                .checkRegister("R1", 7));
+        test.add(new ProcessorTest("INR")
+                .setRegister("R0", 3)
+                .setRegister("Reg3", 7)
+                .run("inr R1,[R0]", 1)
+                .checkRegister("R1", 7));
     }
 
 }
