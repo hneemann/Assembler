@@ -50,7 +50,7 @@ public class TestInstructions {
                 .setCarry(carryIn)
                 .setRegister("R1", a)
                 .setRegister("R2", b)
-                .run(command + " r1,r2")
+                .run(command + " r1,r2", 1)
                 .checkCarry(carryOut)
                 .checkRegister("R1", result)
                 .checkRegister("R2", b));
@@ -58,7 +58,7 @@ public class TestInstructions {
         test.add(new ProcessorTest(command.toUpperCase() + "I" + (carryIn ? " C_in" : "") + (carryOut ? " C_out" : "") + " S")
                 .setCarry(carryIn)
                 .setRegister("R1", a)
-                .run(command + "i r1," + b)
+                .run(command + "i r1," + b, 1)
                 .checkCarry(carryOut)
                 .checkRegister("R1", result));
 
@@ -73,7 +73,7 @@ public class TestInstructions {
         test.add(new ProcessorTest(command.toUpperCase() + "I" + (carryIn ? " C_in" : "") + (carryOut ? " C_out" : "") + " L")
                 .setCarry(carryIn)
                 .setRegister("R1", a)
-                .run(command + "i r1," + b)
+                .run(command + "i r1," + b, 2)
                 .checkCarry(carryOut)
                 .checkRegister("R1", result));
     }
