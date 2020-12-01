@@ -1,6 +1,8 @@
 package de.neemann.assembler.integration;
 
+import de.neemann.assembler.asm.Instruction;
 import de.neemann.assembler.asm.InstructionException;
+import de.neemann.assembler.asm.Opcode;
 import de.neemann.assembler.asm.Program;
 import de.neemann.assembler.expression.ExpressionException;
 import de.neemann.assembler.parser.Parser;
@@ -18,6 +20,7 @@ public class ProcessorTest {
     private String source;
     private int instrAddr;
     private int cycles;
+    private ArrayList<Opcode> opcodeList;
 
     public ProcessorTest(String label) {
         this.label = label;
@@ -74,6 +77,9 @@ public class ProcessorTest {
         ArrayList<Integer> c = new ArrayList<>();
         p.traverse((in, context) -> {
             instrAddr = context.getInstrAddr();
+            if (in instanceof Instruction)
+                addOp(((Instruction) in).getOpcode());
+
             in.createMachineCode(context, e -> {
                 while (c.size() <= instrAddr)
                     c.add(0);
@@ -83,6 +89,16 @@ public class ProcessorTest {
             return true;
         });
         return c;
+    }
+
+    private void addOp(Opcode opcode) {
+        if (opcodeList == null)
+            opcodeList = new ArrayList<>();
+        opcodeList.add(opcode);
+    }
+
+    public ArrayList<Opcode> getUsedOpcodes() {
+        return opcodeList;
     }
 
     public ProcessorTest checkRegister(String reg, int value) {

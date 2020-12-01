@@ -1,5 +1,6 @@
 package de.neemann.assembler.integration;
 
+import de.neemann.assembler.asm.Opcode;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -24,6 +25,7 @@ public class TestGenerator implements Test {
     private int xPos;
     private int yPos;
     private Element visualElements;
+    private int[] opcodesUsed = new int[Opcode.values().length];
 
     public TestGenerator(Object testMethods) {
         this.testMethods = testMethods;
@@ -57,10 +59,18 @@ public class TestGenerator implements Test {
                 .setIndent("    ")
                 .setTextMode(Format.TextMode.PRESERVE);
         new XMLOutputter(format).output(circuit, new FileOutputStream(path));
+
+        for (Opcode oc : Opcode.values()) {
+            if (opcodesUsed[oc.ordinal()]==0)
+                System.out.println(oc.name()+": "+opcodesUsed[oc.ordinal()]);
+        }
     }
 
     @Override
     public void add(ProcessorTest processorTest) {
+        for (Opcode oc : processorTest.getUsedOpcodes())
+            opcodesUsed[oc.ordinal()]++;
+
         String code = processorTest.getCode();
 
         visualElements.addContent(
