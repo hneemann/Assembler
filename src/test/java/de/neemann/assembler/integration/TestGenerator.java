@@ -17,7 +17,7 @@ import static de.neemann.assembler.docu.TestDocu.getMavenRoot;
 
 public class TestGenerator implements Test {
     private static final int DELTAY = 80;
-    private static final int DELTAX = 160;
+    private static final int DELTAX = 200;
     private final ArrayList<Method> methodList;
     private final Object testMethods;
     private int maxCols = 10;

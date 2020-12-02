@@ -333,7 +333,7 @@ public enum Opcode {
             .set(EnRegWrite.Yes)
             .set(SourceToAluA.Yes)),
 
-    LPM("Loads the value at program address [Rs] to register Rd.",
+    LPM("Loads the value at program address [Rs] to register Rd. In a single cycle machine this requires dual ported program memory.",
             MnemonicArguments.DEST_BSOURCE, new Flags()
             .set(ALUBSel.Rom)
             .set(ALUCmd.PassInB)

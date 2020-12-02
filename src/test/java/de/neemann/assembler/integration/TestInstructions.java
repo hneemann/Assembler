@@ -121,22 +121,27 @@ public class TestInstructions {
         test.add(new ProcessorTest("LSL")
                 .setRegister("R1", 8)
                 .run("lsl r1")
+                .checkCarry(false)
                 .checkRegister("R1", 16));
         test.add(new ProcessorTest("LSR")
                 .setRegister("R1", 8)
                 .run("lsr r1")
+                .checkCarry(false)
                 .checkRegister("R1", 4));
         test.add(new ProcessorTest("LSR")
                 .setRegister("R1", 0xffff)
                 .run("lsr r1")
+                .checkCarry(true)
                 .checkRegister("R1", 0x7fff));
         test.add(new ProcessorTest("ASR")
                 .setRegister("R1", 8)
                 .run("asr r1")
+                .checkCarry(false)
                 .checkRegister("R1", 4));
         test.add(new ProcessorTest("ASR")
                 .setRegister("R1", 0xffff)
                 .run("asr r1")
+                .checkCarry(true)
                 .checkRegister("R1", 0xffff));
     }
 
@@ -145,21 +150,37 @@ public class TestInstructions {
                 .setCarry(false)
                 .setRegister("R1", 8)
                 .run("ror r1")
+                .checkCarry(false)
+                .checkRegister("R1", 4));
+        test.add(new ProcessorTest("ROR")
+                .setCarry(false)
+                .setRegister("R1", 9)
+                .run("ror r1")
+                .checkCarry(true)
                 .checkRegister("R1", 4));
         test.add(new ProcessorTest("ROR")
                 .setCarry(true)
                 .setRegister("R1", 8)
                 .run("ror r1")
+                .checkCarry(false)
                 .checkRegister("R1", 0x8004));
         test.add(new ProcessorTest("ROL")
                 .setCarry(false)
                 .setRegister("R1", 8)
                 .run("rol r1")
+                .checkCarry(false)
+                .checkRegister("R1", 16));
+        test.add(new ProcessorTest("ROL")
+                .setCarry(false)
+                .setRegister("R1", 0x8008)
+                .run("rol r1")
+                .checkCarry(true)
                 .checkRegister("R1", 16));
         test.add(new ProcessorTest("ROL")
                 .setCarry(true)
                 .setRegister("R1", 8)
                 .run("rol r1")
+                .checkCarry(false)
                 .checkRegister("R1", 17));
     }
 
