@@ -37,6 +37,7 @@ public class Parser implements Closeable {
         addDirective(new DReg());
         addDirective(new DWord());
         addDirective(new DLong());
+        addDirective(new DWords());
         addDirective(new DOrg());
         addDirective(new DDOrg());
         addDirective(new DData());
@@ -533,6 +534,21 @@ public class Parser implements Closeable {
             String word = parser.parseWord();
             program.addPendingComment(" " + word);
             program.addRam(word, 1);
+        }
+    }
+
+    private static final class DWords extends Directive {
+        private DWords() {
+            super(".words", "addr size", "Reserves [size] words in the RAM. Its address is stored in addr.");
+        }
+
+        @Override
+        protected void doWork(Parser parser, Program program) throws IOException, ParserException, ExpressionException {
+            String ident = parser.parseWord();
+            int size = parser.parseExpression().getValue(program.getContext());
+
+            program.addPendingComment(" " + ident + " " + size);
+            program.addRam(ident, size);
         }
     }
 

@@ -124,6 +124,13 @@ public class ParserTest extends TestCase {
         assertEquals(1, p.getContext().get("b"));
     }
 
+    public void testMetaWords() throws ExpressionException, ParserException, InstructionException, IOException {
+        Program p = new Parser(".word a\n.words b 10\n.word c").parseProgram();
+        assertEquals(0, p.getContext().get("a"));
+        assertEquals(1, p.getContext().get("b"));
+        assertEquals(11, p.getContext().get("c"));
+    }
+
     public void testMetaLong() throws ExpressionException, ParserException, InstructionException, IOException {
         Program p = new Parser(".long A;var a\n.long b").parseProgram();
         assertEquals(0, p.getContext().get("A"));
